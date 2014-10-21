@@ -8,7 +8,7 @@ namespace Heroes
 	namespace Engine
 	{
 
-		const uint32_t SDL_INIT_FLAGS = SDL_INIT_EVERYTHING;
+		const uint32_t SDL_INIT_FLAGS = SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO;
 
 		/**
 		* This class represents the State Engine of the game. It facilitates state transformation
