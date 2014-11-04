@@ -22,6 +22,11 @@ add_executable (Heroes ${Heroes_SRC} )
 
 target_link_libraries ( Heroes ${LIBS})
 
+# copy resources over
+message ( "Copying Resources for Game" )
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/Resources" )
+file(COPY ${RESOURCES_DIR} DESTINATION ${PROJECT_BINARY_DIR}/Resources)
+
 # make debug and release folders
 message ( "Moving dlls into Debug folder." )
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/Debug" )

@@ -33,13 +33,14 @@ namespace Heroes
 				SDL_assert(tileMapFile != nullptr);
 				SDL_assert(window != nullptr);
 
+				// if a tile map has already been intialized clean it up
 				if (m_initialized)
 				{
 					CleanUp();
 				}
 
-				std::ifstream in("TestMap.map", std::ifstream::in);
-
+				// open file
+				std::ifstream in(tileMapFile, std::ifstream::in);
 				SDL_assert(in.is_open());
 
 				// read tile width
@@ -54,15 +55,18 @@ namespace Heroes
 				SDL_assert(in >> numberOfTileTextures);
 				SDL_assert(numberOfTileTextures > 0);
 
+				// array for tile file names
 				char tileFile[64];
+
+				// variables to check tile dimensions match
 				int tilew1 = 0;
 				int tileh1 = 0;
 				int tilew2 = 0;
 				int tileh2 = 0;
 
+				in.getline(tileFile, 1); // read empty line
 
-				std::cout << "Reading Textures" << std::endl;
-				in.getline(tileFile, 5);
+				// go through the number of different texture and load them into the tile map
 				for (int i = 0; i < numberOfTileTextures; i++)
 				{
 					in.getline(tileFile, TileMapConstants::MAX_TILE_TEXTURE_FILE_SIZE);
@@ -75,25 +79,27 @@ namespace Heroes
 					m_textureCache.push_back(testTexture);
 					m_sdlUtilityTool.DestroySurface(testSurface);
 
-					// check that all tile dimensions agree
+					// check that all tile dimensions agree for each i and i + 1
 					if (i > 0)
 					{
-						SDL_QueryTexture(m_textureCache[i], NULL, NULL, &tilew1, &tileh1);
+						SDL_QueryTexture(m_textureCache[i - 1], NULL, NULL, &tilew1, &tileh1);
 						SDL_QueryTexture(m_textureCache[i], NULL, NULL, &tilew2, &tileh2);
 						SDL_assert(tilew1 == tileh1 && tilew2 == tileh2);
 						SDL_assert(tilew1 == tilew2);
+						
+					}
 
-						// assign tile dimension
-						if (i == 0)
-						{
-							m_tileDimension = tilew1;
-						}
+					// assign tile dimension
+					if (i == 0)
+					{
+						SDL_QueryTexture(m_textureCache[i], NULL, NULL, &tilew1, &tileh1);
+						m_tileDimension = tilew1;
 					}
 				}
 
-				std::cout << "Divisions" << std::endl;
+				// assign the positions of each tile
 				int tileMapValue = -1;
-				for (int i = 0; i < m_worldTileWidth * m_worldHeight; i++)
+				for (int i = 0; i < m_worldTileWidth * m_worldTileHeight; i++)
 				{
 					m_textureMap.push_back(Position());
 					SDL_assert(in >> m_textureMap[i].m_surface);
@@ -102,49 +108,15 @@ namespace Heroes
 					m_textureMap[i].m_y = (i / m_worldTileWidth) * m_tileDimension;
 				}
 
-				// -----------------------------------------------
-				// TEMPORARY BEGIN
-				// -----------------------------------------------
-				// 16 X 16 tile world
-				/*m_worldWidth = 128;
-				m_worldHeight = 128;
-
-				// make sure the world is bigger than 6 X 6 tiles
-				SDL_assert(m_worldWidth >= 48 && m_worldHeight >= 48);
-				// -----------------------------------------------
-				// TEMPORARY BEGIN
-				// -----------------------------------------------
-
-				// Create the surface cache
-				SDL_Surface* testSurface = m_sdlUtilityTool.LoadBMP("D:/GameDevelopment/GameSource/Resources/Textures/TestTile.bmp");
-				SDL_Texture* testTexture = m_sdlUtilityTool.CreateTextureFromSurface(renderer, testSurface);
-				SDL_assert(testTexture != nullptr);
-				m_textureCache.push_back(testTexture);
-				m_sdlUtilityTool.DestroySurface(testSurface);
-
-				SDL_assert(testSurface->w == testSurface->h && testSurface->w != 0);
-				m_tileDimension = testSurface->w;*/
-
+				// get the screen dimensions for showing the tilemap
 				SDL_DisplayMode displayMode;
 				SDL_GetWindowDisplayMode(window, &displayMode);
-
-				//m_worldTileWidth = (m_worldWidth * PIXEL_TO_METER) / m_tileDimension;
-				//m_worldTileHeight = (m_worldHeight * PIXEL_TO_METER) / m_tileDimension;
 
 				m_screenTileWidth = (displayMode.w / m_tileDimension) + 3;
 				m_screenTileHeight = (displayMode.h / m_tileDimension) + 3;
 
 				m_screenPixelWidth = displayMode.w;
 				m_screenPixelHeight = displayMode.h;
-
-				// prepopulate the sdl rects
-				/*for (int i = 0; i < m_worldTileWidth * m_worldTileHeight; i++)
-				{
-					m_textureMap.push_back(Position());
-					m_textureMap[i].m_surface = 0;
-					m_textureMap[i].m_x = (i % m_worldTileWidth) * m_tileDimension;
-					m_textureMap[i].m_y = (i / m_worldTileWidth) * m_tileDimension;
-				}*/
 
 				m_initialized = true;
 			}
@@ -155,6 +127,7 @@ namespace Heroes
 
 				for (int i = 0; i < static_cast<int>(m_textureCache.size()); i++)
 				{
+					SDL_assert(m_textureCache[i] != nullptr);
 					m_sdlUtilityTool.DestroyTexture(m_textureCache[i]);
 					m_textureCache[i] = nullptr;
 				}

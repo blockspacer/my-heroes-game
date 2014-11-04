@@ -16,7 +16,7 @@ namespace Heroes
 			const char* START_GAME_TEXT = "FIGHT";
 			const char* LOAD_GAME_TEXT = "CONTINUE";
 			const char* QUIT_GAME_TEXT = "RUN";
-			const char* FONTS_FILE = "D:/GameDevelopment/GameSource/Resources/Fonts/Archeologicaps.ttf";
+			const char* FONTS_FILE = "./Resources/Fonts/Archeologicaps.ttf";
 			const int FONT_PT_SIZE = 72;
 
 			Engine::State* CreateMainMenuState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData)

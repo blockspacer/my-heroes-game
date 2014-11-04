@@ -30,12 +30,11 @@ namespace Heroes
 				{
 					
 
-					b2Vec2 direction = entityMemory.m_directionComponents[targetEntity].m_direction;
+					float movementPercentage = entityMemory.m_directionComponents[targetEntity].m_movementPercentage;
 					float desiredVelocity = 0;
-					if (direction.x != 0.0f || direction.y != 0.0f)
+					if (movementPercentage > 0.0f)
 					{
-						SDL_assert(direction.Length() > 0.5f);
-						desiredVelocity = entityMemory.m_movementComponents[targetEntity].m_baseMax;
+						desiredVelocity = entityMemory.m_movementComponents[targetEntity].m_baseMax * entityMemory.m_directionComponents[targetEntity].m_movementPercentage;
 					}
 					
 					// change to have incremental change

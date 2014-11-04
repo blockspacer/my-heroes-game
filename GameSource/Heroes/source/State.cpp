@@ -13,7 +13,7 @@ namespace Heroes
 
 		State::State(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData) : m_sdlUtilityTool(sdlUtilityTool)
 		{		
-			m_sdlWindow = sdlUtilityTool.CreateWindow("Heroes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 0, 0, SDL_WINDOW_SHOWN | SDL_WINDOW_BORDERLESS | SDL_WINDOW_FULLSCREEN_DESKTOP);
+			m_sdlWindow = sdlUtilityTool.CreateWindow("Heroes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1366, 768, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 			SDL_assert(m_sdlWindow != nullptr);
 
 			m_sdlRenderer = sdlUtilityTool.CreateRenderer(m_sdlWindow, -1, SDL_RENDERER_ACCELERATED);

@@ -125,6 +125,7 @@ namespace Heroes
 
 					struct ComponentDirection{
 						b2Vec2 m_direction; // vector for the x and y component
+						float m_movementPercentage;
 					};
 
 					struct ComponentRender {

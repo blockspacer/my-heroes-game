@@ -29,17 +29,18 @@ namespace Heroes
 					Sint16 axisRightY = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY);
 
 					b2Vec2 movementVector = b2Vec2(axisLeftX, axisLeftY);
-					if (abs(movementVector.x) > Engine::AXIS_EPSILON || abs(movementVector.y) > Engine::AXIS_EPSILON)
+					if (abs(movementVector.x) > 5000 || abs(movementVector.y) > 5000)
 					{
+						entityMemory.m_directionComponents[targetEntity].m_movementPercentage = movementVector.Length() / 32768;
 						movementVector.Normalize();
 					}
 					else
 					{
+						entityMemory.m_directionComponents[targetEntity].m_movementPercentage = 0.0f;
 						movementVector = b2Vec2_zero;
 					}
 					entityMemory.m_directionComponents[targetEntity].m_direction = movementVector;
-
-					// apply forces
+					
 
 					b2Vec2 orientationVector = b2Vec2(- axisRightX, - axisRightY);
 					if (abs(orientationVector.x) > Engine::AXIS_EPSILON || abs(orientationVector.y) > Engine::AXIS_EPSILON)
