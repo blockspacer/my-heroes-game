@@ -15,24 +15,16 @@ namespace Heroes
 		{
 			bool success = false;
 
-			if (!m_initialized)
+			if (!IsInit())
 			{
-				success = InternalInit();
+				success = m_sdlUtilityTool.Init();
 				if (success)
 				{
 					m_initialized = true;
 				}
 			}
 
-			return success;
-		}
-
-		bool StateEngine::InternalInit()
-		{
-			bool success = true;
-			success = success & m_sdlUtilityTool.Init(SDL_INIT_FLAGS);
-			// future things
-			return success;
+			return IsInit();
 		}
 
 		void StateEngine::Run(StateCreationPackage stateCreationPackage)
@@ -105,24 +97,22 @@ namespace Heroes
 		{
 			bool success = false;
 
-			if (m_initialized)
+			if (IsInit())
 			{
-				success = InternalInit();
+				success = m_sdlUtilityTool.Destroy();
 				if (success)
 				{
 					m_initialized = false;
 				}
 			}
-
-			return success;
+			
+			SDL_assert(IsInit() == false);
+			return IsInit();
 		}
 
-		bool StateEngine::InternalDestroy()
+		bool StateEngine::IsInit()
 		{
-			bool success = true;
-			success = success & m_sdlUtilityTool.Destroy();
-			// future things
-			return success;
+			return m_initialized;
 		}
 
 	} // namespace Engine

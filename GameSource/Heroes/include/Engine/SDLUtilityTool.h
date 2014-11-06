@@ -8,6 +8,8 @@ namespace Heroes
 {
 	namespace Engine
 	{
+		const uint32_t SDL_INIT_FLAGS = SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO;
+
 		/**
 		 * This is a class that handles all the SDL object 
 		 * creation
@@ -58,7 +60,7 @@ namespace Heroes
 			SDLUtilityTool();
 			virtual ~SDLUtilityTool();
 
-			bool Init(uint32_t sdlFlags);
+			bool Init();
 			bool Destroy();
 
 			bool m_initialized{ false };

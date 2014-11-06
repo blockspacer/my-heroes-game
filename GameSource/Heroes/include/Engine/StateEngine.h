@@ -8,27 +8,42 @@ namespace Heroes
 	namespace Engine
 	{
 
-		const uint32_t SDL_INIT_FLAGS = SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO;
-
 		/**
 		* This class represents the State Engine of the game. It facilitates state transformation
-		* and while running and rendering the current state.
+		* and handles updating and rendering the current state. The state engine in only in one state
+		* at any given time
 		*/
 		class StateEngine final
 		{
 		public:
 			
+			// empty constructor/destructor
 			StateEngine();
-			virtual ~StateEngine();
+			~StateEngine();
 
+			/*
+			 * Initializes the state engine, return true whether it was succesful or
+			 * false whether there was a failure.
+			 */
 			bool Init();
+
+			/*
+			* Returns whether the state engine has been initialized
+			*/
+			bool IsInit();
+
+			/*
+			* This starts the state engine based on the state that is
+			* passed
+			*/
 			void Run(StateCreationPackage firstStateCreationPackage);
+
+			/*
+			* This destroys (unitializes) the state engine
+			*/
 			bool Destroy();
 
 		private:
-			
-			bool InternalInit();
-			bool InternalDestroy();
 
 			bool m_initialized{ false };
 			Engine::SDLUtilityTool m_sdlUtilityTool;

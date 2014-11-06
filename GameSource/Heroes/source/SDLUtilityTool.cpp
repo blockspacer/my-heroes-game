@@ -11,12 +11,12 @@ namespace Heroes
 		SDLUtilityTool::SDLUtilityTool() {}
 		SDLUtilityTool::~SDLUtilityTool() {}
 
-		bool SDLUtilityTool::Init(uint32_t sdlFlags)
+		bool SDLUtilityTool::Init()
 		{
 			bool success = true;
 			if (!m_initialized)
 			{
-				success = success & (SDL_Init(sdlFlags) == 0);
+				success = success & (SDL_Init(SDL_INIT_FLAGS) == 0);
 				success = success & (TTF_Init() == 0);
 
 				if (success)
