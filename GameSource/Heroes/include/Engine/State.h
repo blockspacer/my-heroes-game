@@ -9,88 +9,92 @@ namespace Heroes
 	namespace Engine
 	{
 
-		/**
-		* This class is to represent the void* data in a clean way to the states so they never
-		* have to test for null themselves.
+		/*
+		* This class represents the state creation data which is used for things like creating a
+		* game play state with a particula level. In general it is the method that states can use to
+		* send information to each other.
 		*/
 		class StateCreationData;
 
-		/**
-		* This class is to represent the void* data in a clean way to the states so they never
-		* have to test for null themselves, might be made into template.
+		/*
+		* This class encapsulates the state create function so that nullptr can be avoided
+		* It provides the ability to see if there is a function and to call that function.
 		*/
 		class StateCreationFunction;
 
-		/**
-		* This is a class for the complete package of the function to call to create
-		* particular state along with the StateCreationData for the state, might be made into template.
+		/*
+		* This is a class that holds all relevant information for how to make a state.
+		* It holds the construction function and the data that the state expects to
+		* recieve (if any).
 		*/
 		class StateCreationPackage;
 
-		/**
-		* States represent the major functions of the game such as the main menu or playing a level
+		/*
+		* States represent the different functionality of the game. They are used for things like
+		* the main menu, level loading, gameplay. It is the object that the state engine uses to
+		* transition through the game.
 		*/
 		class State;
 
 		// type for void* data for state
 		typedef void* UserDataType;
 
-		/**
-		* Function to create the EndState.
-		*/
+		/*
+		 * Function to create the EndState which is just a nullptr for the creation state function.
+		 */
 		State* CreateEndState(Engine::SDLUtilityTool& sdlUtilityTool, StateCreationData& structData);
 		
+		const nullptr_t NoStateCreationData = nullptr;
+
 		class StateCreationData
 		{
 		public:
 
-			StateCreationData() {}
-			StateCreationData(UserDataType userData) : m_userData(userData) {}
+			/*
+			 * Constructor requires a void* userData and a bool to indicate whether is
+			 * was allocated in memory or not.
+			 */
+			StateCreationData(UserDataType userData, bool dataAllocated);
+			~StateCreationData() {}
 
-			bool HasUserData()
-			{
-				return m_userData != nullptr;
-			}
-
-			UserDataType GetUserData()
-			{
-				return m_userData;
-			}
+			// self explanatory
+			bool HasUserData();
+			UserDataType GetUserData();
 
 		private:
 
+			bool m_dateAllocated{ false };
 			UserDataType m_userData{ nullptr };
 		};
 
+		
 		class StateCreationFunction
 		{
 		public:
 			typedef State* (*CreateStateFunc)(Engine::SDLUtilityTool& sdlUtilityTool, StateCreationData& stateCreationData);
 
-			StateCreationFunction() {}
-			StateCreationFunction(CreateStateFunc createStateFunc) : m_createStateFunc(createStateFunc) {}
+			/*
+			* Constructor requires a creation function
+			*/
+			StateCreationFunction(CreateStateFunc createStateFunc);
 
-			bool HasStateCreationFunc()
-			{
-				return m_createStateFunc != nullptr;
-			}
-
-			CreateStateFunc GetStateCreationFunction()
-			{
-				return m_createStateFunc;
-			}
+			// self explanatory
+			bool HasStateCreationFunc();
+			State* CallStateCreationFunction(Engine::SDLUtilityTool& sdlUtilityTool, StateCreationData& stateCreationData);
 
 		private:
 
 			CreateStateFunc m_createStateFunc{ nullptr };
 		};
 
+		
 		class StateCreationPackage
 		{
 		public:
 
-			StateCreationPackage() {}
-
+			/*
+			* Constructor requires a StateCreationFunction and a StateCreationData
+			*/
 			StateCreationPackage(StateCreationFunction createStateFunc, StateCreationData stateCreationData) : m_createStateFunc(createStateFunc), m_stateCreationData(stateCreationData) {}
 
 			StateCreationFunction m_createStateFunc{ nullptr };
@@ -103,17 +107,42 @@ namespace Heroes
 		{
 		public:
 
+			/*
+			 * Constructor requires sdlUtilityTool because only the state engine should
+			 * be responsible for making new states.
+			 */
 			State(Engine::SDLUtilityTool& sdlUtilityTool, StateCreationData& stateCreationData);
 			virtual ~State();
 
 			virtual void Update(uint32_t milliTime) = 0; 
+
+			/*
+			 * This is an overridable renderer. By default it copies the surface to a
+			 * texture and then renders to the texture to the screen.
+			 */
 			virtual void Render();
+
+			/*
+			 * Returns whether there is a valid next state.
+			 */
 			bool HasNextState() const;
+
+			/*
+			* This returns the next state by setting the next state package to the paramter passed in.
+			* Assumes that m_nextState is true.
+			*/
 			StateCreationPackage GetNextStateCreationPackage();
 
 		protected:
 
+			/*
+			 * This clears the surface for this state.
+			 */
 			void ClearSurface();
+
+			/*
+			* This sets m_nextState to the parameter passed in.
+			*/
 			void SetNextState(StateCreationPackage stateCreatePackage);
 
 			bool m_nextState{ false };
@@ -121,7 +150,7 @@ namespace Heroes
 
 			SDLUtilityTool& m_sdlUtilityTool;
 
-			// all states will have a window to render
+			// all states will have a basic sdl visuals and input
 			SDL_Window* m_sdlWindow{ nullptr };
 			SDL_Renderer* m_sdlRenderer{ nullptr };
 			SDL_Surface* m_sdlSurface{ nullptr };

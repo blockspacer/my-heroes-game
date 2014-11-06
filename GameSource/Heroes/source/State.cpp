@@ -11,7 +11,33 @@ namespace Heroes
 			return nullptr;
 		}
 
-		State::State(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData) : m_sdlUtilityTool(sdlUtilityTool)
+		StateCreationData::StateCreationData(UserDataType userData, bool dataAllocated) : m_userData(userData), m_dateAllocated(dataAllocated) {}
+
+		bool StateCreationData::HasUserData()
+		{
+			return m_userData != nullptr;
+		}
+
+		UserDataType StateCreationData::GetUserData()
+		{
+			return m_userData;
+		}
+
+		StateCreationFunction::StateCreationFunction(CreateStateFunc createStateFunc) : m_createStateFunc(createStateFunc) {}
+
+		bool StateCreationFunction::HasStateCreationFunc()
+		{
+			return m_createStateFunc != nullptr;
+		}
+
+		State* StateCreationFunction::CallStateCreationFunction(Engine::SDLUtilityTool& sdlUtilityTool, StateCreationData& stateCreationData)
+		{
+			SDL_assert(HasStateCreationFunc() == true);
+			return m_createStateFunc(sdlUtilityTool, stateCreationData);
+		}
+
+		State::State(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData) : m_sdlUtilityTool(sdlUtilityTool),
+			m_stateCreatePackage(Engine::CreateEndState, Engine::StateCreationData(Engine::NoStateCreationData, false))
 		{		
 			m_sdlWindow = sdlUtilityTool.CreateWindow("Heroes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1366, 768, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 			SDL_assert(m_sdlWindow != nullptr);
@@ -62,6 +88,7 @@ namespace Heroes
 
 		StateCreationPackage State::GetNextStateCreationPackage()
 		{
+			SDL_assert(m_nextState == true);
 			return m_stateCreatePackage;
 		}
 

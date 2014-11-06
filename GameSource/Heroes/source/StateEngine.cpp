@@ -44,7 +44,7 @@ namespace Heroes
 
 			if (stateCreationPackage.m_createStateFunc.HasStateCreationFunc())
 			{
-				state = stateCreationPackage.m_createStateFunc.GetStateCreationFunction()(m_sdlUtilityTool, stateCreationPackage.m_stateCreationData);
+				state = stateCreationPackage.m_createStateFunc.CallStateCreationFunction(m_sdlUtilityTool, stateCreationPackage.m_stateCreationData);
 			}
 
 			Uint32 currentTime = SDL_GetTicks();
@@ -85,7 +85,7 @@ namespace Heroes
 
 						if (stateCreationPackage.m_createStateFunc.HasStateCreationFunc())
 						{
-							state = stateCreationPackage.m_createStateFunc.GetStateCreationFunction()(m_sdlUtilityTool, stateCreationPackage.m_stateCreationData);
+							state = stateCreationPackage.m_createStateFunc.CallStateCreationFunction(m_sdlUtilityTool, stateCreationPackage.m_stateCreationData);
 						}
 
 						// these should always be true except for endstate

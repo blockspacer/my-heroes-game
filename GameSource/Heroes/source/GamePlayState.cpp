@@ -41,7 +41,7 @@ namespace Heroes
 
 				if (buttonBack)
 				{
-					SetNextState(Engine::StateCreationPackage(MainMenu::CreateMainMenuState, Engine::StateCreationData()));
+					SetNextState(Engine::StateCreationPackage(MainMenu::CreateMainMenuState, Engine::StateCreationData(Engine::NoStateCreationData, false)));
 				}
 
 				// List of things to do in update

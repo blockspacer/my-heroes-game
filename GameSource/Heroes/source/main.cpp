@@ -12,7 +12,7 @@ int main(int argc, char** argv)
 		return 1;
 	}
 
-	StateCreationPackage firstStateCreationPackage = StateCreationPackage(States::MainMenu::CreateMainMenuState, StateCreationData());
+	StateCreationPackage firstStateCreationPackage = StateCreationPackage(States::MainMenu::CreateMainMenuState, StateCreationData(NoStateCreationData, false));
 	stateEngine.Run(firstStateCreationPackage); // main menu
 	
 	stateEngine.Destroy();

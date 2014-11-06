@@ -128,13 +128,13 @@ namespace Heroes
 				switch (m_optionIndex)
 				{
 				case 0:
-					SetNextState(Engine::StateCreationPackage(GamePlay::CreateGamePlayState, Engine::StateCreationData()));
+					SetNextState(Engine::StateCreationPackage(GamePlay::CreateGamePlayState, Engine::StateCreationData(Engine::NoStateCreationData, false)));
 					break;
 				case 1:
-					SetNextState(Engine::StateCreationPackage(CreateMainMenuState, Engine::StateCreationData()));
+					SetNextState(Engine::StateCreationPackage(CreateMainMenuState, Engine::StateCreationData(Engine::NoStateCreationData, false)));
 					break;
 				case 2:
-					SetNextState(Engine::StateCreationPackage(Engine::CreateEndState, Engine::StateCreationData()));
+					SetNextState(Engine::StateCreationPackage(Engine::CreateEndState, Engine::StateCreationData(Engine::NoStateCreationData, false)));
 					break;
 				}
 
