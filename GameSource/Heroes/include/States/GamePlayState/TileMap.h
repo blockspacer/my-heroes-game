@@ -12,21 +12,30 @@ namespace Heroes
 	{
 		namespace GamePlay
 		{
+			// type for dynamix surface ids
 			typedef int SurfaceIDType;
+			typedef int TilePositionType;
 
 			enum TileMapConstants
 			{
-				MAX_TILE_TEXTURE_FILE_SIZE = 64,
-				MIN_WORLD_TILE_SIZE = 6
+				MAX_TILE_TEXTURE_FILE_SIZE = 64, // max size for any tile texture file name
+				MIN_WORLD_TILE_SIZE = 5 // minimum dimension a world can be in tiles
 			};
 
-			struct Position {
-				int m_surface;
-				int m_x;
-				int m_y;
-				// probable a texture field
+			/*
+			 * This struct represent a Tile which is a position in the world and 
+			 * a tile texture.
+			 */
+			struct TileInfoType {
+				SurfaceIDType m_surface;
+				TilePositionType m_x;
+				TilePositionType m_y;
 			};
 
+			/*
+			 * The TileMap is the background for the game it has not interaction with
+			 * any of the entities. Currently the TileMap is always in the shape of a rectangle
+			 */
 			class TileMap final
 			{
 
@@ -38,6 +47,9 @@ namespace Heroes
 				 * and height of the grid.
 				 */
 
+				/*
+				 * Constructor requires a SDLUtilityTool.
+				 */
 				TileMap(Engine::SDLUtilityTool& sdlUtilityTool);
 				~TileMap();
 
@@ -45,6 +57,25 @@ namespace Heroes
 				 * This method intializes the tile map based on an
 				 * input file which will specify tile textures and then a grid
 				 * which is made up from those tile textures.
+				 *
+				 * TileMap file format
+				 * -----------------------------------
+				 * < world tile size x >
+				 * < world tile size y >
+				 * < number of different tile textures (n) >
+				 * < tile texture file for surface ID 0 >
+				 * < tile texture file for surface ID 1 >
+				 * < tile texture file for surface ID ... >
+				 * < an x by y grid of numbers 0 -> (n - 1), example n = 3
+				 * 0 0 0 1 1 1 0
+				 * 0 0 0 1 1 1 1
+				 * 2 2 0 0 1 1 0
+				 * 0 2 2 0 0 1 1
+				 * 0 2 2 2 0 1 0
+				 * 0 0 2 2 0 0 1
+				 * 0 0 2 2 0 0 1 >
+				 * -----------------------------------
+				 *
 				 */
 				void Load(const char* tileMapFile, SDL_Window* window, SDL_Renderer* renderer);
 
@@ -57,12 +88,17 @@ namespace Heroes
 
 			private:
 
+				/*
+				 * This cleans up the TileMap's resources. Assumes that
+				 * a vaild file has been loaded.
+				 */
 				void CleanUp();
 
 				Engine::SDLUtilityTool& m_sdlUtilityTool;
 
 				bool m_initialized{ false };
 
+				// These are variables that help with quick TileMap rendering
 				int m_worldWidth{ 0 };
 				int m_worldHeight{ 0 };
 
@@ -77,8 +113,8 @@ namespace Heroes
 
 				int m_tileDimension{ 0 };
 
-				std::vector<SDL_Texture*> m_textureCache;
-				std::vector<Position> m_textureMap;
+				std::vector<SDL_Texture*> m_textureCache; // This hold the textures for a given TileMap
+				std::vector<TileInfoType> m_textureMap; // This holds information about each tile
 			};
 
 		} // namespace GamePlay

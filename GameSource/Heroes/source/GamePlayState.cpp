@@ -23,8 +23,6 @@ namespace Heroes
 
 				int two = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 				int three = m_entityMemory.LoadMainEntity(m_sdlRenderer);
-
-				//std::cout << m_mainEntityID << ", " << two << ", " << three << std::endl;
 			}
 
 			GamePlayState::~GamePlayState()
@@ -109,19 +107,13 @@ namespace Heroes
 				SDL_GetWindowDisplayMode(m_sdlWindow, &displayMode);
 				SDL_Rect relativeEntity;
 
-				std::cout << "SIZE: " << entityList.size() << std::endl;
 				b2Vec2 location = m_entityMemory.m_physicsComponents[m_mainEntityID].body->GetPosition();
 				
 				for (auto entityID : entityList)
 				{
 					
-
-
-					std::cout << "main entity location: " << location.x << ", " << location.y << std::endl;
 					// this should be done in the render update
 					relativeEntity = m_entityMemory.m_renderComponents[entityID].m_dstRect;
-
-					std::cout << relativeEntity.x << ", " << relativeEntity.y << std::endl;
 					relativeEntity.x = relativeEntity.x - (location.x * PIXEL_TO_METER) + displayMode.w / 2;
 					relativeEntity.y = relativeEntity.y - (location.y * PIXEL_TO_METER) + displayMode.h / 2;
 

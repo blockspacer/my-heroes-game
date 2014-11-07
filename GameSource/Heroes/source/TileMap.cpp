@@ -45,11 +45,11 @@ namespace Heroes
 
 				// read tile width
 				SDL_assert(in >> m_worldTileWidth);
-				SDL_assert(m_worldTileWidth > TileMapConstants::MIN_WORLD_TILE_SIZE);
+				SDL_assert(m_worldTileWidth >= TileMapConstants::MIN_WORLD_TILE_SIZE);
 
 				// read tile height
 				SDL_assert(in >> m_worldTileHeight);
-				SDL_assert(m_worldTileHeight > TileMapConstants::MIN_WORLD_TILE_SIZE);
+				SDL_assert(m_worldTileHeight >= TileMapConstants::MIN_WORLD_TILE_SIZE);
 
 				int numberOfTileTextures = 0;
 				SDL_assert(in >> numberOfTileTextures);
@@ -101,7 +101,7 @@ namespace Heroes
 				int tileMapValue = -1;
 				for (int i = 0; i < m_worldTileWidth * m_worldTileHeight; i++)
 				{
-					m_textureMap.push_back(Position());
+					m_textureMap.push_back(TileInfoType());
 					SDL_assert(in >> m_textureMap[i].m_surface);
 					SDL_assert(m_textureMap[i].m_surface >= 0);
 					m_textureMap[i].m_x = (i % m_worldTileWidth) * m_tileDimension;
@@ -144,8 +144,6 @@ namespace Heroes
 				// first calculate the corner of the screen in world pixel coordinates
 				// from the center of the camera in simulation coordinates
 				PixelVector2 pixelPoint = PixelVector2(Meter2Pixel(simulationPoint.x) - (m_screenPixelWidth / 2), Meter2Pixel(simulationPoint.y) - (m_screenPixelHeight / 2));
-				std::cout << simulationPoint.x << ", " << simulationPoint.y << std::endl;
-				std::cout << pixelPoint.m_x << ", " << pixelPoint.m_y << std::endl;
 
 				// Next figure out the tile for that pixel point
 				int tileX = std::min(std::max(pixelPoint.m_x / m_tileDimension - 1, 0), m_worldTileWidth - m_screenTileWidth);
@@ -155,6 +153,7 @@ namespace Heroes
 				relative.w = m_tileDimension;
 				relative.h = m_tileDimension;
 				// i => height, j => width
+				// Loops through the tiles in the vision region and draw thier respective tile textures
 				for (int i = tileY; i < m_screenTileHeight + tileY; i++)
 				{
 					for (int j = tileX; j < m_screenTileWidth + tileX; j++)
@@ -162,7 +161,6 @@ namespace Heroes
 						relative.x = m_textureMap[j + (i * m_worldTileWidth)].m_x - pixelPoint.m_x;
 						relative.y = m_textureMap[j + (i * m_worldTileWidth)].m_y - pixelPoint.m_y;
 						SDL_RenderCopy(renderer, m_textureCache[m_textureMap[j + (i * m_worldTileWidth)].m_surface], NULL, &relative);
-						//SDL_BlitSurface(m_textureCache[m_textureMap[j + (i * m_worldTileWidth)].m_surface], NULL, windowSurface, &relative);
 					}
 				}
 			}
