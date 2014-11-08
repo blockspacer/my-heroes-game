@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Log.h"
 #include "Engine/State.h"
 #include "Engine/SDLUtilityTool.h"
 
