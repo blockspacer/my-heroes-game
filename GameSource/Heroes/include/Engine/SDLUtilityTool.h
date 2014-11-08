@@ -39,8 +39,8 @@ namespace Heroes
 				const char *text, SDL_Color fg);
 			SDL_GameController* GameControllerOpen(int controllerNum);
 			void GameControllerClose(SDL_GameController* controller);
-			SDL_Surface* LoadBMP(const char* file);
-
+			SDL_Surface* LoadImageSurface(const char* file);
+			SDL_Texture* LoadImageTexture(const char* file, SDL_Renderer* renderer);
 
 			/**
 			* Prints what current resources are being used

@@ -30,35 +30,35 @@ namespace Heroes
 				{
 					
 
-					float movementPercentage = entityMemory.m_directionComponents[targetEntity].m_movementPercentage;
+					float movementPercentage = entityMemory.m_dynamicDirectionComponents[targetEntity].m_movementPercentage;
 					float desiredVelocity = 0;
 					if (movementPercentage > 0.0f)
 					{
-						desiredVelocity = entityMemory.m_movementComponents[targetEntity].m_baseMax * entityMemory.m_directionComponents[targetEntity].m_movementPercentage;
+						desiredVelocity = entityMemory.m_staticMovementComponents[entityMemory.m_dynamicStatusComponents[targetEntity].m_staticEntityID].m_baseMax * entityMemory.m_dynamicDirectionComponents[targetEntity].m_movementPercentage;
 					}
 					
 					// change to have incremental change
-					float desiredVelocityX = desiredVelocity * entityMemory.m_directionComponents[targetEntity].m_direction.x;
-					float desiredVelocityY = desiredVelocity * entityMemory.m_directionComponents[targetEntity].m_direction.y;
+					float desiredVelocityX = desiredVelocity * entityMemory.m_dynamicDirectionComponents[targetEntity].m_direction.x;
+					float desiredVelocityY = desiredVelocity * entityMemory.m_dynamicDirectionComponents[targetEntity].m_direction.y;
 
 					// do the math based on massed and preferred velocity of the body
-					b2Vec2 vel = entityMemory.m_physicsComponents[targetEntity].body->GetLinearVelocity();
+					b2Vec2 vel = entityMemory.m_dynamicPhysicsComponents[targetEntity].body->GetLinearVelocity();
 					float velChangeX = desiredVelocityX - vel.x;
-					float impulseX = entityMemory.m_physicsComponents[targetEntity].body->GetMass() * velChangeX; //disregard time factor
+					float impulseX = entityMemory.m_dynamicPhysicsComponents[targetEntity].body->GetMass() * velChangeX; //disregard time factor
 					float velChangeY = desiredVelocityY - vel.y;
-					float impulseY = entityMemory.m_physicsComponents[targetEntity].body->GetMass() * velChangeY; //disregard time factor
+					float impulseY = entityMemory.m_dynamicPhysicsComponents[targetEntity].body->GetMass() * velChangeY; //disregard time factor
 
-					entityMemory.m_physicsComponents[targetEntity].body->ApplyLinearImpulse(b2Vec2(impulseX, impulseY), entityMemory.m_physicsComponents[targetEntity].body->GetWorldCenter(), true);
+					entityMemory.m_dynamicPhysicsComponents[targetEntity].body->ApplyLinearImpulse(b2Vec2(impulseX, impulseY), entityMemory.m_dynamicPhysicsComponents[targetEntity].body->GetWorldCenter(), true);
 				}
 
 				void WarriorRenderUpdateSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller)
 				{
-					b2Vec2 location = entityMemory.m_physicsComponents[targetEntity].body->GetPosition();
-					entityMemory.m_renderComponents[targetEntity].m_dstRect.x = Meter2Pixel(location.x) - 32;
-					entityMemory.m_renderComponents[targetEntity].m_dstRect.y = Meter2Pixel(location.y) - 32;
+					b2Vec2 location = entityMemory.m_dynamicPhysicsComponents[targetEntity].body->GetPosition();
+					entityMemory.m_dynamicRenderComponents[targetEntity].m_dstRect.x = Meter2Pixel(location.x) - entityMemory.m_staticRenderComponents[entityMemory.m_dynamicStatusComponents[targetEntity].m_staticEntityID].m_textureWidth;
+					entityMemory.m_dynamicRenderComponents[targetEntity].m_dstRect.y = Meter2Pixel(location.y) - entityMemory.m_staticRenderComponents[entityMemory.m_dynamicStatusComponents[targetEntity].m_staticEntityID].m_textureHeight;
 
-					b2Vec2 orientation = entityMemory.m_targetComponents[targetEntity].m_orientation;
-					entityMemory.m_renderComponents[targetEntity].m_angle = (atan2(orientation.y, orientation.x)) * (180.0 / M_PI) - 90;
+					b2Vec2 orientation = entityMemory.m_dynamicTargetComponents[targetEntity].m_orientation;
+					entityMemory.m_dynamicRenderComponents[targetEntity].m_angle = (atan2(orientation.y, orientation.x)) * (180.0f / static_cast<float>(M_PI)) - 90.0f;
 				}
 
 			} // namespace WarriorSystems

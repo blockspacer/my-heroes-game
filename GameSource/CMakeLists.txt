@@ -21,6 +21,10 @@ set(SDL2_image_ROOT "${SDL2_DIR}/SDL2_image-2.0.0/")
 set(BOX2D_DIR "${LIBRARIES_DIR}/Box2D/")
 set(BOX2D_ROOT "${BOX2D_DIR}/Box2D_v2.3.0/")
 
+# tinyXML
+set(TINYXML2_DIR "${LIBRARIES_DIR}/TinyXML2/")
+set(TINYXML2_ROOT "${TINYXML2_DIR}/tinyxml2-master/") 
+
 # put all libs together
 set(LIBS "${LIBS}" "${SDL2_ROOT}/SDL2-2.0.3/lib/x86/SDL2.lib" "${SDL2_ROOT}/SDL2-2.0.3/lib/x86/SDL2main.lib"
                    "${SDL2_ttf_ROOT}/SDL2_ttf-2.0.12/lib/x86/SDL2_ttf.lib"
@@ -28,16 +32,8 @@ set(LIBS "${LIBS}" "${SDL2_ROOT}/SDL2-2.0.3/lib/x86/SDL2.lib" "${SDL2_ROOT}/SDL2
                    "${BOX2D_ROOT}/Box2D/Build/vs2012/bin/Debug/Box2D.lib" 
                    "${BOX2D_ROOT}/Box2D/Build/vs2012/bin/Debug/FreeGLUT.lib"
                    "${BOX2D_ROOT}/Box2D/Build/vs2012/bin/Debug/GLUI.lib"
+                   "${TINYXML2_ROOT}/build/Debug/tinyxml2.lib"
                     )
 set(FONT_DIR "${RESOURCES_DIR}/Fonts/")
 
 add_subdirectory( Heroes )
-
-#INCLUDE("${PROJECT_CMAKE_DIR}/macros/headless_setup.cmake")
-
-#set(CMAKE_INCLUDE_PATH "${BUILDY_BITS_ROOT}/LibUV/include/" )
-
-#includes directories for whole project
-#include_directories(SYSTEM "${ACTOR_CONTAINER_ROOT}/3rdParty/DHCore/" )
-#include_directories(SYSTEM "/usr/include" "${BUILDY_BITS_ROOT}/LibUV/include")
-

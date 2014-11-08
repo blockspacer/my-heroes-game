@@ -1,7 +1,8 @@
 ﻿#pragma once
 
 #include <list>
-
+#include <vector>
+#include "Engine/SDLUtilityTool.h"
 #include "States/GamePlayState/Entities/EntityComponents.h"
 
 namespace Heroes
@@ -10,207 +11,94 @@ namespace Heroes
 	{
 		namespace GamePlay
 		{
-				typedef int EntityIDType;
+			typedef int EntityDynamicIDType;
+			typedef int EntityStaticIDType;
 
-				enum EntityMemorySize
-				{
-					SIZE = 1000
-				};
+			enum EntityMemoryConstants
+			{
+				DYNAMIC_ENTITY_MEMORY_SIZE = 1000,
+				STATIC_ENTITY_MEMORY_START_SIZE = 1
+			};
 
-				enum ComponentMask
-				{
-					STATUS,
-					HEALTH,
-					TARGET,
-					ACTION,
-					DIRECTION,
-					MOVEMENT,
-					RENDER,
-					PHYSICS
-				};
+			enum ComponentMask
+			{
+				STATUS,
+				HEALTH,
+				TARGET,
+				ACTION,
+				DIRECTION,
+				MOVEMENT,
+				RENDER,
+				PHYSICS
+			};
 
-				class EntityQuery final : public b2QueryCallback
-				{
-				public:
+			class EntityQuery final : public b2QueryCallback
+			{
+			public:
 
-					virtual bool ReportFixture(b2Fixture* fixture);
+				virtual bool ReportFixture(b2Fixture* fixture);
 
-					std::list<EntityIDType> * m_queryList{ nullptr };
-				};
+				std::list<EntityDynamicIDType> * m_queryList{ nullptr };
+			};
 
-				class EntityMemory final
-				{
-				public:
+			class EntityMemory final
+			{
+			public:
 
-					EntityMemory();
-					~EntityMemory();
+				EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool);
+				~EntityMemory();
 
-					EntityIDType LoadMainEntity(SDL_Renderer* renderer);
+				EntityDynamicIDType LoadMainEntity(SDL_Renderer* renderer);
 
-					// Loads a single entity returning its id
-					EntityIDType LoadEntityFile(const char* entityFile, SDL_Renderer* renderer);
+				// Loads a single entity returning its id
+				EntityDynamicIDType LoadEntityFile(const char* entityFile, SDL_Renderer* renderer);
 
-					// Releases the entities specified in the list
-					void ReleaseEntites(std::list<EntityIDType>& entityIDs);
+				// Releases the entities specified in the list
+				void ReleaseEntites(std::list<EntityDynamicIDType>& entityIDs);
 
-					// Queries the b2 world with the AABB and returns a list of the entities
-					void QueryEntityWorld(std::list<EntityIDType>& entityList, b2AABB boundingArea);
+				// Queries the b2 world with the AABB and returns a list of the entities
+				void QueryEntityWorld(std::list<EntityDynamicIDType>& entityList, b2AABB boundingArea);
 
-					void UpdateEntityWorld(float time);
+				void UpdateEntityWorld(float time);	
 
-					// load entity file
-					// the big array of entities
+				ComponentSystems m_dynamicSystemComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<ComponentSystems> m_staticSystemComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-					// get Component list (ie get all the health components)
+				DynamicStatusComponent m_dynamicStatusComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticStatusComponent> m_staticStatusComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-					// query entity based on id and bounding box
+				DynamicHealthComponent m_dynamicHealthComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticHealthComponent> m_staticHealthComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-					/*
-					public void Load(EntityGroup entity_group, int main_entity)
-					{
-						if (entity_group == null || main_entity < 0 || main_entity > (int) ENTITY_CONSTANTS.MAX_ENTITIES)
-						{
-							Console.WriteLine("Null/Bad parameters in Load() of EntitySystemManager");
-						}
-						entity_group_ = entity_group;
-						main_entity_ = main_entity;
-					}
+				DynamicTargetComponent m_dynamicTargetComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticTargetComponent> m_staticTargetComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-					public LinkedList<int> QueryEntityWorld(Camera camera)
-					{
-						return entity_group_.QueryWorld(camera.GetSimBottomLeft(), camera.GetSimTopRight());
-					}
+				DynamicActionComponent m_dynamicActionComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticActionComponent> m_staticActionComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-					public void UpdateEntities(LinkedList<int> entities, Camera camera)
-					{
-						Console.WriteLine("Updating World");
-						entity_group_.UpdateWorld();
+				DynamicDirectionComponent m_dynamicDirectionComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticDirectionComponent> m_staticDirectionComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
+				DynamicMovementComponent m_dynamicMovementComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticMovementComponent> m_staticMovementComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-						// health system
-						if (health_update_ == (int)ENTITY_SYSTEM_CONSTANTS.HEALTH_UPDATE)
-						{
-							Console.WriteLine("Health");
-							for (LinkedListNode<int> it = entities.First; it != null; it = it.Next)
-							{
-								if (entity_group_.entity_systems[it.Value].health != null)
-								{
-									entity_group_.entity_systems[it.Value].health.Run(it.Value, entity_group_);
-								} 
-							}
-							health_update_ = -1;
-						}
+				DynamicRenderComponent m_dynamicRenderComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticRenderComponent> m_staticRenderComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-						// target system
-						if (target_update_ == (int)ENTITY_SYSTEM_CONSTANTS.TARGET_UPDATE)
-						{
-							Console.WriteLine("Target");
-							for (LinkedListNode<int> it = entities.First; it != null; it = it.Next)
-							{
-								if (entity_group_.entity_systems[it.Value].target != null)
-								{
-									entity_group_.entity_systems[it.Value].target.Run(it.Value, entity_group_);
-								} 
-							}
-							target_update_ = -1;
-						}
+				DynamicPhysicsComponent m_dynamicPhysicsComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticPhysicsComponent> m_staticPhysicsComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
-						// action system
-						if (action_update_ == (int)ENTITY_SYSTEM_CONSTANTS.ACTION_UPDATE)
-						{
-							Console.WriteLine("Action");
-							for (LinkedListNode<int> it = entities.First; it != null; it = it.Next)
-							{
-								if (entity_group_.entity_systems[it.Value].action != null)
-								{
-									entity_group_.entity_systems[it.Value].action.Run(it.Value, entity_group_);
-								} 
-							}
-							action_update_ = -1;
-						}
+			private:
 
-						// direction system
-						if (direction_update_ == (int)ENTITY_SYSTEM_CONSTANTS.DIRECTION_UPDATE)
-						{
-							Console.WriteLine("Direction");
-							for (LinkedListNode<int> it = entities.First; it != null; it = it.Next)
-							{
-								if (entity_group_.entity_systems[it.Value].direction != null)
-								{
-									entity_group_.entity_systems[it.Value].direction.Run(it.Value, entity_group_);
-								} 
-							}
-							direction_update_ = -1;
-						}
+				Engine::SDLUtilityTool& m_sdlUtilityTool;
 
-						// movement system
-						if (movement_update_ == (int)ENTITY_SYSTEM_CONSTANTS.MOVEMENT_UPDATE)
-						{
-							Console.WriteLine("Moving");
-							for (LinkedListNode<int> it = entities.First; it != null; it = it.Next)
-							{
-								if (entity_group_.entity_systems[it.Value].movement != null)
-								{
-									entity_group_.entity_systems[it.Value].movement.Run(it.Value, entity_group_);
-								} 
-							}
-							movement_update_ = -1;
-						}
+				b2World m_entityWorld{ b2Vec2_zero };
 
-						// render system
-						if (render_update_ == (int)ENTITY_SYSTEM_CONSTANTS.RENDER_UPDATE)
-						{
-							Console.WriteLine("Rendering");
-							for (LinkedListNode<int> it = entities.First; it != null; it = it.Next)
-							{
-								if (entity_group_.entity_systems[it.Value].render_update != null)
-								{
-									entity_group_.entity_systems[it.Value].render_update.Update(it.Value, entity_group_, camera.GetDisplayCoordinate());
-								} 
-							}
-							render_update_ = -1;
-						}
+				// internally management system
+				std::list<EntityDynamicIDType> m_freeEntities;
+				std::list<EntityDynamicIDType> m_usedEntities;
 
-						// increment the update cycles (always happens)
-						health_update_++;
-						target_update_++;
-						action_update_++;
-						direction_update_++;
-						movement_update_++;
-						render_update_++;
-					}
-
-					public Vector2 GetMainEntityLocation()
-					{
-						return entity_group_.entity_physics[main_entity_].body.Position;
-					}
-					*/
-
-					ComponentSystems m_systemComponents[EntityMemorySize::SIZE];
-
-					ComponentStatus m_statusComponents[EntityMemorySize::SIZE];
-
-					ComponentHealth m_healthComponents[EntityMemorySize::SIZE];
-
-					ComponentTarget m_targetComponents[EntityMemorySize::SIZE];
-					ComponentAction m_actionComponents[EntityMemorySize::SIZE];
-
-					ComponentDirection m_directionComponents[EntityMemorySize::SIZE];
-					ComponentMovement m_movementComponents[EntityMemorySize::SIZE];
-
-					ComponentRender m_renderComponents[EntityMemorySize::SIZE];
-
-					ComponentPhysics m_physicsComponents[EntityMemorySize::SIZE];
-
-				private:
-
-					b2World m_entityWorld{ b2Vec2_zero };
-
-					// internally management system
-					std::list<EntityIDType> m_freeEntities;
-					std::list<EntityIDType> m_usedEntities;
-
-				};
+			};
 		} // namespace GamePlay
 	} // namespace States
 } //namespace Heroes

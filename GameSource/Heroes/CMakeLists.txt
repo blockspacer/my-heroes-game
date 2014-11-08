@@ -13,6 +13,7 @@ set (
     "${SDL2_ttf_ROOT}/SDL2_ttf-2.0.12/include/"
     "${SDL2_image_ROOT}/include/"
     "${BOX2D_ROOT}/Box2D/"
+    "${TINYXML2_ROOT}"
     "${CMAKE_CURRENT_SOURCE_DIR}/include/"
     )
     
@@ -36,6 +37,7 @@ file(COPY ${SDL2_ttf_ROOT}/SDL2_ttf-2.0.12/lib/x86/SDL2_ttf.dll DESTINATION ${PR
 file(COPY ${SDL2_ttf_ROOT}/SDL2_ttf-2.0.12/lib/x86/zlib1.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug/ )
 file(COPY ${SDL2_image_ROOT}/lib/x86/SDL2_image.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug/ )
 file(COPY ${SDL2_image_ROOT}/lib/x86/libpng16-16.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug/ )
+file(COPY ${TINYXML2_ROOT}/build/Debug/tinyxml2.dll DESTINATION ${PROJECT_BINARY_DIR}/Debug/ )
 
 message ( "Moving dlls into Release folder." )
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/Release" )
@@ -45,8 +47,4 @@ file(COPY ${SDL2_ttf_ROOT}/SDL2_ttf-2.0.12/lib/x86/SDL2_ttf.dll DESTINATION ${PR
 file(COPY ${SDL2_ttf_ROOT}/SDL2_ttf-2.0.12/lib/x86/zlib1.dll DESTINATION ${PROJECT_BINARY_DIR}/Release/ )
 file(COPY ${SDL2_image_ROOT}/lib/x86/SDL2_image.dll DESTINATION ${PROJECT_BINARY_DIR}/Release/ )
 file(COPY ${SDL2_image_ROOT}/lib/x86/libpng16-16.dll DESTINATION ${PROJECT_BINARY_DIR}/Release/ )
-
-message ( "Moving the fonts into project folder, Debug and Release folders." )
-file(COPY ${FONT_DIR}/Archeologicaps.ttf DESTINATION ${PROJECT_BINARY_DIR} )
-file(COPY ${FONT_DIR}/Archeologicaps.ttf DESTINATION ${PROJECT_BINARY_DIR}/Debug/ )
-file(COPY ${FONT_DIR}/Archeologicaps.ttf DESTINATION ${PROJECT_BINARY_DIR}/Release/ )
+file(COPY ${TINYXML2_ROOT}/build/Debug/tinyxml2.dll DESTINATION ${PROJECT_BINARY_DIR}/Release/ )

@@ -1,4 +1,5 @@
 #include <SDL_assert.h> 
+#include <tinyxml2.h>
 #include <iostream>
 
 #include "States/MainMenuState/MainMenuState.h"
@@ -10,17 +11,20 @@ namespace Heroes
 	{
 		namespace GamePlay
 		{
-
+			
 			Engine::State* CreateGamePlayState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData)
 			{
+				tinyxml2::XMLDocument;
 				return new GamePlayState(sdlUtilityTool, stateCreationData);
 			}
 
 			GamePlayState::GamePlayState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData) : State(sdlUtilityTool, stateCreationData)
+				
 			{
 				m_tileMap.Load("./Resources/Levels/Maps/TestMap.map", m_sdlWindow, m_sdlRenderer);
 				m_mainEntityID = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 
+				// memory leak
 				int two = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 				int three = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 			}
@@ -57,7 +61,7 @@ namespace Heroes
 				// list of active entiites should be local
 				// threading does not affect this scheme
 				
-				std::list<GamePlay::EntityIDType> entityList;
+				std::list<GamePlay::EntityDynamicIDType> entityList;
 
 				
 
@@ -69,56 +73,56 @@ namespace Heroes
 				
 
 				// RUN THE SYSYTEMS
-				m_entityMemory.m_systemComponents[m_mainEntityID].m_directionSystem(m_mainEntityID, m_entityMemory, m_controller);
+				m_entityMemory.m_dynamicSystemComponents[m_mainEntityID].m_directionSystem(m_mainEntityID, m_entityMemory, m_controller);
 				//m_entityMemory.m_systemComponents[m_mainEntityID].m_movementSystem(m_mainEntityID, m_entityMemory, nullptr);
 
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemComponents[entityID].m_movementSystem(entityID, m_entityMemory, nullptr);
-					m_entityMemory.m_systemComponents[entityID].m_renderUpdateSystem(entityID, m_entityMemory, nullptr);
+					m_entityMemory.m_dynamicSystemComponents[entityID].m_movementSystem(entityID, m_entityMemory, nullptr);
+					m_entityMemory.m_dynamicSystemComponents[entityID].m_renderUpdateSystem(entityID, m_entityMemory, nullptr);
 					//m_entityMemory.m_systemComponents[entityID].m_directionSystem(entityID, m_entityMemory, m_controller);
 					
 				}
 
 				m_entityMemory.UpdateEntityWorld(0.030f);
-				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_physicsComponents[m_mainEntityID].body->GetPosition()));
+				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_dynamicPhysicsComponents[m_mainEntityID].body->GetPosition()));
 				// direction for main entity only
 				
 			}
 
-			void GamePlayState::QuerySimulationZone(std::list<EntityIDType>& entityList)
+			void GamePlayState::QuerySimulationZone(std::list<EntityDynamicIDType>& entityList)
 			{
 				b2AABB activeSimulationRegion;
 				m_camera.GetActiveZone(activeSimulationRegion); // get active region
 				m_entityMemory.QueryEntityWorld(entityList, activeSimulationRegion); // get entities in active region
 			}
 
-			void GamePlayState::QueryVisionZone(std::list<EntityIDType>& entityList)
+			void GamePlayState::QueryVisionZone(std::list<EntityDynamicIDType>& entityList)
 			{
 				b2AABB visibleSimulationRegion;
 				m_camera.GetVisionZone(visibleSimulationRegion, m_sdlWindow); // get visible region
 				m_entityMemory.QueryEntityWorld(entityList, visibleSimulationRegion); // get entities in visible region
 			}
 
-			void GamePlayState::RenderEntites(std::list<EntityIDType> entityList)
+			void GamePlayState::RenderEntites(std::list<EntityDynamicIDType> entityList)
 			{
 				// this could be cleaner
 				SDL_DisplayMode displayMode;
 				SDL_GetWindowDisplayMode(m_sdlWindow, &displayMode);
 				SDL_Rect relativeEntity;
 
-				b2Vec2 location = m_entityMemory.m_physicsComponents[m_mainEntityID].body->GetPosition();
+				b2Vec2 location = m_entityMemory.m_dynamicPhysicsComponents[m_mainEntityID].body->GetPosition();
 				
 				for (auto entityID : entityList)
 				{
 					
 					// this should be done in the render update
-					relativeEntity = m_entityMemory.m_renderComponents[entityID].m_dstRect;
+					relativeEntity = m_entityMemory.m_dynamicRenderComponents[entityID].m_dstRect;
 					relativeEntity.x = relativeEntity.x - (location.x * PIXEL_TO_METER) + displayMode.w / 2;
 					relativeEntity.y = relativeEntity.y - (location.y * PIXEL_TO_METER) + displayMode.h / 2;
 
-					float angle = m_entityMemory.m_renderComponents[entityID].m_angle;
-					SDL_RenderCopyEx(m_sdlRenderer, m_entityMemory.m_renderComponents[entityID].m_texture, NULL, &relativeEntity, angle, NULL, SDL_FLIP_NONE);		
+					float angle = m_entityMemory.m_dynamicRenderComponents[entityID].m_angle;
+					SDL_RenderCopyEx(m_sdlRenderer, m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_texture, NULL, &relativeEntity, angle, NULL, SDL_FLIP_NONE);
 				}
 			}
 

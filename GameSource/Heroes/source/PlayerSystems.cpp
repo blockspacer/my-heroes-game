@@ -19,7 +19,7 @@ namespace Heroes
 
 				void MainEntityDirectionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller)
 				{
-					SDL_assert(targetEntity >= 0 && targetEntity < GamePlay::EntityMemorySize::SIZE);
+					SDL_assert(targetEntity >= 0 && targetEntity < GamePlay::EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE);
 					SDL_assert(controller != nullptr);
 
 					Sint16 axisLeftX = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX);
@@ -31,22 +31,22 @@ namespace Heroes
 					b2Vec2 movementVector = b2Vec2(axisLeftX, axisLeftY);
 					if (abs(movementVector.x) > 5000 || abs(movementVector.y) > 5000)
 					{
-						entityMemory.m_directionComponents[targetEntity].m_movementPercentage = movementVector.Length() / 32768;
+						entityMemory.m_dynamicDirectionComponents[targetEntity].m_movementPercentage = movementVector.Length() / 32768;
 						movementVector.Normalize();
 					}
 					else
 					{
-						entityMemory.m_directionComponents[targetEntity].m_movementPercentage = 0.0f;
+						entityMemory.m_dynamicDirectionComponents[targetEntity].m_movementPercentage = 0.0f;
 						movementVector = b2Vec2_zero;
 					}
-					entityMemory.m_directionComponents[targetEntity].m_direction = movementVector;
+					entityMemory.m_dynamicDirectionComponents[targetEntity].m_direction = movementVector;
 					
 
-					b2Vec2 orientationVector = b2Vec2(- axisRightX, - axisRightY);
+					b2Vec2 orientationVector = b2Vec2(static_cast<float>(-axisRightX), static_cast<float>(-axisRightY));
 					if (abs(orientationVector.x) > Engine::AXIS_EPSILON || abs(orientationVector.y) > Engine::AXIS_EPSILON)
 					{
 						orientationVector.Normalize();
-						entityMemory.m_targetComponents[targetEntity].m_orientation = orientationVector;
+						entityMemory.m_dynamicTargetComponents[targetEntity].m_orientation = orientationVector;
 					}
 					
 					

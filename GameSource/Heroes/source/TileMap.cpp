@@ -73,11 +73,9 @@ namespace Heroes
 					SDL_assert(in.fail() == false);
 
 					// Create the surface cache
-					SDL_Surface* testSurface = m_sdlUtilityTool.LoadBMP(tileFile);
-					SDL_Texture* testTexture = m_sdlUtilityTool.CreateTextureFromSurface(renderer, testSurface);
+					SDL_Texture* testTexture = m_sdlUtilityTool.LoadImageTexture(tileFile, renderer);
 					SDL_assert(testTexture != nullptr);
 					m_textureCache.push_back(testTexture);
-					m_sdlUtilityTool.DestroySurface(testSurface);
 
 					// check that all tile dimensions agree for each i and i + 1
 					if (i > 0)

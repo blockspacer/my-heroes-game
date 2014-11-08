@@ -8,7 +8,10 @@ namespace Heroes
 	namespace Engine
 	{
 
-		SDLUtilityTool::SDLUtilityTool() {}
+		SDLUtilityTool::SDLUtilityTool()
+		{
+			std::cout << "SDL Tool Created" << std::endl;
+		}
 		SDLUtilityTool::~SDLUtilityTool() {}
 
 		bool SDLUtilityTool::Init()
@@ -79,7 +82,7 @@ namespace Heroes
 			SDL_assert(m_initialized);
 			SDL_assert(renderer != nullptr);
 			SDL_DestroyRenderer(renderer);
-			m_sdlWindows--;
+			m_sdlRenderers--;
 			m_totalResources--;
 		}
 
@@ -176,19 +179,40 @@ namespace Heroes
 			m_totalResources--;
 		}
 
-		SDL_Surface* SDLUtilityTool::LoadBMP(const char* file)
+		SDL_Surface* SDLUtilityTool::LoadImageSurface(const char* file)
 		{
 			SDL_assert(m_initialized);
-			SDL_Surface* bmp = SDL_LoadBMP(file);
-			SDL_assert(bmp != nullptr);
+			SDL_Surface* image = IMG_Load(file);
+			SDL_assert(image != nullptr);
 			m_sdlSurfaces++;
 			m_totalResources++;
-			return bmp;
+			return image;
 		}
+
+		SDL_Texture* SDLUtilityTool::LoadImageTexture(const char* file, SDL_Renderer* renderer)
+		{
+			SDL_assert(m_initialized);
+			SDL_Surface* imageSurface = LoadImageSurface(file);
+			SDL_assert(imageSurface != nullptr);
+			SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
+			SDL_assert(imageTexture != nullptr);
+			DestroySurface(imageSurface);
+			m_sdlTextures++;
+			m_totalResources++;
+			return imageTexture;
+		}
+
+		SDL_Texture* LoadImageTexture(const char* file);
 
 		void SDLUtilityTool::PrintStatus()
 		{
 			std::cerr << "Resources are not cleaned up." << std::endl;
+			std::cerr << "Windows: " << m_sdlWindows << std::endl;
+			std::cerr << "Renderers: " << m_sdlRenderers << std::endl;
+			std::cerr << "Surfaces: " << m_sdlSurfaces << std::endl;
+			std::cerr << "Textures: " << m_sdlTextures << std::endl;
+			std::cerr << "Fonts: " << m_sdlFonts << std::endl;
+			std::cerr << "Controllers: " << m_sdlControllers << std::endl;
 		}
 
 	} // namespace Graphics
