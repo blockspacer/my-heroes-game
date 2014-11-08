@@ -13,7 +13,6 @@ namespace Heroes
 
 		bool StateEngine::Init()
 		{
-			Log_Write_L2(g_HEROES_DEBUG_LEVEL, "Hello World");
 			bool success = false;
 
 			if (!IsInit())
