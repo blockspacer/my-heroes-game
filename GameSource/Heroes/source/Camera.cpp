@@ -12,14 +12,11 @@ namespace Heroes
 	{
 		namespace GamePlay
 		{
-			Camera::Camera()
-			{
-				Engine::g_Log_Write_L1("Constructed GamePlay Camera");
-			}
 
 			Camera::Camera(const b2Vec2& cameraFollow)
 			{
 				m_cameraFollow = cameraFollow;
+				Engine::g_Log_Write_L1("Constructed GamePlay Camera");
 			}
 
 			Camera::~Camera()

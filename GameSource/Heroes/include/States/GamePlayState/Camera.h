@@ -30,7 +30,6 @@ namespace Heroes
 			{
 			public:
 
-				Camera();
 				Camera(const b2Vec2& cameraFollow);
 				~Camera();
 
