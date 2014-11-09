@@ -28,7 +28,7 @@ namespace Heroes
 				}
 			}
 
-			Engine::g_Log_Write_L1("Initialized SDLUtilityTool");
+			g_Log_Write_L1(LOG_INITIALIZATION_EVENT, "Initialized SDLUtilityTool");
 			return success;
 		}
 
@@ -43,7 +43,7 @@ namespace Heroes
 				success = true;
 			}
 
-			Engine::g_Log_Write_L1("Destroyed SDLUtilityTool");
+			g_Log_Write_L1(LOG_UNINITIALIZATION_EVENT, "Destroyed SDLUtilityTool");
 			return success;
 		}
 

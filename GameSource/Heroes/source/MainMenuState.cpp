@@ -71,7 +71,7 @@ namespace Heroes
 				// make sure that the screen shows up correct initially
 				UpdateTexture();
 
-				Engine::g_Log_Write_L1("Created Main Menu State");
+				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Created Main Menu State");
 			}
 
 			MainMenuState::~MainMenuState()
@@ -83,7 +83,7 @@ namespace Heroes
 					m_sdlUtilityTool.DestroySurface(m_highlightedOptions[i]);
 				}
 
-				Engine::g_Log_Write_L1("Destroyed Main Menu State");
+				g_Log_Write_L1(LOG_DESTRUCTION_EVENT, "Destroyed Main Menu State");
 			}
 
 			void MainMenuState::Update(uint32_t milliTime)

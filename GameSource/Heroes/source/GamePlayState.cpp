@@ -30,12 +30,12 @@ namespace Heroes
 				//int two = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 				//int three = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 
-				Engine::g_Log_Write_L1("Created Game Play State");
+				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Created Game Play State");
 			}
 
 			GamePlayState::~GamePlayState()
 			{
-				Engine::g_Log_Write_L1("Destroyed Game Play State");
+				g_Log_Write_L1(LOG_DESTRUCTION_EVENT, "Destroyed Game Play State");
 			}
 
 			void GamePlayState::Update(uint32_t milliTime)

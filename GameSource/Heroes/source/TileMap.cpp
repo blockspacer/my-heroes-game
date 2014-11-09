@@ -96,7 +96,7 @@ namespace Heroes
 						m_tileDimension = tilew1;
 					}
 
-					Engine::g_Log_Write_L1("Loaded Map File in TileMap");
+					g_Log_Write_L2(LOG_FILE_LOAD_EVENT, "Loaded Map File in TileMap");
 				}
 
 				// assign the positions of each tile
@@ -134,7 +134,7 @@ namespace Heroes
 					m_textureCache[i] = nullptr;
 				}
 
-				Engine::g_Log_Write_L1("Cleaned up Map File in TileMap");
+				g_Log_Write_L2(LOG_FILE_UNLOAD_EVENT, "Cleaned up Map File in TileMap");
 				m_initialized = false;
 			}
 

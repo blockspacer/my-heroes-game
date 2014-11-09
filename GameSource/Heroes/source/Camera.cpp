@@ -16,12 +16,12 @@ namespace Heroes
 			Camera::Camera(const b2Vec2& cameraFollow)
 			{
 				m_cameraFollow = cameraFollow;
-				Engine::g_Log_Write_L1("Constructed GamePlay Camera");
+				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Constructed GamePlay Camera");
 			}
 
 			Camera::~Camera()
 			{
-				Engine::g_Log_Write_L1("Destructed GamePlay Camera");
+				g_Log_Write_L1(LOG_DESTRUCTION_EVENT, "Destructed GamePlay Camera");
 			}
 
 			void Camera::SetCameraFollow(const b2Vec2& cameraFollow)

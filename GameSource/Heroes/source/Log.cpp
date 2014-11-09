@@ -34,6 +34,8 @@ namespace Heroes
 			generatedComment = "Generated from code compiled on " + std::string(__DATE__) + " at " + std::string(__TIME__);
 			m_logPrinter.PushComment(generatedComment.c_str());
 
+			m_logPrinter.OpenElement("GameLog");
+
 			m_logPrinter.OpenElement("LogHeader");
 
 				m_logPrinter.OpenElement("DebugLevel");
@@ -78,10 +80,15 @@ namespace Heroes
 
 		Log::~Log()
 		{
+			m_logPrinter.CloseElement();
+
+			m_outputFile << m_logPrinter.CStr();
+			m_outputFile.flush();
+			
 			m_outputFile.close();
 		}
 
-		void Log::WriteLogEntry(int iEntryType, std::string strSourceFile, std::string strFunction, int iSourceLine, std::string strMessage)
+		void Log::WriteLogEntry(int iEntryType, std::string logEvent, std::string strSourceFile, std::string strFunction, int iSourceLine, std::string strMessage)
 		{
 			std::lock_guard<std::mutex> lock(m_mutex);
 
@@ -92,6 +99,7 @@ namespace Heroes
 
 			m_logPrinter.PushAttribute("chronological_id", m_logEventID++);
 			m_logPrinter.PushAttribute("debug_type", iEntryType);
+			m_logPrinter.PushAttribute("log_event_type", logEvent.c_str());
 
 			m_logPrinter.OpenElement("TimeIndex");
 			m_logPrinter.PushText(std::to_string(SDL_GetTicks()).c_str());

@@ -25,7 +25,7 @@ namespace Heroes
 				}
 			}
 
-			g_Log_Write_L1("Intialized State Engine");
+			g_Log_Write_L1(LOG_INITIALIZATION_EVENT, "Intialized State Engine");
 
 			return IsInit();
 		}
@@ -110,7 +110,7 @@ namespace Heroes
 			}
 			
 			SDL_assert(IsInit() == false);
-			Engine::g_Log_Write_L1("Destroyed State Engine");
+			g_Log_Write_L1(LOG_UNINITIALIZATION_EVENT, "Destroyed State Engine");
 
 			return IsInit();
 		}
