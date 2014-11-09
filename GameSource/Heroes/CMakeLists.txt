@@ -23,6 +23,9 @@ add_executable (Heroes ${Heroes_SRC} )
 
 target_link_libraries ( Heroes ${LIBS})
 
+# create log directory
+file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/Logs" )
+
 # copy resources over
 message ( "Copying Resources for Game" )
 file(MAKE_DIRECTORY "${PROJECT_BINARY_DIR}/Resources" )

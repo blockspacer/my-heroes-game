@@ -1,23 +1,117 @@
 
+#include <stdio.h>
+#include <string>
+
+#include <SDL.h>
+
 #include "Engine/Log.h"
 
 namespace Heroes
 {
 	namespace Engine
 	{
-		const char* LOG_FILE = "HeroesLog.xml";
+		const char* LOG_FILE = "Logs/HeroesLog";
+		const char* LOG_FILE_MODE = "w"; // new file everytime
 
 		Log::Log()
 		{
-			// open xml file write the beginning of the log (header)
-			
+			std::lock_guard<std::mutex> lock(m_mutex);
 
+			std::string fileName;
+			fileName = std::string(LOG_FILE) + "_Time[" + std::string(__TIME__) + "].xml";
+			fileName[22] = '-'; // replace the ":"
+			fileName[25] = '-'; // replace the ":"
+
+			m_outputFile.open(fileName);
+			
+			// print xml log header
+			m_logPrinter.ClearBuffer();
+
+			m_logPrinter.PushHeader(true, true);
+			m_logPrinter.PushComment("Written using Log.cpp");
+
+			std::string generatedComment;
+			generatedComment = "Generated from code compiled on " + std::string(__DATE__) + " at " + std::string(__TIME__);
+			m_logPrinter.PushComment(generatedComment.c_str());
+
+			m_logPrinter.OpenElement("LogHeader");
+
+				m_logPrinter.OpenElement("DebugLevel");
+
+					std::string debugLevel = "Debug Level is " + std::string(g_DEBUG_LEVEL_DESCRIPTION);
+					m_logPrinter.PushText(debugLevel.c_str());
+
+				m_logPrinter.CloseElement();
+
+				m_logPrinter.OpenElement("Session");
+
+					m_logPrinter.OpenElement("Started");
+
+						m_logPrinter.OpenElement("Time");
+
+							std::string time = std::string(__TIME__);
+							m_logPrinter.PushText(time.c_str());
+
+						m_logPrinter.CloseElement();
+
+						m_logPrinter.OpenElement("Date");
+
+							std::string date = std::string(__DATE__);
+							m_logPrinter.PushText(date.c_str());
+
+						m_logPrinter.CloseElement();
+
+					m_logPrinter.CloseElement();
+
+					m_logPrinter.OpenElement("Configuration");
+					m_logPrinter.CloseElement();
+
+				m_logPrinter.CloseElement();
+
+			m_logPrinter.CloseElement();
+
+			m_outputFile << m_logPrinter.CStr();
+			m_outputFile.flush();
+
+			m_logPrinter.ClearBuffer();
+		}
+
+		Log::~Log()
+		{
+			m_outputFile.close();
 		}
 
 		void Log::WriteLogEntry(int iEntryType, std::string strSourceFile, std::string strFunction, int iSourceLine, std::string strMessage)
 		{
-			// write log event
-			std::cout << iEntryType << " " << strSourceFile << " " << strFunction << " Line: " << iSourceLine << " " << strMessage << std::endl;
+			std::lock_guard<std::mutex> lock(m_mutex);
+
+			m_logPrinter.ClearBuffer();
+
+			// Log Event
+			m_logPrinter.OpenElement("LogEvent");
+
+			m_logPrinter.PushAttribute("chronological_id", m_logEventID++);
+			m_logPrinter.PushAttribute("debug_type", iEntryType);
+
+			m_logPrinter.OpenElement("TimeIndex");
+			m_logPrinter.PushText(std::to_string(SDL_GetTicks()).c_str());
+			m_logPrinter.CloseElement();
+
+			m_logPrinter.OpenElement("Location");
+			std::string location = "SOURCE: " + strSourceFile + ", FUNCTION: " + strFunction + ", LINE: " + std::to_string(iSourceLine);
+			m_logPrinter.PushText(location.c_str());
+			m_logPrinter.CloseElement();
+
+			m_logPrinter.OpenElement("Message");
+			m_logPrinter.PushText(strMessage.c_str());
+			m_logPrinter.CloseElement();
+
+			m_logPrinter.CloseElement();
+
+			m_outputFile << m_logPrinter.CStr();
+			m_outputFile.flush();
+
+			m_logPrinter.ClearBuffer();
 		}
 
 	} // namespace Engine

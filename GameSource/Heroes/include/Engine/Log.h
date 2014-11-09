@@ -1,28 +1,37 @@
 #pragma once
 
-#define g_HEROES_DEBUG_LEVEL 3
+#define g_DEBUG_LEVEL_ZERO 0
+#define g_DEBUG_LEVEL_ONE 1
+#define g_DEBUG_LEVEL_TWO 2
+#define g_DEBUG_LEVEL_THREE 3
+
+#define g_DEBUG_LEVEL g_DEBUG_LEVEL_THREE
 
 // 3 levels of debugging to the log file
-#if g_HEROES_DEBUG_LEVEL == 3
-#	define Log_Write_L1(linetype, linetext) Log::GetSingletonInstance().WriteLogEntry( (linetype),  __FILE__, __FUNCTION__, __LINE__, (linetext) )
-#	define Log_Write_L2(linetype, linetext) Log::GetSingletonInstance().WriteLogEntry( (linetype),  __FILE__, __FUNCTION__, __LINE__, (linetext) )
-#	define Log_Write_L3(linetype, linetext) Log::GetSingletonInstance().WriteLogEntry( (linetype),  __FILE__, __FUNCTION__, __LINE__, (linetext) )
-#elif g_HEROES_DEBUG_LEVEL == 2
-#	define Log_Write_L1(linetype, linetext) Log::GetSingletonInstance().WriteLogEntry( (linetype),  __FILE__, __FUNCTION__, __LINE__, (linetext) )
-#	define Log_Write_L2(linetype, linetext) Log::GetSingletonInstance().WriteLogEntry( (linetype),  __FILE__, __FUNCTION__, __LINE__, (linetext) )
-#	define Log_Write_L3(linetype, linetext)
-#elif g_HEROES_DEBUG_LEVEL == 1
-#	define Log_Write_L1(linetype, linetext) Log::GetSingletonInstance().WriteLogEntry( (linetype),  __FILE__, __FUNCTION__, __LINE__, (linetext) )
-#	define Log_Write_L2(linetype, linetext)
-#	define Log_Write_L3(linetype, linetext)
+#if g_DEBUG_LEVEL == 3
+#	define g_DEBUG_LEVEL_DESCRIPTION "High"
+#	define g_Log_Write_L1(linetext) Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_ONE, __FILE__, __FUNCTION__, __LINE__, (linetext) )
+#	define g_Log_Write_L2(linetext) Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_TWO,  __FILE__, __FUNCTION__, __LINE__, (linetext) )
+#	define g_Log_Write_L3(linetext) Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_THREE,  __FILE__, __FUNCTION__, __LINE__, (linetext) )
+#elif g_DEBUG_LEVEL == 2
+#	define g_DEBUG_LEVEL_DESCRIPTION "Medium"
+#	define g_Log_Write_L1(linetext) Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_ONE, __FILE__, __FUNCTION__, __LINE__, (linetext) )
+#	define g_Log_Write_L2(linetext) Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_TWO,  __FILE__, __FUNCTION__, __LINE__, (linetext) )
+#	define g_Log_Write_L3(linetext)
+#elif g_DEBUG_LEVEL == 1
+#	define g_DEBUG_LEVEL_DESCRIPTION "Low"
+#	define g_Log_Write_L1(linetext) Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_ONE, __FILE__, __FUNCTION__, __LINE__, (linetext) )
+#	define g_Log_Write_L2(linetext)
+#	define g_Log_Write_L3(linetext)
 #else
-#	define Log_Write_L1(linetype, linetext)
-#	define Log_Write_L2(linetype, linetext)
-#	define Log_Write_L3(linetype, linetext)
+#	define g_DEBUG_LEVEL_DESCRIPTION "None"
+#	define g_Log_Write_L1(linetext)
+#	define g_Log_Write_L2(linetext)
+#	define g_Log_Write_L3(linetext)
 #endif
 
-#include <string>
-#include <iostream>
+#include <fstream>
+#include <mutex>
 
 #include <tinyxml2.h>
 
@@ -58,13 +67,21 @@ namespace Heroes
 			 */
 			Log();
 
+			/*
+			 *
+			 */
+			~Log();
+
 			// Dont forget to declare these two. You want to make sure they
 			// are unaccessable otherwise you may accidently get copies of
 			// your singleton appearing.
 			Log(Log const&); // no implementation
 			void operator=(Log const&); // no implementation
 
-			tinyxml2::XMLDocument m_logDocument;
+			int m_logEventID{ 0 };
+			std::mutex m_mutex;
+			std::ofstream m_outputFile;
+			tinyxml2::XMLPrinter m_logPrinter;
 		};
 	} // namespace Engine
 } // namespace Heroes

@@ -13,6 +13,7 @@ namespace Heroes
 
 		bool StateEngine::Init()
 		{
+			
 			bool success = false;
 
 			if (!IsInit())
@@ -54,6 +55,7 @@ namespace Heroes
 
 					// run the state for 33 milliseconds
 					state->Update(33);
+					g_Log_Write_L2("Update State");
 
 					// render the state
 					state->Render();
