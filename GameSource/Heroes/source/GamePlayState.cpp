@@ -2,6 +2,8 @@
 #include <tinyxml2.h>
 #include <iostream>
 
+#include "Engine/Log.h"
+
 #include "States/MainMenuState/MainMenuState.h"
 #include "States/GamePlayState/GamePlayState.h"
 
@@ -25,12 +27,15 @@ namespace Heroes
 				m_mainEntityID = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 
 				// memory leak
-				int two = m_entityMemory.LoadMainEntity(m_sdlRenderer);
-				int three = m_entityMemory.LoadMainEntity(m_sdlRenderer);
+				//int two = m_entityMemory.LoadMainEntity(m_sdlRenderer);
+				//int three = m_entityMemory.LoadMainEntity(m_sdlRenderer);
+
+				Engine::g_Log_Write_L1("Created Game Play State");
 			}
 
 			GamePlayState::~GamePlayState()
 			{
+				Engine::g_Log_Write_L1("Destroyed Game Play State");
 			}
 
 			void GamePlayState::Update(uint32_t milliTime)

@@ -3,6 +3,8 @@
 
 #include <SDL.h>
 
+#include "Engine/Log.h"
+
 #include "States/GamePlayState/b2Conversion.h"
 #include "States/GamePlayState/TileMap.h"
 
@@ -93,6 +95,8 @@ namespace Heroes
 						SDL_QueryTexture(m_textureCache[i], NULL, NULL, &tilew1, &tileh1);
 						m_tileDimension = tilew1;
 					}
+
+					Engine::g_Log_Write_L1("Loaded Map File in TileMap");
 				}
 
 				// assign the positions of each tile
@@ -130,6 +134,7 @@ namespace Heroes
 					m_textureCache[i] = nullptr;
 				}
 
+				Engine::g_Log_Write_L1("Cleaned up Map File in TileMap");
 				m_initialized = false;
 			}
 

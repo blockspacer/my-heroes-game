@@ -1,6 +1,9 @@
 #pragma once
 
 #include <SDL_assert.h>
+
+#include "Engine/Log.h"
+
 #include "States/GamePlayState/Camera.h"
 
 namespace Heroes
@@ -11,7 +14,7 @@ namespace Heroes
 		{
 			Camera::Camera()
 			{
-
+				Engine::g_Log_Write_L1("Constructed GamePlay Camera");
 			}
 
 			Camera::Camera(const b2Vec2& cameraFollow)
@@ -21,7 +24,7 @@ namespace Heroes
 
 			Camera::~Camera()
 			{
-
+				Engine::g_Log_Write_L1("Destructed GamePlay Camera");
 			}
 
 			void Camera::SetCameraFollow(const b2Vec2& cameraFollow)

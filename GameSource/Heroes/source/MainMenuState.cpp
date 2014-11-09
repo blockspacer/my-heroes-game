@@ -1,6 +1,7 @@
 #include <SDL_assert.h> 
 #include <iostream>
 
+#include "Engine/Log.h"
 #include "Engine/SDLXbox360Controller.h"
 
 #include "States/MainMenuState/MainMenuState.h"
@@ -70,6 +71,7 @@ namespace Heroes
 				// make sure that the screen shows up correct initially
 				UpdateTexture();
 
+				Engine::g_Log_Write_L1("Created Main Menu State");
 			}
 
 			MainMenuState::~MainMenuState()
@@ -80,6 +82,8 @@ namespace Heroes
 					m_sdlUtilityTool.DestroySurface(m_normalOptions[i]);
 					m_sdlUtilityTool.DestroySurface(m_highlightedOptions[i]);
 				}
+
+				Engine::g_Log_Write_L1("Destroyed Main Menu State");
 			}
 
 			void MainMenuState::Update(uint32_t milliTime)

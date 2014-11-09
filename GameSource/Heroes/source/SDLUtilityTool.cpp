@@ -1,6 +1,7 @@
 #include <SDL_assert.h>
 #include <iostream>
 
+#include "Engine/Log.h"
 #include "Engine/SDLUtilityTool.h"
 
 namespace Heroes
@@ -10,7 +11,6 @@ namespace Heroes
 
 		SDLUtilityTool::SDLUtilityTool()
 		{
-			std::cout << "SDL Tool Created" << std::endl;
 		}
 		SDLUtilityTool::~SDLUtilityTool() {}
 
@@ -28,6 +28,7 @@ namespace Heroes
 				}
 			}
 
+			Engine::g_Log_Write_L1("Initialized SDLUtilityTool");
 			return success;
 		}
 
@@ -42,6 +43,7 @@ namespace Heroes
 				success = true;
 			}
 
+			Engine::g_Log_Write_L1("Destroyed SDLUtilityTool");
 			return success;
 		}
 
