@@ -33,14 +33,13 @@ namespace Heroes
 				void QuerySimulationZone(std::list<EntityDynamicIDType>& entityList);
 				void QueryVisionZone(std::list<EntityDynamicIDType>& entityList);
 				void RenderEntites(std::list<EntityDynamicIDType> entityList);
-				float GetRotationAngle(b2Vec2& rotationVector);
 
 				// temporary point for camera to follow
 				b2Vec2 m_simulationPoint{ b2Vec2_zero };
 
 				std::list<EntityDynamicIDType> m_entityList;
 
-				GamePlay::EntityMemory m_entityMemory{ m_sdlUtilityTool };
+				GamePlay::EntityMemory m_entityMemory{ m_sdlUtilityTool, m_sdlWindow };
 				GamePlay::Camera m_camera{ m_simulationPoint };
 				GamePlay::TileMap m_tileMap{ m_sdlUtilityTool };
 

@@ -34,13 +34,17 @@ namespace Heroes
 				ENVIRONMENT_SENSOR_COL = ALLY_BODY | ENEMY_BODY
 			};
 
-			struct ComponentSystems
+			struct DynamicSystemsComponent
+			{
+				GamePlay::SystemFunc m_targetSystem;
+				GamePlay::SystemFunc m_directionSystem;
+			};
+
+			struct StaticSystemsComponent
 			{
 				GamePlay::SystemFunc m_statusSystem;
 				GamePlay::SystemFunc m_healthSystem;
-				GamePlay::SystemFunc m_targetSystem;
 				GamePlay::SystemFunc m_actionSystem;
-				GamePlay::SystemFunc m_directionSystem;
 				GamePlay::SystemFunc m_movementSystem;
 				GamePlay::SystemFunc m_renderUpdateSystem;
 			};
@@ -159,6 +163,7 @@ namespace Heroes
 			{
 				SDL_Rect m_srcRect; // location on sprite sheet
 				SDL_Rect m_dstRect; // location in world
+				SDL_Rect m_healthBarRect;
 				float m_angle{ -1.0f }; // direction of texture
 			};
 
@@ -166,7 +171,8 @@ namespace Heroes
 			{
 				int m_textureWidth{ 0 };
 				int m_textureHeight{ 0 };
-				SDL_Texture* m_texture{ nullptr }; // not an animation surface
+				SDL_Texture* m_entityTexture{ nullptr }; // not an animation surface
+				SDL_Texture* m_lifeBarTexture{ nullptr };
 			};
 		} // namespace GamePlay
 	} // namespace States

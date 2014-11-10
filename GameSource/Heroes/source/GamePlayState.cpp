@@ -1,6 +1,4 @@
-#include <SDL_assert.h> 
-#include <tinyxml2.h>
-#include <iostream>
+#include <SDL_assert.h>
 
 #include "Engine/Log.h"
 
@@ -16,7 +14,6 @@ namespace Heroes
 			
 			Engine::State* CreateGamePlayState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData)
 			{
-				tinyxml2::XMLDocument;
 				return new GamePlayState(sdlUtilityTool, stateCreationData);
 			}
 
@@ -24,11 +21,14 @@ namespace Heroes
 				
 			{
 				m_tileMap.Load("./Resources/Levels/Maps/TestMap.map", m_sdlWindow, m_sdlRenderer);
-				m_mainEntityID = m_entityMemory.LoadMainEntity(m_sdlRenderer);
 
-				// memory leak
-				//int two = m_entityMemory.LoadMainEntity(m_sdlRenderer);
-				//int three = m_entityMemory.LoadMainEntity(m_sdlRenderer);
+				m_entityMemory.LoadStaticWarriorFile(nullptr, m_sdlRenderer);
+
+				EntityDynamicIDType one = m_entityMemory.LoadDynamicWarrior(b2Vec2_zero, b2Vec2_zero);
+				m_entityMemory.LoadDynamicWarrior(b2Vec2(1, 1), b2Vec2_zero);
+				m_entityMemory.LoadDynamicWarrior(b2Vec2(2, 2), b2Vec2_zero);
+
+				m_mainEntityID = m_entityMemory.OverrideMainEntity(one);
 
 				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Created Game Play State");
 			}
@@ -71,27 +71,67 @@ namespace Heroes
 				
 
 				 // update camera
+				m_entityMemory.UpdateEntityWorld(0.030f);
+				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_dynamicPhysicsComponents[m_mainEntityID].body->GetPosition()));
 
 				 // list for entities
 				m_entityList.clear();
 				QuerySimulationZone(m_entityList);
 				
 
-				// RUN THE SYSYTEMS
-				m_entityMemory.m_dynamicSystemComponents[m_mainEntityID].m_directionSystem(m_mainEntityID, m_entityMemory, m_controller);
-				//m_entityMemory.m_systemComponents[m_mainEntityID].m_movementSystem(m_mainEntityID, m_entityMemory, nullptr);
+				//// RUN THE SYSYTEMS
+				//m_entityMemory.m_dynamicSystemComponents[m_mainEntityID].m_directionSystem(m_mainEntityID, m_entityMemory, m_controller);
+				////m_entityMemory.m_systemComponents[m_mainEntityID].m_movementSystem(m_mainEntityID, m_entityMemory, nullptr);
 
+				//for (auto entityID : m_entityList)
+				//{
+				//	m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_movementSystem(entityID, m_entityMemory, nullptr);
+				//	m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_renderUpdateSystem(entityID, m_entityMemory, nullptr);
+				//	//m_entityMemory.m_systemComponents[entityID].m_directionSystem(entityID, m_entityMemory, m_controller);
+				//	
+				//}
+
+				// Status
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_dynamicSystemComponents[entityID].m_movementSystem(entityID, m_entityMemory, nullptr);
-					m_entityMemory.m_dynamicSystemComponents[entityID].m_renderUpdateSystem(entityID, m_entityMemory, nullptr);
-					//m_entityMemory.m_systemComponents[entityID].m_directionSystem(entityID, m_entityMemory, m_controller);
-					
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_statusSystem(entityID, m_entityMemory, nullptr);
 				}
 
-				m_entityMemory.UpdateEntityWorld(0.030f);
-				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_dynamicPhysicsComponents[m_mainEntityID].body->GetPosition()));
-				// direction for main entity only
+				// Health
+				for (auto entityID : m_entityList)
+				{
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_healthSystem(entityID, m_entityMemory, nullptr);
+				}
+
+				// Target
+				for (auto entityID : m_entityList)
+				{
+					m_entityMemory.m_dynamicSystemComponents[entityID].m_targetSystem(entityID, m_entityMemory, m_controller);
+				}
+
+				// Action
+				for (auto entityID : m_entityList)
+				{
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_actionSystem(entityID, m_entityMemory, nullptr);
+				}
+
+				// Direction
+				for (auto entityID : m_entityList)
+				{
+					m_entityMemory.m_dynamicSystemComponents[entityID].m_directionSystem(entityID, m_entityMemory, m_controller);
+				}
+
+				// Movement
+				for (auto entityID : m_entityList)
+				{
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_movementSystem(entityID, m_entityMemory, nullptr);
+				}
+
+				// Render
+				for (auto entityID : m_entityList)
+				{
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_renderUpdateSystem(entityID, m_entityMemory, nullptr);
+				}
 				
 			}
 
@@ -109,39 +149,13 @@ namespace Heroes
 				m_entityMemory.QueryEntityWorld(entityList, visibleSimulationRegion); // get entities in visible region
 			}
 
-			void GamePlayState::RenderEntites(std::list<EntityDynamicIDType> entityList)
-			{
-				// this could be cleaner
-				SDL_DisplayMode displayMode;
-				SDL_GetWindowDisplayMode(m_sdlWindow, &displayMode);
-				SDL_Rect relativeEntity;
-
-				b2Vec2 location = m_entityMemory.m_dynamicPhysicsComponents[m_mainEntityID].body->GetPosition();
-				
-				for (auto entityID : entityList)
-				{
-					
-					// this should be done in the render update
-					relativeEntity = m_entityMemory.m_dynamicRenderComponents[entityID].m_dstRect;
-					relativeEntity.x = relativeEntity.x - (location.x * PIXEL_TO_METER) + displayMode.w / 2;
-					relativeEntity.y = relativeEntity.y - (location.y * PIXEL_TO_METER) + displayMode.h / 2;
-
-					float angle = m_entityMemory.m_dynamicRenderComponents[entityID].m_angle;
-					SDL_RenderCopyEx(m_sdlRenderer, m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_texture, NULL, &relativeEntity, angle, NULL, SDL_FLIP_NONE);
-				}
-			}
-
-			float GamePlayState::GetRotationAngle(b2Vec2& rotationVector)
-			{
-				//float tanAngle = atan2f(rotationVector.x)
-				return 0.0f;
-			}
-
 			void GamePlayState::Render()
 			{
+				// get the entities
 				m_entityList.clear();
 				QueryVisionZone(m_entityList);
 
+				// render the game
 				SDL_RenderClear(m_sdlRenderer);
 
 				ClearSurface();
@@ -149,6 +163,21 @@ namespace Heroes
 				RenderEntites(m_entityList);
 
 				SDL_RenderPresent(m_sdlRenderer);
+			}
+
+			void GamePlayState::RenderEntites(std::list<EntityDynamicIDType> entityList)
+			{
+				// render the textures
+				for (auto entityID : entityList)
+				{
+					SDL_RenderCopyEx(m_sdlRenderer, m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_entityTexture, NULL, &m_entityMemory.m_dynamicRenderComponents[entityID].m_dstRect, m_entityMemory.m_dynamicRenderComponents[entityID].m_angle, NULL, SDL_FLIP_NONE);
+				}
+
+				// render the health bars
+				for (auto entityID : entityList)
+				{
+					SDL_RenderCopy(m_sdlRenderer, m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_lifeBarTexture, NULL, &m_entityMemory.m_dynamicRenderComponents[entityID].m_healthBarRect);
+				}
 			}
 
 		} // namespace GamePlay

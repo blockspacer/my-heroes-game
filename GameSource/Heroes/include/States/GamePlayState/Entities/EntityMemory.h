@@ -2,6 +2,7 @@
 
 #include <list>
 #include <vector>
+#include <map> // future find better implementation
 #include "Engine/SDLUtilityTool.h"
 #include "States/GamePlayState/Entities/EntityComponents.h"
 
@@ -45,13 +46,16 @@ namespace Heroes
 			{
 			public:
 
-				EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool);
+				EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool, SDL_Window* m_window);
 				~EntityMemory();
 
-				EntityDynamicIDType LoadMainEntity(SDL_Renderer* renderer);
+				EntityDynamicIDType OverrideMainEntity(EntityDynamicIDType entityID);
 
 				// Loads a single entity returning its id
 				EntityDynamicIDType LoadEntityFile(const char* entityFile, SDL_Renderer* renderer);
+
+				void LoadStaticWarriorFile(const char* staticWarriorFile, SDL_Renderer* renderer);
+				EntityDynamicIDType LoadDynamicWarrior(b2Vec2 position, b2Vec2 orientation);
 
 				// Releases the entities specified in the list
 				void ReleaseEntites(std::list<EntityDynamicIDType>& entityIDs);
@@ -59,10 +63,14 @@ namespace Heroes
 				// Queries the b2 world with the AABB and returns a list of the entities
 				void QueryEntityWorld(std::list<EntityDynamicIDType>& entityList, b2AABB boundingArea);
 
-				void UpdateEntityWorld(float time);	
+				void UpdateEntityWorld(float time);
 
-				ComponentSystems m_dynamicSystemComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<ComponentSystems> m_staticSystemComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
+				int GetWindowWidth();
+				int GetWindowHeight();
+				int GetMainEntityDynamicID();
+
+				DynamicSystemsComponent m_dynamicSystemComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
+				std::vector<StaticSystemsComponent> m_staticSystemComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
 
 				DynamicStatusComponent m_dynamicStatusComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
 				std::vector<StaticStatusComponent> m_staticStatusComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
@@ -91,6 +99,9 @@ namespace Heroes
 			private:
 
 				Engine::SDLUtilityTool& m_sdlUtilityTool;
+				int m_windowWidth{ 0 };
+				int m_windowHeight{ 0 };
+				int m_mainEntityDynamicID{ -1 };
 
 				b2World m_entityWorld{ b2Vec2_zero };
 
@@ -98,6 +109,7 @@ namespace Heroes
 				std::list<EntityDynamicIDType> m_freeEntities;
 				std::list<EntityDynamicIDType> m_usedEntities;
 
+				std::map<std::string, EntityStaticIDType> m_staticEntityMap;
 			};
 		} // namespace GamePlay
 	} // namespace States
