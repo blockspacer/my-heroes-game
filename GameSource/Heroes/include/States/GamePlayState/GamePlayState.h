@@ -7,6 +7,7 @@
 
 #include "States/GamePlayState/Camera.h"
 #include "States/GamePlayState/TileMap.h"
+#include "States/GamePlayState/Entities/EntityLoader.h"
 #include "States/GamePlayState/Entities/EntityMemory.h"
 
 namespace Heroes
@@ -39,6 +40,7 @@ namespace Heroes
 
 				std::list<EntityDynamicIDType> m_entityList;
 
+				GamePlay::EntityLoader m_entityLoader{ m_sdlUtilityTool };
 				GamePlay::EntityMemory m_entityMemory{ m_sdlUtilityTool, m_sdlWindow };
 				GamePlay::Camera m_camera{ m_simulationPoint };
 				GamePlay::TileMap m_tileMap{ m_sdlUtilityTool };

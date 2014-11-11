@@ -36,17 +36,17 @@ namespace Heroes
 
 			struct DynamicSystemsComponent
 			{
-				GamePlay::SystemFunc m_targetSystem;
-				GamePlay::SystemFunc m_directionSystem;
+				GamePlay::EntityDecisionSystemFunc m_targetSystem;
+				GamePlay::EntityDecisionSystemFunc m_directionSystem;
 			};
 
 			struct StaticSystemsComponent
 			{
-				GamePlay::SystemFunc m_statusSystem;
-				GamePlay::SystemFunc m_healthSystem;
-				GamePlay::SystemFunc m_actionSystem;
-				GamePlay::SystemFunc m_movementSystem;
-				GamePlay::SystemFunc m_renderUpdateSystem;
+				GamePlay::EntitySystemFunc m_statusSystem;
+				GamePlay::EntitySystemFunc m_healthSystem;
+				GamePlay::EntitySystemFunc m_actionSystem;
+				GamePlay::EntitySystemFunc m_movementSystem;
+				GamePlay::EntityRenderFunc m_renderUpdateSystem;
 			};
 
 			enum ActionType
@@ -72,13 +72,13 @@ namespace Heroes
 				ActionType m_action{ ActionType::NO_ACTION }; // whether entity is actively doing something (busy)
 				MovementType m_movement{ MovementType::NO_MOVEMENT };
 				StatusType m_status{ StatusType::DEAD }; // whether entity is dead
-				int m_countDownCurrent{ -1 }; // amount until this entity should be cleaned up
+				int m_deathTimer{ -1 }; // amount until this entity should be cleaned up
 				StaticEntityIDType m_staticEntityID{ -1 };
 			};
 
 			struct StaticStatusComponent
 			{
-				int m_countDownBase{ -1 }; // max death count down
+				int m_deathTimer{ -1 }; // max death count down
 			};
 
 			// HEALTH SYSTEM
@@ -92,8 +92,8 @@ namespace Heroes
 
 			struct StaticHealthComponent
 			{
-				int m_healthNormalBase{ -1 };
-				int m_resistanceNormalBase{ -1 };
+				int m_healthNormal{ -1 };
+				int m_resistanceNormal{ -1 };
 			};
 
 			// TARGET SYSTEM
@@ -124,7 +124,7 @@ namespace Heroes
 
 			struct StaticActionComponent
 			{
-				int m_normalBase{ -1 };
+				int m_normalAttackDamage{ -1 };
 			};
 
 			// PHYSICS data not needed by a system
@@ -146,7 +146,7 @@ namespace Heroes
 
 			struct StaticMovementComponent
 			{
-				float m_baseMax{ -1 };
+				float m_speed{ -1 };
 			};
 
 			struct DynamicDirectionComponent
@@ -172,7 +172,7 @@ namespace Heroes
 				int m_textureWidth{ 0 };
 				int m_textureHeight{ 0 };
 				SDL_Texture* m_entityTexture{ nullptr }; // not an animation surface
-				SDL_Texture* m_lifeBarTexture{ nullptr };
+				SDL_Texture* m_healthBarTexture{ nullptr };
 			};
 		} // namespace GamePlay
 	} // namespace States

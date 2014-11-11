@@ -96,7 +96,7 @@ namespace Heroes
 						m_tileDimension = tilew1;
 					}
 
-					g_Log_Write_L2(LOG_FILE_LOAD_EVENT, "Loaded Map File in TileMap");
+					g_Log_Write_L2(LOG_FILE_LOAD_EVENT, tileMapFile);
 				}
 
 				// assign the positions of each tile

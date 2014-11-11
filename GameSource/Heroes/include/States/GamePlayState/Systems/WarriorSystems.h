@@ -11,19 +11,19 @@ namespace Heroes
 		{
 			namespace WarriorSystems
 			{
-				void WarriorStatusSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
+				void WarriorStatusSystem(int targetEntity, GamePlay::EntityMemory& entityMemory);
 				
-				void WarriorHealthSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
+				void WarriorHealthSystem(int targetEntity, GamePlay::EntityMemory& entityMemory);
 
 				void WarriorTargetSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
 
-				void WarriorActionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
+				void WarriorActionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory);
 
 				void WarriorDirectionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
 
-				void WarriorMovementSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
+				void WarriorMovementSystem(int targetEntity, GamePlay::EntityMemory& entityMemory);
 
-				void WarriorRenderUpdateSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
+				void WarriorRenderUpdateSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_Window* window);
 
 			} // namespace WarriorSystems
 		} // namespace GamePlay

@@ -2,6 +2,7 @@
 
 #include <SDL_image.h>
 
+#include "Engine/Log.h"
 #include "States/GamePlayState/Systems/PlayerSystems.h"
 #include "States/GamePlayState/Systems/WarriorSystems.h"
 #include "States/GamePlayState/Entities/EntityMemory.h"
@@ -23,11 +24,7 @@ namespace Heroes
 
 				EntityMemory::EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool, SDL_Window* window) : m_sdlUtilityTool(sdlUtilityTool)
 				{
-					SDL_DisplayMode displayMode;
-					SDL_GetWindowDisplayMode(window, &displayMode);
 					
-					m_windowWidth = displayMode.w;
-					m_windowHeight = displayMode.h;
 
 					// fill up the free entities
 					for (EntityDynamicIDType i = 0; i < EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE; i++)
@@ -42,33 +39,11 @@ namespace Heroes
 				EntityMemory::~EntityMemory()
 				{
 					// manually delete entity texture
-					m_sdlUtilityTool.DestroyTexture(m_staticRenderComponents[0].m_entityTexture);
-					m_sdlUtilityTool.DestroyTexture(m_staticRenderComponents[0].m_lifeBarTexture);
-				}
-
-				void EntityMemory::LoadStaticWarriorFile(const char* staticWarriorFile, SDL_Renderer* renderer)
-				{
-					StaticEntityIDType staticWarriorID = 0;
-
-					// first put the name of the entity into the map
-					m_staticEntityMap["Warrior"] = staticWarriorID;
-
-					m_staticSystemComponents[staticWarriorID].m_statusSystem = WarriorSystems::WarriorStatusSystem;
-					m_staticSystemComponents[staticWarriorID].m_healthSystem = WarriorSystems::WarriorHealthSystem;
-					m_staticSystemComponents[staticWarriorID].m_actionSystem = WarriorSystems::WarriorActionSystem;
-					m_staticSystemComponents[staticWarriorID].m_movementSystem = WarriorSystems::WarriorMovementSystem;
-					m_staticSystemComponents[staticWarriorID].m_renderUpdateSystem = WarriorSystems::WarriorRenderUpdateSystem;
-
-					// create static entity of warrior
-					m_staticStatusComponents[staticWarriorID].m_countDownBase = 10;
-					m_staticHealthComponents[staticWarriorID].m_healthNormalBase = 100;
-					m_staticHealthComponents[staticWarriorID].m_resistanceNormalBase = 0;
-					m_staticActionComponents[staticWarriorID].m_normalBase = 20;
-					m_staticMovementComponents[staticWarriorID].m_baseMax = 10;
-					m_staticRenderComponents[staticWarriorID].m_entityTexture = m_sdlUtilityTool.LoadImageTexture("./Resources/Textures/TestEntity.png", renderer);
-					m_staticRenderComponents[staticWarriorID].m_lifeBarTexture = m_sdlUtilityTool.LoadImageTexture("./Resources/Textures/HealthBar.png", renderer);
-
-					SDL_QueryTexture(m_staticRenderComponents[staticWarriorID].m_entityTexture, NULL, NULL, &(m_staticRenderComponents[staticWarriorID].m_textureWidth), &(m_staticRenderComponents[staticWarriorID].m_textureHeight));
+					for (int i = 0; i < m_freeStaticEntityID; i++)
+					{
+						m_sdlUtilityTool.DestroyTexture(m_staticRenderComponents[i].m_entityTexture);
+						m_sdlUtilityTool.DestroyTexture(m_staticRenderComponents[i].m_healthBarTexture);
+					}
 				}
 
 				EntityDynamicIDType EntityMemory::LoadDynamicWarrior(b2Vec2 position, b2Vec2 orientation)
@@ -86,9 +61,9 @@ namespace Heroes
 					m_dynamicStatusComponents[id].m_action = ActionType::NO_ACTION;
 					m_dynamicStatusComponents[id].m_movement = MovementType::NO_MOVEMENT;
 					m_dynamicStatusComponents[id].m_status = StatusType::ALIVE;
-					m_dynamicStatusComponents[id].m_countDownCurrent = m_staticStatusComponents[staticWarriorID].m_countDownBase;
+					m_dynamicStatusComponents[id].m_deathTimer = m_staticStatusComponents[staticWarriorID].m_deathTimer;
 
-					m_dynamicHealthComponents[id].m_healthNormalCurrent = m_staticHealthComponents[staticWarriorID].m_healthNormalBase / 2;
+					m_dynamicHealthComponents[id].m_healthNormalCurrent = m_staticHealthComponents[staticWarriorID].m_healthNormal / 2;
 					m_dynamicHealthComponents[id].m_damageDirect = 0;
 					m_dynamicHealthComponents[id].m_damageDirectSource = -1;
 
@@ -144,20 +119,6 @@ namespace Heroes
 					return entityID;
 				}
 
-				int EntityMemory::LoadEntityFile(const char* entityFile, SDL_Renderer* renderer)
-				{
-					EntityDynamicIDType id = m_freeEntities.front();
-
-					// loads static data
-					// loads the dynamic data
-					SDL_assert(false);
-
-					m_freeEntities.pop_front();
-					m_usedEntities.push_back(id);
-
-					return id;
-				}
-
 				void EntityMemory::ReleaseEntites(std::list<EntityDynamicIDType>& entityIDs)
 				{
 					for (EntityDynamicIDType &c : entityIDs)
@@ -182,18 +143,6 @@ namespace Heroes
 					
 					m_entityWorld.Step(time, 8, 2);
 					m_entityWorld.ClearForces();
-				}
-
-				int EntityMemory::GetWindowWidth()
-				{
-					SDL_assert(m_windowWidth > 0);
-					return m_windowWidth;
-				}
-
-				int EntityMemory::GetWindowHeight()
-				{
-					SDL_assert(m_windowHeight > 0);
-					return m_windowHeight;
 				}
 
 				int EntityMemory::GetMainEntityDynamicID()

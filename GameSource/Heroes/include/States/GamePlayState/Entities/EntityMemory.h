@@ -3,6 +3,9 @@
 #include <list>
 #include <vector>
 #include <map> // future find better implementation
+
+#include <tinyxml2.h>
+
 #include "Engine/SDLUtilityTool.h"
 #include "States/GamePlayState/Entities/EntityComponents.h"
 
@@ -14,6 +17,8 @@ namespace Heroes
 		{
 			typedef int EntityDynamicIDType;
 			typedef int EntityStaticIDType;
+
+			class EntityLoader;
 
 			enum EntityMemoryConstants
 			{
@@ -51,10 +56,6 @@ namespace Heroes
 
 				EntityDynamicIDType OverrideMainEntity(EntityDynamicIDType entityID);
 
-				// Loads a single entity returning its id
-				EntityDynamicIDType LoadEntityFile(const char* entityFile, SDL_Renderer* renderer);
-
-				void LoadStaticWarriorFile(const char* staticWarriorFile, SDL_Renderer* renderer);
 				EntityDynamicIDType LoadDynamicWarrior(b2Vec2 position, b2Vec2 orientation);
 
 				// Releases the entities specified in the list
@@ -65,8 +66,8 @@ namespace Heroes
 
 				void UpdateEntityWorld(float time);
 
-				int GetWindowWidth();
-				int GetWindowHeight();
+				//int GetWindowWidth();
+				//int GetWindowHeight();
 				int GetMainEntityDynamicID();
 
 				DynamicSystemsComponent m_dynamicSystemComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
@@ -98,10 +99,13 @@ namespace Heroes
 
 			private:
 
+				friend class EntityLoader;
+
 				Engine::SDLUtilityTool& m_sdlUtilityTool;
 				int m_windowWidth{ 0 };
 				int m_windowHeight{ 0 };
 				int m_mainEntityDynamicID{ -1 };
+				int m_freeStaticEntityID{ 0 };
 
 				b2World m_entityWorld{ b2Vec2_zero };
 

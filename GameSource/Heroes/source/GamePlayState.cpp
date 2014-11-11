@@ -22,7 +22,7 @@ namespace Heroes
 			{
 				m_tileMap.Load("./Resources/Levels/Maps/TestMap.map", m_sdlWindow, m_sdlRenderer);
 
-				m_entityMemory.LoadStaticWarriorFile(nullptr, m_sdlRenderer);
+				m_entityLoader.LoadEntityFile("./Resources/Entities/Warrior.xml", m_entityMemory, m_sdlRenderer);
 
 				EntityDynamicIDType one = m_entityMemory.LoadDynamicWarrior(b2Vec2_zero, b2Vec2_zero);
 				m_entityMemory.LoadDynamicWarrior(b2Vec2(1, 1), b2Vec2_zero);
@@ -68,8 +68,6 @@ namespace Heroes
 				
 				std::list<GamePlay::EntityDynamicIDType> entityList;
 
-				
-
 				 // update camera
 				m_entityMemory.UpdateEntityWorld(0.030f);
 				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_dynamicPhysicsComponents[m_mainEntityID].body->GetPosition()));
@@ -77,30 +75,17 @@ namespace Heroes
 				 // list for entities
 				m_entityList.clear();
 				QuerySimulationZone(m_entityList);
-				
-
-				//// RUN THE SYSYTEMS
-				//m_entityMemory.m_dynamicSystemComponents[m_mainEntityID].m_directionSystem(m_mainEntityID, m_entityMemory, m_controller);
-				////m_entityMemory.m_systemComponents[m_mainEntityID].m_movementSystem(m_mainEntityID, m_entityMemory, nullptr);
-
-				//for (auto entityID : m_entityList)
-				//{
-				//	m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_movementSystem(entityID, m_entityMemory, nullptr);
-				//	m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_renderUpdateSystem(entityID, m_entityMemory, nullptr);
-				//	//m_entityMemory.m_systemComponents[entityID].m_directionSystem(entityID, m_entityMemory, m_controller);
-				//	
-				//}
 
 				// Status
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_statusSystem(entityID, m_entityMemory, nullptr);
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_statusSystem(entityID, m_entityMemory);
 				}
 
 				// Health
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_healthSystem(entityID, m_entityMemory, nullptr);
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_healthSystem(entityID, m_entityMemory);
 				}
 
 				// Target
@@ -112,7 +97,7 @@ namespace Heroes
 				// Action
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_actionSystem(entityID, m_entityMemory, nullptr);
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_actionSystem(entityID, m_entityMemory);
 				}
 
 				// Direction
@@ -124,13 +109,13 @@ namespace Heroes
 				// Movement
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_movementSystem(entityID, m_entityMemory, nullptr);
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_movementSystem(entityID, m_entityMemory);
 				}
 
 				// Render
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_renderUpdateSystem(entityID, m_entityMemory, nullptr);
+					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_renderUpdateSystem(entityID, m_entityMemory, m_sdlWindow);
 				}
 				
 			}
@@ -167,16 +152,26 @@ namespace Heroes
 
 			void GamePlayState::RenderEntites(std::list<EntityDynamicIDType> entityList)
 			{
+				// shadows
+
 				// render the textures
 				for (auto entityID : entityList)
 				{
-					SDL_RenderCopyEx(m_sdlRenderer, m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_entityTexture, NULL, &m_entityMemory.m_dynamicRenderComponents[entityID].m_dstRect, m_entityMemory.m_dynamicRenderComponents[entityID].m_angle, NULL, SDL_FLIP_NONE);
+					SDL_RenderCopyEx(m_sdlRenderer, 
+						m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_entityTexture, 
+						NULL, 
+						&m_entityMemory.m_dynamicRenderComponents[entityID].m_dstRect, m_entityMemory.m_dynamicRenderComponents[entityID].m_angle, 
+						NULL, 
+						SDL_FLIP_NONE);
 				}
 
 				// render the health bars
 				for (auto entityID : entityList)
 				{
-					SDL_RenderCopy(m_sdlRenderer, m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_lifeBarTexture, NULL, &m_entityMemory.m_dynamicRenderComponents[entityID].m_healthBarRect);
+					SDL_RenderCopy(m_sdlRenderer, 
+						m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_healthBarTexture, 
+						NULL, 
+						&m_entityMemory.m_dynamicRenderComponents[entityID].m_healthBarRect);
 				}
 			}
 

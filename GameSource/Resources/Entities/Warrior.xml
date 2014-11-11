@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<!--Written using Log.cpp-->
+<!--Generated from code compiled on Nov  9 2014 at 13:32:50-->
+<Entity>
+    <Name>Warrior</Name>
+    <DeathTimer>10</DeathTimer>
+    <Health>100</Health>
+    <Resistance>0</Resistance>
+    <AttackDamage>20</AttackDamage>
+    <MovementSpeed>10</MovementSpeed>
+    <EntityTexture>./Resources/Textures/TestEntity.png</EntityTexture>
+    <HealthBarTexture>./Resources/Textures/HealthBar.png</HealthBarTexture>
+</Entity>
