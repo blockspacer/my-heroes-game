@@ -1,7 +1,7 @@
 #include <iostream>
 #include <fstream>
 
-#include <SDL.h>
+#include <Engine/SDLUtilityTool.h>
 
 #include "Engine/Log.h"
 

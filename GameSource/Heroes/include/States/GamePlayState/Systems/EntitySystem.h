@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include <SDL.h>
+#include <Engine/SDLUtilityTool.h>
 
 namespace Heroes
 {
