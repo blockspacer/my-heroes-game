@@ -1,6 +1,0 @@
-C:/Users/Sam/Downloads/tinyxml2-master/tinyxml2-master/build/CMakeFiles/ALL_BUILD.dir
-C:/Users/Sam/Downloads/tinyxml2-master/tinyxml2-master/build/CMakeFiles/DATA_COPY.dir
-C:/Users/Sam/Downloads/tinyxml2-master/tinyxml2-master/build/CMakeFiles/ZERO_CHECK.dir
-C:/Users/Sam/Downloads/tinyxml2-master/tinyxml2-master/build/CMakeFiles/test.dir
-C:/Users/Sam/Downloads/tinyxml2-master/tinyxml2-master/build/CMakeFiles/tinyxml2.dir
-C:/Users/Sam/Downloads/tinyxml2-master/tinyxml2-master/build/CMakeFiles/tinyxml2static.dir

@@ -20,6 +20,7 @@ namespace Heroes
 			GamePlayState::GamePlayState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData) : State(sdlUtilityTool, stateCreationData)
 				
 			{
+
 				m_tileMap.Load("./Resources/Levels/Maps/TestMap.map", m_sdlWindow, m_sdlRenderer);
 
 				m_entityLoader.LoadEntityFile("./Resources/Entities/Warrior.xml", m_entityMemory, m_sdlRenderer);
