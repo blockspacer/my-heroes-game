@@ -3,11 +3,22 @@
 #include <list>
 #include <vector>
 #include <map> // future find better implementation
+#include <array>
 
 #include <tinyxml2.h>
 
 #include "Engine/SDLUtilityTool.h"
-#include "States/GamePlayState/Entities/EntityComponents.h"
+
+// the various component containers
+#include "States/GamePlayState/Entities/SystemsComponents.h"
+#include "States/GamePlayState/Entities/StatusComponents.h"
+#include "States/GamePlayState/Entities/HealthComponents.h"
+#include "States/GamePlayState/Entities/TargetComponents.h"
+#include "States/GamePlayState/Entities/ActionComponents.h"
+#include "States/GamePlayState/Entities/DirectionComponents.h"
+#include "States/GamePlayState/Entities/MovementComponents.h"
+#include "States/GamePlayState/Entities/PhysicsComponents.h"
+#include "States/GamePlayState/Entities/RenderComponents.h"
 
 namespace Heroes
 {
@@ -19,12 +30,7 @@ namespace Heroes
 			typedef int EntityStaticIDType;
 
 			class EntityLoader;
-
-			enum EntityMemoryConstants
-			{
-				DYNAMIC_ENTITY_MEMORY_SIZE = 1000,
-				STATIC_ENTITY_MEMORY_START_SIZE = 1
-			};
+			class StatusComponents;
 
 			enum ComponentMask
 			{
@@ -70,32 +76,15 @@ namespace Heroes
 				//int GetWindowHeight();
 				int GetMainEntityDynamicID();
 
-				DynamicSystemsComponent m_dynamicSystemComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticSystemsComponent> m_staticSystemComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicStatusComponent m_dynamicStatusComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticStatusComponent> m_staticStatusComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicHealthComponent m_dynamicHealthComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticHealthComponent> m_staticHealthComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicTargetComponent m_dynamicTargetComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticTargetComponent> m_staticTargetComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicActionComponent m_dynamicActionComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticActionComponent> m_staticActionComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicDirectionComponent m_dynamicDirectionComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticDirectionComponent> m_staticDirectionComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicMovementComponent m_dynamicMovementComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticMovementComponent> m_staticMovementComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicRenderComponent m_dynamicRenderComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticRenderComponent> m_staticRenderComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
-
-				DynamicPhysicsComponent m_dynamicPhysicsComponents[EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE];
-				std::vector<StaticPhysicsComponent> m_staticPhysicsComponents{ STATIC_ENTITY_MEMORY_START_SIZE };
+				SystemsComponents m_systemsComponents;
+				StatusComponents m_statusComponents;
+				HealthComponents m_healthComponents;
+				TargetComponents m_targetComponents;
+				ActionComponents m_actionComponents;
+				DirectionComponents m_directionComponents;
+				MovementComponents m_movementComponents;
+				RenderComponents m_renderComponents;
+				PhysicsComponents m_physicsComponents;
 
 			private:
 

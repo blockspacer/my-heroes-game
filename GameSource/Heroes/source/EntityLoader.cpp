@@ -1,6 +1,7 @@
 #include "Engine/Log.h"
 
 #include "States/GamePlayState/Systems/WarriorSystems.h"
+#include "States/GamePlayState/Entities/EntityComponentConstants.h"
 #include "States/GamePlayState/Entities/EntityLoader.h"
 
 namespace Heroes
@@ -59,60 +60,67 @@ namespace Heroes
 					if (elementName.compare(STATIC_FILE_NAME) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_staticEntityMap[text] = entityMemory.m_freeStaticEntityID;
+						entityMemory.m_staticEntityMap[text] = entityMemory.m_freeStaticEntityID; // FIX THIS
+						int staticEntityID = entityMemory.m_freeStaticEntityID;
 
 						// there needs to be a way to attach functions to this entity
-						entityMemory.m_staticSystemComponents[entityMemory.m_freeStaticEntityID].m_statusSystem = WarriorSystems::WarriorStatusSystem;
-						entityMemory.m_staticSystemComponents[entityMemory.m_freeStaticEntityID].m_healthSystem = WarriorSystems::WarriorHealthSystem;
-						entityMemory.m_staticSystemComponents[entityMemory.m_freeStaticEntityID].m_actionSystem = WarriorSystems::WarriorActionSystem;
-						entityMemory.m_staticSystemComponents[entityMemory.m_freeStaticEntityID].m_movementSystem = WarriorSystems::WarriorMovementSystem;
-						entityMemory.m_staticSystemComponents[entityMemory.m_freeStaticEntityID].m_renderUpdateSystem = WarriorSystems::WarriorRenderUpdateSystem;
+						entityMemory.m_systemsComponents.SetStatusSystem_S(staticEntityID, WarriorSystems::WarriorStatusSystem);
+						entityMemory.m_systemsComponents.SetHealthSystem_S(staticEntityID, WarriorSystems::WarriorHealthSystem);
+						entityMemory.m_systemsComponents.SetTargetSystem_S(staticEntityID, WarriorSystems::WarriorTargetSystem);
+						entityMemory.m_systemsComponents.SetActionSystem_S(staticEntityID, WarriorSystems::WarriorActionSystem);
+						entityMemory.m_systemsComponents.SetDirectionSystem_S(staticEntityID, WarriorSystems::WarriorDirectionSystem);
+						entityMemory.m_systemsComponents.SetMovementSystem_S(staticEntityID, WarriorSystems::WarriorMovementSystem);
+						entityMemory.m_systemsComponents.SetRenderUpdateSystem_S(staticEntityID, WarriorSystems::WarriorRenderUpdateSystem);
 
 					}
 					else if (elementName.compare(STATIC_FILE_DEATH_TIMER) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_staticStatusComponents[entityMemory.m_freeStaticEntityID].m_deathTimer = atoi(text.c_str());
-						SDL_assert(entityMemory.m_staticStatusComponents[entityMemory.m_freeStaticEntityID].m_deathTimer >= 0);
+						entityMemory.m_statusComponents.SetDeathTimer_S(entityMemory.m_freeStaticEntityID, atoi(text.c_str()));
+						SDL_assert(entityMemory.m_statusComponents.GetDeathTimer_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_HEALTH) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_staticHealthComponents[entityMemory.m_freeStaticEntityID].m_healthNormal = atoi(text.c_str());
-						SDL_assert(entityMemory.m_staticHealthComponents[entityMemory.m_freeStaticEntityID].m_healthNormal >= 0);
+						entityMemory.m_healthComponents.SetNormalHealth_S(entityMemory.m_freeStaticEntityID, atoi(text.c_str()));
+						SDL_assert(entityMemory.m_healthComponents.GetNormalHealth_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_RESISTANCE) == 0)
 					{
-						text = element->GetText();
-						entityMemory.m_staticHealthComponents[entityMemory.m_freeStaticEntityID].m_resistanceNormal = atoi(text.c_str());
-						SDL_assert(entityMemory.m_staticHealthComponents[entityMemory.m_freeStaticEntityID].m_resistanceNormal >= 0);
+						//text = element->GetText();
+						//entityMemory.m_staticHealthComponents.at(entityMemory.m_freeStaticEntityID).m_resistanceNormal = atoi(text.c_str());
+						//SDL_assert(entityMemory.m_staticHealthComponents.at(entityMemory.m_freeStaticEntityID).m_resistanceNormal >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_ATTACK_DAMAGE) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_staticActionComponents[entityMemory.m_freeStaticEntityID].m_normalAttackDamage = atoi(text.c_str());
-						SDL_assert(entityMemory.m_staticActionComponents[entityMemory.m_freeStaticEntityID].m_normalAttackDamage >= 0);
+						entityMemory.m_actionComponents.SetNormalAttackDamage_S(entityMemory.m_freeStaticEntityID, atoi(text.c_str()));
+						SDL_assert(entityMemory.m_actionComponents.GetNormalAttackDamage_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_MOVEMENT_SPEED) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_staticMovementComponents[entityMemory.m_freeStaticEntityID].m_speed = atoi(text.c_str());
-						SDL_assert(entityMemory.m_staticMovementComponents[entityMemory.m_freeStaticEntityID].m_speed >= 0);
+						entityMemory.m_movementComponents.SetMovementSpeed_S(entityMemory.m_freeStaticEntityID, static_cast<float>(atof(text.c_str())));
+						SDL_assert(entityMemory.m_movementComponents.GetMovementSpeed_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_ENTITY_TEXTURE) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_staticRenderComponents[entityMemory.m_freeStaticEntityID].m_entityTexture = m_sdlUtilityTool.LoadImageTexture(text.c_str(), renderer);
-						SDL_QueryTexture(entityMemory.m_staticRenderComponents[entityMemory.m_freeStaticEntityID].m_entityTexture, 
+						entityMemory.m_renderComponents.SetEntityTexture_S(entityMemory.m_freeStaticEntityID, m_sdlUtilityTool.LoadImageTexture(text.c_str(), renderer));
+						int textureWidth = 0;
+						int textureHeight = 0;
+						SDL_QueryTexture(entityMemory.m_renderComponents.GetEntityTexture_S(entityMemory.m_freeStaticEntityID), 
 							NULL, 
 							NULL, 
-							&(entityMemory.m_staticRenderComponents[entityMemory.m_freeStaticEntityID].m_textureWidth), 
-							&(entityMemory.m_staticRenderComponents[entityMemory.m_freeStaticEntityID].m_textureHeight));
+							&textureWidth, 
+							&textureHeight);
+						entityMemory.m_renderComponents.SetTextureWidth_S(entityMemory.m_freeStaticEntityID, textureWidth);
+						entityMemory.m_renderComponents.SetTextureHeight_S(entityMemory.m_freeStaticEntityID, textureHeight);
 					}
 					else if (elementName.compare(STATIC_FILE_HEALTH_BAR_TEXTURE) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_staticRenderComponents[entityMemory.m_freeStaticEntityID].m_healthBarTexture = m_sdlUtilityTool.LoadImageTexture(text.c_str(), renderer);
+						entityMemory.m_renderComponents.SetHealthBarTexture_S(entityMemory.m_freeStaticEntityID, m_sdlUtilityTool.LoadImageTexture(text.c_str(), renderer));
 					}
 
 					element = element->NextSiblingElement();

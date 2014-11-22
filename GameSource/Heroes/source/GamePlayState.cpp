@@ -5,12 +5,22 @@
 #include "States/MainMenuState/MainMenuState.h"
 #include "States/GamePlayState/GamePlayState.h"
 
+#include <States/GamePlayState/LuaStateLoader.h>
+
 namespace Heroes
 {
 	namespace States
 	{
 		namespace GamePlay
 		{
+			void printInfo(float x) {
+				std::cout << x << std::endl;
+			}
+
+			int GetInt()
+			{
+				return 5;
+			}
 			
 			Engine::State* CreateGamePlayState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData)
 			{
@@ -41,6 +51,46 @@ namespace Heroes
 
 			void GamePlayState::Update(uint32_t milliTime)
 			{
+				// test the luaState here
+				LuaStateLoader luaLoader;
+				lua_State* luaState = luaLoader.GetGerneralEntityLuaState(m_entityMemory);
+
+				luabind::module(luaState)[
+					luabind::def("printInfo", &printInfo),
+					luabind::def("GetInt", &GetInt)
+				];
+
+				luabind::object f = luabind::globals(luaState); 
+				SDL_assert(f.is_valid());
+				luabind::object t = f["StatusComponents"];
+				SDL_assert(t.is_valid());
+				try {
+					// Now call our function in a lua script
+					luaL_dostring(
+						luaState,
+						"b = B2Vec2\n"
+						"b.x = 6\n"
+						//"d = Test\n"
+						//"d:SetDeathTimer(5)\n"
+						//"b.x = d.m_staticEntityID\n"
+						"c = StatusComponents:GetDeathTimer_D(0)\n"
+						"printInfo(c)\n"
+						"StatusComponents:SetDeathTimer_D(0, 30)\n"
+
+						"c = StatusComponents:GetDeathTimer_D(0)\n"
+						//"z = d:GetDeathTimer()\n"
+						//"b.x = c\n"
+						//"b.y = 5.5\n"
+						//"print(4)\n"
+						"printInfo(c)\n"
+						);
+				}
+				catch (const std::exception &TheError) {
+					std::cout << TheError.what() << std::endl;
+				}
+				
+				std::cout << m_entityMemory.m_statusComponents.GetDeathTimer_S(0) << std::endl;
+
 				SDL_Event sdlEvent;
 				if (SDL_WaitEventTimeout(&sdlEvent, 0)) {}
 
@@ -71,7 +121,7 @@ namespace Heroes
 
 				 // update camera
 				m_entityMemory.UpdateEntityWorld(0.030f);
-				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_dynamicPhysicsComponents[m_mainEntityID].body->GetPosition()));
+				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_physicsComponents.GetEntityBody_D(m_mainEntityID)->GetPosition()));
 
 				 // list for entities
 				m_entityList.clear();
@@ -80,43 +130,43 @@ namespace Heroes
 				// Status
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_statusSystem(entityID, m_entityMemory);
+					m_entityMemory.m_systemsComponents.GetStatusSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
 				}
 
 				// Health
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_healthSystem(entityID, m_entityMemory);
+					m_entityMemory.m_systemsComponents.GetHealthSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
 				}
 
 				// Target
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_dynamicSystemComponents[entityID].m_targetSystem(entityID, m_entityMemory, m_controller);
+					m_entityMemory.m_systemsComponents.GetTargetSystem_D(entityID)(entityID, m_entityMemory, m_controller);
 				}
 
 				// Action
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_actionSystem(entityID, m_entityMemory);
+					m_entityMemory.m_systemsComponents.GetActionSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
 				}
 
 				// Direction
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_dynamicSystemComponents[entityID].m_directionSystem(entityID, m_entityMemory, m_controller);
+					m_entityMemory.m_systemsComponents.GetDirectionSystem_D(entityID)(entityID, m_entityMemory, m_controller);
 				}
 
 				// Movement
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_movementSystem(entityID, m_entityMemory);
+					m_entityMemory.m_systemsComponents.GetMovementSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
 				}
 
 				// Render
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_staticSystemComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_renderUpdateSystem(entityID, m_entityMemory, m_sdlWindow);
+					m_entityMemory.m_systemsComponents.GetRenderUpdateSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory, m_sdlWindow);
 				}
 				
 			}
@@ -159,9 +209,9 @@ namespace Heroes
 				for (auto entityID : entityList)
 				{
 					SDL_RenderCopyEx(m_sdlRenderer, 
-						m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_entityTexture, 
+						m_entityMemory.m_renderComponents.GetEntityTexture_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID)),
 						NULL, 
-						&m_entityMemory.m_dynamicRenderComponents[entityID].m_dstRect, m_entityMemory.m_dynamicRenderComponents[entityID].m_angle, 
+						m_entityMemory.m_renderComponents.GetDestinationRect_D(entityID), m_entityMemory.m_renderComponents.GetAngle_D(entityID), 
 						NULL, 
 						SDL_FLIP_NONE);
 				}
@@ -170,9 +220,9 @@ namespace Heroes
 				for (auto entityID : entityList)
 				{
 					SDL_RenderCopy(m_sdlRenderer, 
-						m_entityMemory.m_staticRenderComponents[m_entityMemory.m_dynamicStatusComponents[entityID].m_staticEntityID].m_healthBarTexture, 
+						m_entityMemory.m_renderComponents.GetHealthBarTexture_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID)),
 						NULL, 
-						&m_entityMemory.m_dynamicRenderComponents[entityID].m_healthBarRect);
+						m_entityMemory.m_renderComponents.GetHealthBarRect_D(entityID));
 				}
 			}
 

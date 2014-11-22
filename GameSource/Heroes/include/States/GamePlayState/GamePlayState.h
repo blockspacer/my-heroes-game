@@ -19,6 +19,11 @@ namespace Heroes
 
 			Engine::State* CreateGamePlayState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData);
 
+			enum GamePlayConstants
+			{
+				AXIS_EPSILON = 10000
+			};
+
 			class GamePlayState final : public Engine::State
 			{
 			public:

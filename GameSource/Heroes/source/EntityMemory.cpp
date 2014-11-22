@@ -3,9 +3,11 @@
 #include <SDL_image.h>
 
 #include "Engine/Log.h"
+#include "States/GamePlayState/Entities/EntityComponentConstants.h"
 #include "States/GamePlayState/Systems/PlayerSystems.h"
 #include "States/GamePlayState/Systems/WarriorSystems.h"
 #include "States/GamePlayState/Entities/EntityMemory.h"
+#include "States/GamePlayState/Entities/StatusComponents.h"
 
 namespace Heroes
 {
@@ -22,17 +24,24 @@ namespace Heroes
 					return true;
 				}
 
-				EntityMemory::EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool, SDL_Window* window) : m_sdlUtilityTool(sdlUtilityTool)
+				EntityMemory::EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool, SDL_Window* window) : m_sdlUtilityTool(sdlUtilityTool),
+																										 m_systemsComponents(*this),
+																										 m_statusComponents(*this),
+																										 m_healthComponents(*this),
+																										 m_targetComponents(*this),
+																										 m_actionComponents(*this),
+																										 m_directionComponents(*this),
+																										 m_movementComponents(*this),
+																										 m_physicsComponents(*this),
+																										 m_renderComponents(*this, window)
 				{
-					
-
 					// fill up the free entities
-					for (EntityDynamicIDType i = 0; i < EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE; i++)
+					for (EntityDynamicIDType i = 0; i < ComponentContainerConstants::DYNAMIC_ENTITY_MEMORY_SIZE; i++)
 					{
 						m_freeEntities.push_back(i);
 					}
 
-					SDL_assert(m_freeEntities.size() == EntityMemoryConstants::DYNAMIC_ENTITY_MEMORY_SIZE);
+					SDL_assert(m_freeEntities.size() == ComponentContainerConstants::DYNAMIC_ENTITY_MEMORY_SIZE);
 					SDL_assert(m_usedEntities.size() == 0);
 				}
 
@@ -41,8 +50,8 @@ namespace Heroes
 					// manually delete entity texture
 					for (int i = 0; i < m_freeStaticEntityID; i++)
 					{
-						m_sdlUtilityTool.DestroyTexture(m_staticRenderComponents[i].m_entityTexture);
-						m_sdlUtilityTool.DestroyTexture(m_staticRenderComponents[i].m_healthBarTexture);
+						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetEntityTexture_S(i));
+						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetHealthBarTexture_S(i));
 					}
 				}
 
@@ -51,21 +60,22 @@ namespace Heroes
 					EntityStaticIDType staticWarriorID = m_staticEntityMap["Warrior"];
 
 					EntityDynamicIDType id = m_freeEntities.front();
+					
 
 					// manually load the player controlled entity
-					
-					m_dynamicSystemComponents[id].m_targetSystem = WarriorSystems::WarriorTargetSystem;
-					m_dynamicSystemComponents[id].m_directionSystem = WarriorSystems::WarriorDirectionSystem;
 
-					m_dynamicStatusComponents[id].m_staticEntityID = staticWarriorID; // warrior is the only static entity
-					m_dynamicStatusComponents[id].m_action = ActionType::NO_ACTION;
-					m_dynamicStatusComponents[id].m_movement = MovementType::NO_MOVEMENT;
-					m_dynamicStatusComponents[id].m_status = StatusType::ALIVE;
-					m_dynamicStatusComponents[id].m_deathTimer = m_staticStatusComponents[staticWarriorID].m_deathTimer;
+					m_systemsComponents.SetTargetSystem_D(id, m_systemsComponents.GetTargetSystem_S(staticWarriorID));
+					m_systemsComponents.SetDirectionSystem_D(id, m_systemsComponents.GetDirectionSystem_S(staticWarriorID));
 
-					m_dynamicHealthComponents[id].m_healthNormalCurrent = m_staticHealthComponents[staticWarriorID].m_healthNormal / 2;
-					m_dynamicHealthComponents[id].m_damageDirect = 0;
-					m_dynamicHealthComponents[id].m_damageDirectSource = -1;
+					m_statusComponents.SetStaticEntityID_D(id, staticWarriorID); // warrior is the only static entity
+					m_statusComponents.SetAction_D(id, ActionType::NO_ACTION);
+					m_statusComponents.SetMovement_D(id, MovementType::NO_MOVEMENT);
+					m_statusComponents.SetStatus_D(id, StatusType::ALIVE);
+					m_statusComponents.SetDeathTimer_D(id, m_statusComponents.GetDeathTimer_S(staticWarriorID));
+
+					m_healthComponents.SetNormalHealth_D(id, m_healthComponents.GetNormalHealth_S(staticWarriorID) / 2);
+					m_healthComponents.SetDirectDamage_D(id, 0);
+					m_healthComponents.SetDirectDamageSource_D(id, -1);
 
 					// TODO
 					// m_physicsComponents
@@ -75,35 +85,35 @@ namespace Heroes
 					def.position = position; // center
 					def.angle = 0;
 					def.fixedRotation = true;
-					m_dynamicPhysicsComponents[id].body = m_entityWorld.CreateBody(&def);
-					m_dynamicPhysicsComponents[id].body->SetUserData((void*)id);
-					std::cout << m_dynamicPhysicsComponents[id].body->GetUserData() << std::endl;
+					m_physicsComponents.SetEntityBody_D(id, m_entityWorld.CreateBody(&def));
+					m_physicsComponents.GetEntityBody_D(id)->SetUserData((void*)id);
+					std::cout << m_physicsComponents.GetEntityBody_D(id)->GetUserData() << std::endl;
 					b2CircleShape* shape = new b2CircleShape;
 					shape->m_radius = 0.5;
 					shape->m_p = b2Vec2(0, 0.25);
-					m_dynamicPhysicsComponents[id].shapes.push_back(shape);
+					m_physicsComponents.GetEntityShapes_D(id)->push_back(shape);
 					fixDef.shape = shape;
 					fixDef.density = 1;
 					fixDef.friction = 1;
 					fixDef.isSensor = false;
 					fixDef.filter.categoryBits = EntityCollisionMasks::ALLY_BODY;
 					fixDef.filter.maskBits = EntityCollisionCategories::ALLY_BODY_COL;
-					m_dynamicPhysicsComponents[id].body->CreateFixture(&fixDef);
+					m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&fixDef);
 					// m_targetComponents
 					// m_actionComponents
 					// m_directionComponents
-					m_dynamicDirectionComponents[id].m_direction = orientation;
+					m_directionComponents.SetDirection_D(id, orientation);
 					// m_movementComponents
 					// m_renderComponents
 
 
-					m_dynamicRenderComponents[id].m_dstRect.w = 64;
-					m_dynamicRenderComponents[id].m_dstRect.h = 64;
-					m_dynamicRenderComponents[id].m_dstRect.x = -32;
-					m_dynamicRenderComponents[id].m_dstRect.y = -32;
-					m_dynamicRenderComponents[id].m_healthBarRect.h = 8;
-					m_dynamicRenderComponents[id].m_healthBarRect.w = m_staticRenderComponents[staticWarriorID].m_textureWidth;
-					m_dynamicRenderComponents[id].m_angle = 0.0f;
+					m_renderComponents.GetDestinationRect_D(id)->w = 64;
+					m_renderComponents.GetDestinationRect_D(id)->h = 64;
+					m_renderComponents.GetDestinationRect_D(id)->x = -32;
+					m_renderComponents.GetDestinationRect_D(id)->y = -32;
+					m_renderComponents.GetHealthBarRect_D(id)->h = 8;
+					m_renderComponents.GetHealthBarRect_D(id)->w = m_renderComponents.GetTextureWidth_S(staticWarriorID);
+					m_renderComponents.SetAngle_D(id, 0.0f);
 
 					m_freeEntities.pop_front();
 					m_usedEntities.push_back(id);
@@ -113,8 +123,8 @@ namespace Heroes
 
 				EntityDynamicIDType EntityMemory::OverrideMainEntity(EntityDynamicIDType entityID)
 				{					
-					m_dynamicSystemComponents[entityID].m_targetSystem = PlayerSystems::MainEntityTargetSystem; // player system
-					m_dynamicSystemComponents[entityID].m_directionSystem = PlayerSystems::MainEntityDirectionSystem; // player system
+					m_systemsComponents.SetTargetSystem_D(entityID, PlayerSystems::MainEntityTargetSystem); // player system
+					m_systemsComponents.SetDirectionSystem_D(entityID, PlayerSystems::MainEntityDirectionSystem); // player system
 					m_mainEntityDynamicID = entityID;
 					return entityID;
 				}
