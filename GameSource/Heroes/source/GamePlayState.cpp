@@ -88,7 +88,7 @@ namespace Heroes
 				catch (const std::exception &TheError) {
 					std::cout << TheError.what() << std::endl;
 				}
-				
+
 				std::cout << m_entityMemory.m_statusComponents.GetDeathTimer_S(0) << std::endl;
 
 				SDL_Event sdlEvent;
@@ -166,7 +166,7 @@ namespace Heroes
 				// Render
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemsComponents.GetRenderUpdateSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory, m_sdlWindow);
+					m_entityMemory.m_renderComponents.UpdateEntityRenderComponent(entityID, m_camera, m_sdlWindow);
 				}
 				
 			}

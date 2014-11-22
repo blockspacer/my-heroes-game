@@ -24,16 +24,7 @@ namespace Heroes
 					return true;
 				}
 
-				EntityMemory::EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool, SDL_Window* window) : m_sdlUtilityTool(sdlUtilityTool),
-																										 m_systemsComponents(*this),
-																										 m_statusComponents(*this),
-																										 m_healthComponents(*this),
-																										 m_targetComponents(*this),
-																										 m_actionComponents(*this),
-																										 m_directionComponents(*this),
-																										 m_movementComponents(*this),
-																										 m_physicsComponents(*this),
-																										 m_renderComponents(*this, window)
+				EntityMemory::EntityMemory(Engine::SDLUtilityTool& sdlUtilityTool, SDL_Window* window) : m_sdlUtilityTool(sdlUtilityTool)
 				{
 					// fill up the free entities
 					for (EntityDynamicIDType i = 0; i < ComponentContainerConstants::DYNAMIC_ENTITY_MEMORY_SIZE; i++)

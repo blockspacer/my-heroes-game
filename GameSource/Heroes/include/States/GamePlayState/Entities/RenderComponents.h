@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SDL.h>
+#include "States/GamePlayState/Camera.h"
 #include "States/GamePlayState/Entities/ComponentsContainer.h"
 
 namespace Heroes
@@ -29,7 +30,7 @@ namespace Heroes
 			{
 			public:
 
-				RenderComponents(EntityMemory& entityMemory, SDL_Window* window);
+				RenderComponents(EntityMemory& entityMemory);
 				virtual ~RenderComponents();
 				
 				// DYNAMIC GETTERS AND SETTERS
@@ -56,7 +57,7 @@ namespace Heroes
 
 				// UTILITY FUNCTIONS
 
-				void UpdateEntityRenderComponent(int dynamicEntityID);
+				void UpdateEntityRenderComponent(int dynamicEntityID, Camera& camera, SDL_Window* window);
 			
 			private:
 
@@ -72,9 +73,6 @@ namespace Heroes
 
 				void SetHealthBarTexture_S(int entityStaticID, SDL_Texture* healthBarTexture);
 
-			
-
-				SDL_Window* m_window;
 			};
 
 		} // namespace GamePlay

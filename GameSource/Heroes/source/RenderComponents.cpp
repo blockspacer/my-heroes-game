@@ -10,8 +10,7 @@ namespace Heroes
 		namespace GamePlay
 		{
 
-			RenderComponents::RenderComponents(EntityMemory& entityMemory, SDL_Window* window) : ComponentsContainer<DynamicRenderComponent, StaticRenderComponent>(entityMemory),
-																								 m_window(window) {}
+			RenderComponents::RenderComponents(EntityMemory& entityMemory) : ComponentsContainer<DynamicRenderComponent, StaticRenderComponent>(entityMemory) {}
 			RenderComponents::~RenderComponents() {}
 
 			// getters and setters
@@ -96,13 +95,13 @@ namespace Heroes
 				m_staticComponents[entityStaticID].m_healthBarTexture = healthBarTexture;
 			}
 
-			void RenderComponents::UpdateEntityRenderComponent(int dynamicEntityID)
+			void RenderComponents::UpdateEntityRenderComponent(int dynamicEntityID, Camera& camera, SDL_Window* window)
 			{
 				SDL_DisplayMode displayMode;
-				SDL_GetWindowDisplayMode(m_window, &displayMode);
+				SDL_GetWindowDisplayMode(window, &displayMode);
 
 				EntityStaticIDType staticID = m_entityMemory.m_statusComponents.GetStaticEntityID_D(dynamicEntityID);
-				b2Vec2 mainEntitylocation = m_entityMemory.m_physicsComponents.GetEntityBody_D(m_entityMemory.GetMainEntityDynamicID())->GetPosition();
+				b2Vec2 cameraLocation = camera.GetSimCenter();
 				b2Vec2 location = m_entityMemory.m_physicsComponents.GetEntityBody_D(dynamicEntityID)->GetPosition();
 				SDL_Rect dst;
 
@@ -112,8 +111,8 @@ namespace Heroes
 
 				// make relative to the main entities location
 
-				dst.x = dst.x - static_cast<int>(mainEntitylocation.x * PIXEL_TO_METER) + displayMode.w / 2;
-				dst.y = dst.y - static_cast<int>(mainEntitylocation.y * PIXEL_TO_METER) + displayMode.h / 2;
+				dst.x = dst.x - static_cast<int>(cameraLocation.x * PIXEL_TO_METER) + displayMode.w / 2;
+				dst.y = dst.y - static_cast<int>(cameraLocation.y * PIXEL_TO_METER) + displayMode.h / 2;
 
 				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->x = dst.x;
 				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->y = dst.y;

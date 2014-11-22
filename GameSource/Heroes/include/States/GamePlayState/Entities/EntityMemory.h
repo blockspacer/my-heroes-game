@@ -76,15 +76,15 @@ namespace Heroes
 				//int GetWindowHeight();
 				int GetMainEntityDynamicID();
 
-				SystemsComponents m_systemsComponents;
-				StatusComponents m_statusComponents;
-				HealthComponents m_healthComponents;
-				TargetComponents m_targetComponents;
-				ActionComponents m_actionComponents;
-				DirectionComponents m_directionComponents;
-				MovementComponents m_movementComponents;
-				RenderComponents m_renderComponents;
-				PhysicsComponents m_physicsComponents;
+				SystemsComponents m_systemsComponents{ *this };
+				StatusComponents m_statusComponents{ *this };
+				HealthComponents m_healthComponents{ *this };
+				TargetComponents m_targetComponents{ *this };
+				ActionComponents m_actionComponents{ *this };
+				DirectionComponents m_directionComponents{ *this };
+				MovementComponents m_movementComponents{ *this };
+				RenderComponents m_renderComponents{ *this };
+				PhysicsComponents m_physicsComponents{ *this };
 
 			private:
 
