@@ -40,11 +40,11 @@ namespace Heroes
 					g_Log_Write_L2(LOG_FILE_LOAD_EVENT, doc.GetErrorStr1());
 				}
 
-				SDL_assert(error == tinyxml2::XML_NO_ERROR);
+				g_assert(error == tinyxml2::XML_NO_ERROR);
 
 				tinyxml2::XMLElement* rootElement = doc.RootElement();
 
-				SDL_assert(rootElement->NoChildren() == false);
+				g_assert(rootElement->NoChildren() == false);
 
 				tinyxml2::XMLElement* element = rootElement->FirstChildElement();
 				std::string elementName;
@@ -77,31 +77,31 @@ namespace Heroes
 					{
 						text = element->GetText();
 						entityMemory.m_statusComponents.SetDeathTimer_S(entityMemory.m_freeStaticEntityID, atoi(text.c_str()));
-						SDL_assert(entityMemory.m_statusComponents.GetDeathTimer_S(entityMemory.m_freeStaticEntityID) >= 0);
+						g_assert(entityMemory.m_statusComponents.GetDeathTimer_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_HEALTH) == 0)
 					{
 						text = element->GetText();
 						entityMemory.m_healthComponents.SetNormalHealth_S(entityMemory.m_freeStaticEntityID, atoi(text.c_str()));
-						SDL_assert(entityMemory.m_healthComponents.GetNormalHealth_S(entityMemory.m_freeStaticEntityID) >= 0);
+						g_assert(entityMemory.m_healthComponents.GetNormalHealth_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_RESISTANCE) == 0)
 					{
 						//text = element->GetText();
 						//entityMemory.m_staticHealthComponents.at(entityMemory.m_freeStaticEntityID).m_resistanceNormal = atoi(text.c_str());
-						//SDL_assert(entityMemory.m_staticHealthComponents.at(entityMemory.m_freeStaticEntityID).m_resistanceNormal >= 0);
+						//g_assert(entityMemory.m_staticHealthComponents.at(entityMemory.m_freeStaticEntityID).m_resistanceNormal >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_ATTACK_DAMAGE) == 0)
 					{
 						text = element->GetText();
 						entityMemory.m_actionComponents.SetNormalAttackDamage_S(entityMemory.m_freeStaticEntityID, atoi(text.c_str()));
-						SDL_assert(entityMemory.m_actionComponents.GetNormalAttackDamage_S(entityMemory.m_freeStaticEntityID) >= 0);
+						g_assert(entityMemory.m_actionComponents.GetNormalAttackDamage_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_MOVEMENT_SPEED) == 0)
 					{
 						text = element->GetText();
 						entityMemory.m_movementComponents.SetMovementSpeed_S(entityMemory.m_freeStaticEntityID, static_cast<float>(atof(text.c_str())));
-						SDL_assert(entityMemory.m_movementComponents.GetMovementSpeed_S(entityMemory.m_freeStaticEntityID) >= 0);
+						g_assert(entityMemory.m_movementComponents.GetMovementSpeed_S(entityMemory.m_freeStaticEntityID) >= 0);
 					}
 					else if (elementName.compare(STATIC_FILE_ENTITY_TEXTURE) == 0)
 					{
@@ -120,11 +120,49 @@ namespace Heroes
 					else if (elementName.compare(STATIC_FILE_HEALTH_BAR_TEXTURE) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_renderComponents.SetHealthBarTexture_S(entityMemory.m_freeStaticEntityID, m_sdlUtilityTool.LoadImageTexture(text.c_str(), renderer));
+						entityMemory.m_renderComponents.SetStatusTexture_S(entityMemory.m_freeStaticEntityID, m_sdlUtilityTool.LoadImageTexture(text.c_str(), renderer));
 					}
 
 					element = element->NextSiblingElement();
 				}
+
+				// manually add the animation stuff
+				// standing animation
+				entityMemory.m_renderComponents.SetStandingFramesTexture_S(entityMemory.m_freeStaticEntityID, m_sdlUtilityTool.LoadImageTexture("./Resources/Textures/WarriorStandingAnimation.png", renderer));
+				int animationSize = 0;
+				SDL_QueryTexture(entityMemory.m_renderComponents.GetStandingFramesTexture_S(entityMemory.m_freeStaticEntityID),
+					NULL,
+					NULL,
+					nullptr,
+					&animationSize);
+
+				entityMemory.m_renderComponents.SetStandingTextureSize_S(entityMemory.m_freeStaticEntityID, animationSize);
+				entityMemory.m_renderComponents.SetStandingFrames_S(entityMemory.m_freeStaticEntityID, 12);
+				entityMemory.m_renderComponents.SetStandingAnimationTimeMilli_S(entityMemory.m_freeStaticEntityID, 750);
+
+				// moving animation
+				entityMemory.m_renderComponents.SetMovingFramesTexture_S(entityMemory.m_freeStaticEntityID, m_sdlUtilityTool.LoadImageTexture("./Resources/Textures/WarriorMovingAnimation.png", renderer));
+				SDL_QueryTexture(entityMemory.m_renderComponents.GetMovingFramesTexture_S(entityMemory.m_freeStaticEntityID),
+					NULL,
+					NULL,
+					nullptr,
+					&animationSize);
+
+				entityMemory.m_renderComponents.SetMovingTextureSize_S(entityMemory.m_freeStaticEntityID, animationSize);
+				entityMemory.m_renderComponents.SetMovingFrames_S(entityMemory.m_freeStaticEntityID, 12);
+				entityMemory.m_renderComponents.SetMovingAnimationTimeMilli_S(entityMemory.m_freeStaticEntityID, 750);
+
+				// basic attack animation animation
+				entityMemory.m_renderComponents.SetBasicAttackFramesTexture_S(entityMemory.m_freeStaticEntityID, m_sdlUtilityTool.LoadImageTexture("./Resources/Textures/WarriorAttackAnimation.png", renderer));
+				SDL_QueryTexture(entityMemory.m_renderComponents.GetBasicAttackFramesTexture_S(entityMemory.m_freeStaticEntityID),
+					NULL,
+					NULL,
+					nullptr,
+					&animationSize);
+
+				entityMemory.m_renderComponents.SetBasicAttackTextureSize_S(entityMemory.m_freeStaticEntityID, animationSize);
+				entityMemory.m_renderComponents.SetBasicAttackFrames_S(entityMemory.m_freeStaticEntityID, 12);
+				entityMemory.m_renderComponents.SetBasicAttackAnimationTimeMilli_S(entityMemory.m_freeStaticEntityID, 750);
 
 				entityMemory.m_freeStaticEntityID++; // increment the nex free static entity ID
 

@@ -18,9 +18,9 @@ int main(int argc, char** argv)
 	//];
 
 	//luabind::object f = luabind::globals(luaState);
-	//SDL_assert(f);
+	//g_assert(f);
 	//luabind::object t = f["SDL_GameControllerGetButton"];
-	//SDL_assert(t.is_valid());
+	//g_assert(t.is_valid());
 	//t(SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK);
 
 	////luabind::call_function<Uint8>(luaState, "SDL_GameControllerGetButton", nullptr, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK)

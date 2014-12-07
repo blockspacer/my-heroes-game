@@ -1,5 +1,5 @@
 
-#include <SDL_assert.h>
+#include "Engine/Log.h"
 #include <SDL_gamecontroller.h>
 #include <Box2D/Common/b2Math.h>
 
@@ -40,14 +40,14 @@ namespace Heroes
 
 			void LuaStateLoader::CloseLuaState(lua_State* luaState)
 			{
-				SDL_assert(luaState != nullptr);
+				g_assert(luaState != nullptr);
 				lua_close(luaState);
 			}
 
 			lua_State* LuaStateLoader::CreateAndBindLuaState()
 			{
 				lua_State *luaState = luaL_newstate();
-				SDL_assert(luaState != nullptr);
+				g_assert(luaState != nullptr);
 				luabind::open(luaState);
 				return luaState;
 			}
@@ -116,11 +116,13 @@ namespace Heroes
 					//	NO_ACTION,
 					//	CLOSE_COMBAT
 					//};
-					luabind::class_<ActionType>("ActionType")
+					luabind::class_<BusyStatusType>("BusyStatusType")
 					.enum_("Constants")
 					[
-						luabind::value("NO_ACTION", 0),
-						luabind::value("CLOSE_COMBAT", 1)
+						luabind::value("NONE", BusyStatusType::NONE),
+						luabind::value("STUNNED", BusyStatusType::STUNNED),
+						luabind::value("BASIC_ATTACK", BusyStatusType::BASIC_ATTACK),
+						luabind::value("SPECIAL_ATTACK", BusyStatusType::SPECIAL_ATTACK)
 					],
 
 					//enum MovementType
@@ -128,11 +130,11 @@ namespace Heroes
 					//	NO_MOVEMENT,
 					//	MOVING
 					//};
-					luabind::class_<MovementType>("MovementType")
+					luabind::class_<IdleStatusType>("IdleStatusType")
 					.enum_("Constants")
 					[
-						luabind::value("NO_MOVEMENT", 0),
-						luabind::value("MOVING", 1)
+						luabind::value("STANDING", IdleStatusType::STANDING),
+						luabind::value("MOVING", IdleStatusType::MOVING)
 					],
 
 					//enum StatusType
@@ -140,11 +142,12 @@ namespace Heroes
 					//	ALIVE,
 					//	DEAD
 					//};
-					luabind::class_<StatusType>("StatusType")
+					luabind::class_<ActiveStatusType>("ActiveStatusType")
 					.enum_("Constants")
 					[
-						luabind::value("ALIVE", 0),
-						luabind::value("DEAD", 1)
+						luabind::value("ALIVE", ActiveStatusType::ALIVE),
+						luabind::value("DEAD", ActiveStatusType::DEAD),
+						luabind::value("NA", ActiveStatusType::NA)
 					],
 
 					//struct DynamicStatusComponent

@@ -1,8 +1,6 @@
 
 #include <stdio.h>
 #include <string>
-
-#include <SDL_assert.h>
 #include <SDL_timer.h> // GetTicks
 
 #include "Engine/Log.h"

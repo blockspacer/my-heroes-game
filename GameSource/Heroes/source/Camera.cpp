@@ -1,7 +1,5 @@
 #pragma once
 
-#include <SDL_assert.h>
-
 #include "Engine/Log.h"
 
 #include "States/GamePlayState/Camera.h"

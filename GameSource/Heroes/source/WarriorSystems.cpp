@@ -21,7 +21,22 @@ namespace Heroes
 				{}
 
 				void WarriorActionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory)
-				{}
+				{
+					// basic attack only
+					
+					int actionStartTime = entityMemory.m_statusComponents.GetBusyStatusStartTime_D(targetEntity);
+					int actionTotalTime = entityMemory.m_statusComponents.GetBusyStatusTotalTime_D(targetEntity);
+					int currentTime = SDL_GetTicks();
+					int staticID = entityMemory.m_statusComponents.GetStaticEntityID_D(targetEntity);
+
+					// check whether we have reached the point where we actually do damage
+					if (currentTime - actionStartTime > actionTotalTime * entityMemory.m_actionComponents.GetNormalAttackDamagePoint_S(staticID) &&
+						entityMemory.m_actionComponents.GetNormalAttackDamagePoint_D(targetEntity) == false)
+					{
+						// do damage
+						entityMemory.m_actionComponents.SetNormalAttackDamagePoint_D(targetEntity, true);
+					}
+				}
 
 				void WarriorDirectionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller)
 				{}
@@ -76,9 +91,9 @@ namespace Heroes
 					// set health bar coordinates
 					entityMemory.m_healthComponents.SetNormalHealth_D(targetEntity, (entityMemory.m_healthComponents.GetNormalHealth_D(targetEntity) + 1) % entityMemory.m_healthComponents.GetNormalHealth_S(staticID));
 					float healthPercentage = (entityMemory.m_healthComponents.GetNormalHealth_D(targetEntity) * 1.0f) / entityMemory.m_healthComponents.GetNormalHealth_S(staticID);
-					entityMemory.m_renderComponents.GetHealthBarRect_D(targetEntity)->w = static_cast<int>(entityMemory.m_renderComponents.GetTextureWidth_S(staticID) * healthPercentage);
-					entityMemory.m_renderComponents.GetHealthBarRect_D(targetEntity)->x = dst.x;
-					entityMemory.m_renderComponents.GetHealthBarRect_D(targetEntity)->y = dst.y - 10;
+					entityMemory.m_renderComponents.GetStatusRect_D(targetEntity)->w = static_cast<int>(entityMemory.m_renderComponents.GetTextureWidth_S(staticID) * healthPercentage);
+					entityMemory.m_renderComponents.GetStatusRect_D(targetEntity)->x = dst.x;
+					entityMemory.m_renderComponents.GetStatusRect_D(targetEntity)->y = dst.y - 10;
 
 					b2Vec2 orientation = entityMemory.m_targetComponents.GetOrientation_D(targetEntity);
 					entityMemory.m_renderComponents.SetAngle_D(targetEntity, (atan2(orientation.y, orientation.x)) * (180.0f / static_cast<float>(M_PI)) - 90.0f);

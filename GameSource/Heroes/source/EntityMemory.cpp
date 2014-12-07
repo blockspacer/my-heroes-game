@@ -32,8 +32,8 @@ namespace Heroes
 						m_freeEntities.push_back(i);
 					}
 
-					SDL_assert(m_freeEntities.size() == ComponentContainerConstants::DYNAMIC_ENTITY_MEMORY_SIZE);
-					SDL_assert(m_usedEntities.size() == 0);
+					g_assert(m_freeEntities.size() == ComponentContainerConstants::DYNAMIC_ENTITY_MEMORY_SIZE);
+					g_assert(m_usedEntities.size() == 0);
 				}
 
 				EntityMemory::~EntityMemory()
@@ -42,7 +42,10 @@ namespace Heroes
 					for (int i = 0; i < m_freeStaticEntityID; i++)
 					{
 						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetEntityTexture_S(i));
-						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetHealthBarTexture_S(i));
+						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetStatusTexture_S(i));
+						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetStandingFramesTexture_S(i));
+						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetMovingFramesTexture_S(i));
+						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetBasicAttackFramesTexture_S(i));
 					}
 				}
 
@@ -59,9 +62,8 @@ namespace Heroes
 					m_systemsComponents.SetDirectionSystem_D(id, m_systemsComponents.GetDirectionSystem_S(staticWarriorID));
 
 					m_statusComponents.SetStaticEntityID_D(id, staticWarriorID); // warrior is the only static entity
-					m_statusComponents.SetAction_D(id, ActionType::NO_ACTION);
-					m_statusComponents.SetMovement_D(id, MovementType::NO_MOVEMENT);
-					m_statusComponents.SetStatus_D(id, StatusType::ALIVE);
+					m_statusComponents.SetActiveStatus_D(id, ActiveStatusType::ALIVE);
+					m_statusComponents.SetIdleStatus_D(id, IdleStatusType::STANDING);
 					m_statusComponents.SetDeathTimer_D(id, m_statusComponents.GetDeathTimer_S(staticWarriorID));
 
 					m_healthComponents.SetNormalHealth_D(id, m_healthComponents.GetNormalHealth_S(staticWarriorID) / 2);
@@ -94,17 +96,26 @@ namespace Heroes
 					// m_actionComponents
 					// m_directionComponents
 					m_directionComponents.SetDirection_D(id, orientation);
+					m_targetComponents.SetOrientation_D(id, orientation);
 					// m_movementComponents
 					// m_renderComponents
 
-
-					m_renderComponents.GetDestinationRect_D(id)->w = 64;
-					m_renderComponents.GetDestinationRect_D(id)->h = 64;
+					
+					m_renderComponents.GetDestinationRect_D(id)->w = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
+					m_renderComponents.GetDestinationRect_D(id)->h = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
 					m_renderComponents.GetDestinationRect_D(id)->x = -32;
 					m_renderComponents.GetDestinationRect_D(id)->y = -32;
-					m_renderComponents.GetHealthBarRect_D(id)->h = 8;
-					m_renderComponents.GetHealthBarRect_D(id)->w = m_renderComponents.GetTextureWidth_S(staticWarriorID);
+					m_renderComponents.GetStatusRect_D(id)->h = 8;
+					m_renderComponents.GetStatusRect_D(id)->w = m_renderComponents.GetTextureWidth_S(staticWarriorID);
 					m_renderComponents.SetAngle_D(id, 0.0f);
+
+					// animation stuff
+					m_renderComponents.GetSourceRect_D(id)->w = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
+					m_renderComponents.GetSourceRect_D(id)->h = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
+					m_renderComponents.GetSourceRect_D(id)->x = 0;
+					m_renderComponents.GetSourceRect_D(id)->y = 0;
+					m_renderComponents.SetAnimationTimeMilli_D(id, SDL_GetTicks());
+					m_renderComponents.SetFrame_D(id, 0);
 
 					m_freeEntities.pop_front();
 					m_usedEntities.push_back(id);
@@ -124,13 +135,13 @@ namespace Heroes
 				{
 					for (EntityDynamicIDType &c : entityIDs)
 					{
-						SDL_assert(false);
+						g_assert(false);
 					}
 				}
 
 				void EntityMemory::QueryEntityWorld(std::list<EntityDynamicIDType>& entityList, b2AABB boundingArea)
 				{
-					SDL_assert(entityList.size() == 0);
+					g_assert(entityList.size() == 0);
 
 					EntityQuery entityQuery;
 					entityQuery.m_queryList = &entityList;
@@ -140,7 +151,7 @@ namespace Heroes
 
 				void EntityMemory::UpdateEntityWorld(float time)
 				{
-					SDL_assert(time > 0);
+					g_assert(time > 0);
 					
 					m_entityWorld.Step(time, 8, 2);
 					m_entityWorld.ClearForces();
@@ -148,7 +159,7 @@ namespace Heroes
 
 				int EntityMemory::GetMainEntityDynamicID()
 				{
-					SDL_assert(m_mainEntityDynamicID >= 0);
+					g_assert(m_mainEntityDynamicID >= 0);
 					return m_mainEntityDynamicID;
 				}
 					

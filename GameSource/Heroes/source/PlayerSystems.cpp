@@ -1,6 +1,6 @@
-#include <SDL_assert.h>
+#include "Engine/Log.h"
 
-#include "Engine\SDLXbox360Controller.h"
+#include "Engine/SDLXbox360Controller.h"
 #include "States/GamePlayState/Systems/PlayerSystems.h"
 
 namespace Heroes
@@ -14,13 +14,19 @@ namespace Heroes
 
 				void MainEntityTargetSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller)
 				{
+					Uint8 buttonA = SDL_GameControllerGetButton(controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);
 
+					if (buttonA)
+					{
+						// set basic attack 1.5 secs
+						entityMemory.m_statusComponents.SetBusyStatus(targetEntity, BusyStatusType::BASIC_ATTACK, 750);
+					}
 				}
 
 				void MainEntityDirectionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller)
 				{
-					SDL_assert(targetEntity >= 0 && targetEntity < GamePlay::ComponentContainerConstants::DYNAMIC_ENTITY_MEMORY_SIZE);
-					SDL_assert(controller != nullptr);
+					g_assert(targetEntity >= 0 && targetEntity < GamePlay::ComponentContainerConstants::DYNAMIC_ENTITY_MEMORY_SIZE);
+					g_assert(controller != nullptr);
 
 					Sint16 axisLeftX = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX);
 					Sint16 axisLeftY = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY);
@@ -48,7 +54,23 @@ namespace Heroes
 						orientationVector.Normalize();
 						entityMemory.m_targetComponents.SetOrientation_D(targetEntity, orientationVector);
 					}
-					
+					else
+					{
+						orientationVector = entityMemory.m_targetComponents.GetOrientation_D(targetEntity);
+					}
+
+					// set the idle status
+					IdleStatusType idleStatus;
+					if (entityMemory.m_directionComponents.GetMovementPercentage_D(targetEntity) > 0.7 &&
+						abs(acosf((orientationVector.x) * -movementVector.x + (orientationVector.y * -movementVector.y))) < M_PI / 6)
+					{
+						idleStatus = IdleStatusType::MOVING;
+					}
+					else
+					{
+						idleStatus = IdleStatusType::STANDING;
+					}
+					entityMemory.m_statusComponents.SetIdleStatus_D(targetEntity, idleStatus);
 					
 				}
 

@@ -10,29 +10,38 @@ namespace Heroes
 		{	
 			typedef int StaticEntityIDType;
 
-			enum ActionType
+			enum BusyStatusType
 			{
-				NO_ACTION,
-				CLOSE_COMBAT
+				NONE,
+				STUNNED,
+				BASIC_ATTACK,
+				SPECIAL_ATTACK
+
 			};
 
-			enum MovementType
+			enum IdleStatusType
 			{
-				NO_MOVEMENT,
+				STANDING,
 				MOVING
 			};
 
-			enum StatusType
+			enum ActiveStatusType
 			{
 				ALIVE,
-				DEAD
+				DEAD,
+				NA
 			};
 
 			struct DynamicStatusComponent final
 			{
-				ActionType m_action{ ActionType::NO_ACTION }; // whether entity is actively doing something (busy)
-				MovementType m_movement{ MovementType::NO_MOVEMENT };
-				StatusType m_status{ StatusType::DEAD }; // whether entity is dead
+
+
+				BusyStatusType m_busy{ BusyStatusType::NONE }; // whether entity is actively doing something (busy)
+				int m_busyStatusStartTime{ 0 };
+				int m_busyStatusTotalTime{ 0 };
+
+				IdleStatusType m_idle{ IdleStatusType::STANDING };
+				ActiveStatusType m_status{ ActiveStatusType::DEAD }; // whether entity is dead
 				int m_deathTimer{ -1 }; // amount until this entity should be cleaned up
 				StaticEntityIDType m_staticEntityID{ -1 };
 			};
@@ -51,17 +60,19 @@ namespace Heroes
 
 				// DYNAMIC GETTERS AND SETTERS
 
-				int GetAction_D(int entityDynamicID);
+				int GetBusyStatus_D(int entityDynamicID);
 
-				void SetAction_D(int entityDynamicID, ActionType action);
+				int GetBusyStatusStartTime_D(int entityDynamicID);
 
-				int GetMovement_D(int entityDynamicID);
+				int GetBusyStatusTotalTime_D(int entityDynamicID);
 
-				void SetMovement_D(int entityDynamicID, MovementType movement);
+				int GetIdleStatus_D(int entityDynamicID);
 
-				int GetStatus_D(int entityDynamicID);
+				void SetIdleStatus_D(int entityDynamicID, IdleStatusType idleStatus);
 
-				void SetStatus_D(int entityDynamicID, StatusType status);
+				int GetActiveStatus_D(int entityDynamicID);
+
+				void SetActiveStatus_D(int entityDynamicID, ActiveStatusType status);
 
 				int GetDeathTimer_D(int entityDynamicID);
 
@@ -75,7 +86,11 @@ namespace Heroes
 
 				int GetDeathTimer_S(int entityStaticID);
 
-				// UTILITY FUNCTIONS			
+				// UTILITY FUNCTIONS
+
+				void UpdateEntityStatusComponent(int dynamicEntityID);
+
+				bool SetBusyStatus(int entityDynamicID, BusyStatusType busyStatus, int busyStatusTotalTime);
 
 			private:
 

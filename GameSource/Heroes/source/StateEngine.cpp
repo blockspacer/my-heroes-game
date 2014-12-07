@@ -1,6 +1,4 @@
-#include <SDL_assert.h> 
-#include <iostream>
-
+#include "Engine/Log.h" 
 #include "Engine/StateEngine.h"
 
 namespace Heroes
@@ -76,7 +74,7 @@ namespace Heroes
 						}
 
 						// check that sdl resources are cleaned up
-						SDL_assert(m_sdlUtilityTool.GetNumberOfSDLResources() == 0);
+						g_assert(m_sdlUtilityTool.GetNumberOfSDLResources() == 0);
 
 						if (stateCreationPackage.m_createStateFunc.HasStateCreationFunc())
 						{
@@ -86,7 +84,7 @@ namespace Heroes
 						// these should always be true except for endstate
 						if (state != nullptr)
 						{
-							SDL_assert(!state->HasNextState());
+							g_assert(!state->HasNextState());
 						}
 
 						
@@ -109,7 +107,7 @@ namespace Heroes
 				}
 			}
 			
-			SDL_assert(IsInit() == false);
+			g_assert(IsInit() == false);
 			g_Log_Write_L1(LOG_UNINITIALIZATION_EVENT, "Destroyed State Engine");
 
 			return IsInit();

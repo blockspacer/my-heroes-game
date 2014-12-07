@@ -1,5 +1,6 @@
 #pragma once
 
+#include "Engine/Log.h"
 #include "States/GamePlayState/Entities/ActionComponents.h"
 
 namespace Heroes
@@ -13,16 +14,55 @@ namespace Heroes
 
 			// getters and setters				
 
+			bool ActionComponents::GetNormalAttackDamagePoint_D(int entityDynamicID)
+			{
+				CheckDynamicEntityID(entityDynamicID);
+				return m_dynamicComponents[entityDynamicID].m_normalAttackDamagePoint;
+			}
+
+			void ActionComponents::SetNormalAttackDamagePoint_D(int entityDynamicID, bool normalAttackDamagePoint)
+			{
+				CheckDynamicEntityID(entityDynamicID);
+				m_dynamicComponents[entityDynamicID].m_normalAttackDamagePoint = normalAttackDamagePoint;
+			}
+
 			int ActionComponents::GetNormalAttackDamage_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
 				return m_staticComponents[entityStaticID].m_normalAttackDamage;
 			}
 
+			int ActionComponents::GetNormalAttackSpeed_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_normalAttackSpeed;
+			}
+
+			float ActionComponents::GetNormalAttackDamagePoint_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_normalAttackDamagePoint;
+			}
+
 			void ActionComponents::SetNormalAttackDamage_S(int entityStaticID, int normalAttackDamage)
 			{
 				CheckStaticEntityID(entityStaticID);
+				g_assert(normalAttackDamage > 0);
 				m_staticComponents[entityStaticID].m_normalAttackDamage = normalAttackDamage;
+			}
+
+			void ActionComponents::SetNormalAttackSpeed_S(int entityStaticID, int normalAttackSpeed)
+			{
+				CheckStaticEntityID(entityStaticID);
+				g_assert(normalAttackSpeed > 0);
+				m_staticComponents[entityStaticID].m_normalAttackSpeed = normalAttackSpeed;
+			}
+
+			void ActionComponents::SetNormalAttackDamagePoint_S(int entityStaticID, float normalAttackDamagePoint)
+			{
+				CheckStaticEntityID(entityStaticID);
+				g_assert(normalAttackDamagePoint > 0.0f && normalAttackDamagePoint < 1.0f);
+				m_staticComponents[entityStaticID].m_normalAttackDamagePoint = normalAttackDamagePoint;
 			}
 
 		} // namespace GamePlay

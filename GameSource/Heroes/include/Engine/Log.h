@@ -5,7 +5,7 @@
 #define g_DEBUG_LEVEL_TWO 2
 #define g_DEBUG_LEVEL_THREE 3
 
-#define g_DEBUG_LEVEL g_DEBUG_LEVEL_TWO
+#define g_DEBUG_LEVEL g_DEBUG_LEVEL_THREE
 
 // Level 1 Log Events
 #define LOG_CONSTRUCTION_EVENT "ConstructionEvent"
@@ -23,28 +23,32 @@
 #	define g_Log_Write_L1(logEvent, lineText) Engine::Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_ONE, logEvent, __FILE__, __FUNCTION__, __LINE__, lineText)
 #	define g_Log_Write_L2(logEvent, lineText) Engine::Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_TWO, logEvent, __FILE__, __FUNCTION__, __LINE__, lineText)
 #	define g_Log_Write_L3(logEvent, lineText) Engine::Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_THREE, logEvent, __FILE__, __FUNCTION__, __LINE__, lineText)
+#   define g_assert(expression) SDL_assert(expression)
 #elif g_DEBUG_LEVEL == 2
 #	define g_DEBUG_LEVEL_DESCRIPTION "Medium (2)"
 #	define g_Log_Write_L1(logEvent, lineText) Engine::Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_ONE, logEvent, __FILE__, __FUNCTION__, __LINE__, lineText)
 #	define g_Log_Write_L2(logEvent, lineText) Engine::Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_TWO, logEvent, __FILE__, __FUNCTION__, __LINE__, lineText)
 #	define g_Log_Write_L3(logEvent, lineText)
+#   define g_assert(expression) SDL_assert(expression)
 #elif g_DEBUG_LEVEL == 1
 #	define g_DEBUG_LEVEL_DESCRIPTION "Low (1)"
 #	define g_Log_Write_L1(logEvent, lineText) Engine::Log::GetSingletonInstance().WriteLogEntry( g_DEBUG_LEVEL_ONE, logEvent, __FILE__, __FUNCTION__, __LINE__, lineText)
 #	define g_Log_Write_L2(logEvent, lineText)
 #	define g_Log_Write_L3(logEvent, lineText)
+#   define g_assert(expression) SDL_assert(expression)
 #else
 #	define g_DEBUG_LEVEL_DESCRIPTION "None (0)"
 #	define g_Log_Write_L1(logEvent, lineText)
 #	define g_Log_Write_L2(logEvent, lineText)
 #	define g_Log_Write_L3(logEvent, lineText)
+#   define g_assert(expression)
 #endif
 
 
 
 #include <fstream>
 #include <mutex>
-
+#include <SDL_assert.h>
 #include <tinyxml2.h>
 
 namespace Heroes

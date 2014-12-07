@@ -1,5 +1,3 @@
-#include <SDL_assert.h>
-
 #include "Engine/Log.h"
 
 #include "States/MainMenuState/MainMenuState.h"
@@ -35,9 +33,14 @@ namespace Heroes
 
 				m_entityLoader.LoadEntityFile("./Resources/Entities/Warrior.xml", m_entityMemory, m_sdlRenderer);
 
-				EntityDynamicIDType one = m_entityMemory.LoadDynamicWarrior(b2Vec2_zero, b2Vec2_zero);
-				m_entityMemory.LoadDynamicWarrior(b2Vec2(1, 1), b2Vec2_zero);
-				m_entityMemory.LoadDynamicWarrior(b2Vec2(2, 2), b2Vec2_zero);
+				b2Vec2 orientation;
+				orientation.x = 0;
+				orientation.y = 1;
+				EntityDynamicIDType one = m_entityMemory.LoadDynamicWarrior(b2Vec2_zero, orientation);
+				m_entityMemory.LoadDynamicWarrior(b2Vec2(1, 1), orientation);
+				m_entityMemory.LoadDynamicWarrior(b2Vec2(2, 2), orientation);
+				m_entityMemory.LoadDynamicWarrior(b2Vec2(3, 3), orientation);
+				m_entityMemory.LoadDynamicWarrior(b2Vec2(4, 4), orientation);
 
 				m_mainEntityID = m_entityMemory.OverrideMainEntity(one);
 
@@ -52,44 +55,44 @@ namespace Heroes
 			void GamePlayState::Update(uint32_t milliTime)
 			{
 				// test the luaState here
-				LuaStateLoader luaLoader;
-				lua_State* luaState = luaLoader.GetGerneralEntityLuaState(m_entityMemory);
+				//LuaStateLoader luaLoader;
+				//lua_State* luaState = luaLoader.GetGerneralEntityLuaState(m_entityMemory);
 
-				luabind::module(luaState)[
-					luabind::def("printInfo", &printInfo),
-					luabind::def("GetInt", &GetInt)
-				];
+				//luabind::module(luaState)[
+				//	luabind::def("printInfo", &printInfo),
+				//	luabind::def("GetInt", &GetInt)
+				//];
 
-				luabind::object f = luabind::globals(luaState); 
-				SDL_assert(f.is_valid());
-				luabind::object t = f["StatusComponents"];
-				SDL_assert(t.is_valid());
-				try {
-					// Now call our function in a lua script
-					luaL_dostring(
-						luaState,
-						"b = B2Vec2\n"
-						"b.x = 6\n"
-						//"d = Test\n"
-						//"d:SetDeathTimer(5)\n"
-						//"b.x = d.m_staticEntityID\n"
-						"c = StatusComponents:GetDeathTimer_D(0)\n"
-						"printInfo(c)\n"
-						"StatusComponents:SetDeathTimer_D(0, 30)\n"
+				//luabind::object f = luabind::globals(luaState); 
+				//g_assert(f.is_valid());
+				//luabind::object t = f["StatusComponents"];
+				//g_assert(t.is_valid());
+				//try {
+				//	// Now call our function in a lua script
+				//	luaL_dostring(
+				//		luaState,
+				//		"b = B2Vec2\n"
+				//		"b.x = 6\n"
+				//		//"d = Test\n"
+				//		//"d:SetDeathTimer(5)\n"
+				//		//"b.x = d.m_staticEntityID\n"
+				//		"c = StatusComponents:GetDeathTimer_D(0)\n"
+				//		"printInfo(c)\n"
+				//		"StatusComponents:SetDeathTimer_D(0, 30)\n"
 
-						"c = StatusComponents:GetDeathTimer_D(0)\n"
-						//"z = d:GetDeathTimer()\n"
-						//"b.x = c\n"
-						//"b.y = 5.5\n"
-						//"print(4)\n"
-						"printInfo(c)\n"
-						);
-				}
-				catch (const std::exception &TheError) {
-					std::cout << TheError.what() << std::endl;
-				}
+				//		"c = StatusComponents:GetDeathTimer_D(0)\n"
+				//		//"z = d:GetDeathTimer()\n"
+				//		//"b.x = c\n"
+				//		//"b.y = 5.5\n"
+				//		//"print(4)\n"
+				//		"printInfo(c)\n"
+				//		);
+				//}
+				//catch (const std::exception &TheError) {
+				//	std::cout << TheError.what() << std::endl;
+				//}
 
-				std::cout << m_entityMemory.m_statusComponents.GetDeathTimer_S(0) << std::endl;
+				//std::cout << m_entityMemory.m_statusComponents.GetDeathTimer_S(0) << std::endl;
 
 				SDL_Event sdlEvent;
 				if (SDL_WaitEventTimeout(&sdlEvent, 0)) {}
@@ -130,7 +133,7 @@ namespace Heroes
 				// Status
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemsComponents.GetStatusSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
+					m_entityMemory.m_statusComponents.UpdateEntityStatusComponent(entityID);
 				}
 
 				// Health
@@ -142,25 +145,54 @@ namespace Heroes
 				// Target
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemsComponents.GetTargetSystem_D(entityID)(entityID, m_entityMemory, m_controller);
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
+					{
+						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) == BusyStatusType::NONE)
+						{
+							m_entityMemory.m_systemsComponents.GetTargetSystem_D(entityID)(entityID, m_entityMemory, m_controller);
+						}
+						
+					}
 				}
 
 				// Action
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemsComponents.GetActionSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
+					{
+						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) != BusyStatusType::NONE)
+						{
+							m_entityMemory.m_systemsComponents.GetActionSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
+
+							if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) == BusyStatusType::BASIC_ATTACK)
+							{
+								// remove the velocity of entity for basic attacks
+								m_entityMemory.m_physicsComponents.GetEntityBody_D(entityID)->SetLinearVelocity(b2Vec2_zero);
+							}
+						}
+					}
 				}
 
 				// Direction
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemsComponents.GetDirectionSystem_D(entityID)(entityID, m_entityMemory, m_controller);
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
+					{
+						m_entityMemory.m_systemsComponents.GetDirectionSystem_D(entityID)(entityID, m_entityMemory, m_controller);
+					}
 				}
 
 				// Movement
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemsComponents.GetMovementSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
+					{
+						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) == BusyStatusType::NONE)
+						{
+							m_entityMemory.m_systemsComponents.GetMovementSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
+						}
+						
+					}
 				}
 
 				// Render
@@ -209,20 +241,20 @@ namespace Heroes
 				for (auto entityID : entityList)
 				{
 					SDL_RenderCopyEx(m_sdlRenderer, 
-						m_entityMemory.m_renderComponents.GetEntityTexture_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID)),
-						NULL, 
-						m_entityMemory.m_renderComponents.GetDestinationRect_D(entityID), m_entityMemory.m_renderComponents.GetAngle_D(entityID), 
+						m_entityMemory.m_renderComponents.GetAnimationTexture_D(entityID),
+						m_entityMemory.m_renderComponents.GetSourceRect_D(entityID), 
+						m_entityMemory.m_renderComponents.GetDestinationRect_D(entityID), m_entityMemory.m_renderComponents.GetAngle_D(entityID),
 						NULL, 
 						SDL_FLIP_NONE);
 				}
 
-				// render the health bars
+				// render the Status TODO
 				for (auto entityID : entityList)
 				{
 					SDL_RenderCopy(m_sdlRenderer, 
-						m_entityMemory.m_renderComponents.GetHealthBarTexture_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID)),
+						m_entityMemory.m_renderComponents.GetStatusTexture_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID)),
 						NULL, 
-						m_entityMemory.m_renderComponents.GetHealthBarRect_D(entityID));
+						m_entityMemory.m_renderComponents.GetStatusRect_D(entityID));
 				}
 			}
 

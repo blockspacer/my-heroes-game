@@ -1,5 +1,4 @@
-#include <SDL_assert.h>
-
+#include "Engine/Log.h"
 #include "Engine/State.h"
 
 namespace Heroes
@@ -32,7 +31,7 @@ namespace Heroes
 
 		State* StateCreationFunction::CallStateCreationFunction(Engine::SDLUtilityTool& sdlUtilityTool, StateCreationData& stateCreationData)
 		{
-			SDL_assert(HasStateCreationFunc() == true);
+			g_assert(HasStateCreationFunc() == true);
 			return m_createStateFunc(sdlUtilityTool, stateCreationData);
 		}
 
@@ -40,25 +39,25 @@ namespace Heroes
 			m_stateCreatePackage(Engine::CreateEndState, Engine::StateCreationData(Engine::NoStateCreationData, false))
 		{		
 			m_sdlWindow = sdlUtilityTool.CreateWindow("Heroes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1366, 768, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
-			SDL_assert(m_sdlWindow != nullptr);
+			g_assert(m_sdlWindow != nullptr);
 
 			m_sdlRenderer = sdlUtilityTool.CreateRenderer(m_sdlWindow, -1, SDL_RENDERER_ACCELERATED);
-			SDL_assert(m_sdlRenderer != nullptr);
+			g_assert(m_sdlRenderer != nullptr);
 
 			SDL_DisplayMode display;
 			SDL_GetWindowDisplayMode(m_sdlWindow, &display);
 
 			m_sdlSurface = sdlUtilityTool.CreateRGBSurface(0, display.w, display.h, 32);
-			SDL_assert(m_sdlSurface != nullptr);
+			g_assert(m_sdlSurface != nullptr);
 
 			m_sdlTexture = sdlUtilityTool.CreateTextureFromSurface(m_sdlRenderer, m_sdlSurface);
-			SDL_assert(m_sdlTexture != nullptr);
+			g_assert(m_sdlTexture != nullptr);
 
-			SDL_assert(SDL_NumJoysticks() != 0);
+			g_assert(SDL_NumJoysticks() != 0);
 			if (SDL_IsGameController(0)) {
 				m_controller = sdlUtilityTool.GameControllerOpen(0);
 			}
-			SDL_assert(m_controller != nullptr);
+			g_assert(m_controller != nullptr);
 
 			// set the events to be ignored
 			SDL_JoystickEventState(SDL_QUERY);
@@ -88,7 +87,7 @@ namespace Heroes
 
 		StateCreationPackage State::GetNextStateCreationPackage()
 		{
-			SDL_assert(m_nextState == true);
+			g_assert(m_nextState == true);
 			return m_stateCreatePackage;
 		}
 

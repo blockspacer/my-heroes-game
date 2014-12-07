@@ -1,5 +1,3 @@
-#include <SDL_assert.h> 
-#include <iostream>
 
 #include "Engine/Log.h"
 #include "Engine/SDLXbox360Controller.h"
@@ -29,7 +27,7 @@ namespace Heroes
 			{
 				//open the file 
 				TTF_Font* font = m_sdlUtilityTool.CreateFont(FONTS_FILE, FONT_PT_SIZE);
-				SDL_assert(font != nullptr);
+				g_assert(font != nullptr);
 
 				// created normal options
 				SDL_Surface* normalSurface = nullptr;
@@ -41,13 +39,13 @@ namespace Heroes
 				normalColor.a = 255;
 
 				normalSurface = m_sdlUtilityTool.RenderText_Blended(font, START_GAME_TEXT, normalColor);
-				SDL_assert(normalSurface != nullptr);
+				g_assert(normalSurface != nullptr);
 				m_normalOptions[0] = normalSurface;
 				normalSurface = m_sdlUtilityTool.RenderText_Blended(font, LOAD_GAME_TEXT, normalColor);
-				SDL_assert(normalSurface != nullptr);
+				g_assert(normalSurface != nullptr);
 				m_normalOptions[1] = normalSurface;
 				normalSurface = m_sdlUtilityTool.RenderText_Blended(font, QUIT_GAME_TEXT, normalColor);
-				SDL_assert(normalSurface != nullptr);
+				g_assert(normalSurface != nullptr);
 				m_normalOptions[2] = normalSurface;
 
 				SDL_Color highlightedColor;
@@ -57,13 +55,13 @@ namespace Heroes
 				highlightedColor.a = 255;
 
 				normalSurface = m_sdlUtilityTool.RenderText_Blended(font, START_GAME_TEXT, highlightedColor);
-				SDL_assert(normalSurface != nullptr);
+				g_assert(normalSurface != nullptr);
 				m_highlightedOptions[0] = normalSurface;
 				normalSurface = m_sdlUtilityTool.RenderText_Blended(font, LOAD_GAME_TEXT, highlightedColor);
-				SDL_assert(normalSurface != nullptr);
+				g_assert(normalSurface != nullptr);
 				m_highlightedOptions[1] = normalSurface;
 				normalSurface = m_sdlUtilityTool.RenderText_Blended(font, QUIT_GAME_TEXT, highlightedColor);
-				SDL_assert(normalSurface != nullptr);
+				g_assert(normalSurface != nullptr);
 				m_highlightedOptions[2] = normalSurface;
 
 				m_sdlUtilityTool.DestroyFont(font);

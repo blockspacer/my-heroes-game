@@ -1,5 +1,7 @@
 #pragma once
 
+#include  <SDL_timer.h>
+#include "Engine/Log.h"
 #include "States/GamePlayState/Entities/StatusComponents.h"
 
 namespace Heroes
@@ -20,37 +22,31 @@ namespace Heroes
 
 				// STATIC SETTERS
 
-			int StatusComponents::GetAction_D(int entityDynamicID)
+			int StatusComponents::GetBusyStatus_D(int entityDynamicID)
 			{
 				CheckDynamicEntityID(entityDynamicID);
-				return m_dynamicComponents[entityDynamicID].m_action;
+				return m_dynamicComponents[entityDynamicID].m_busy;
 			}
 
-			void StatusComponents::SetAction_D(int entityDynamicID, ActionType action)
+			int StatusComponents::GetIdleStatus_D(int entityDynamicID)
 			{
 				CheckDynamicEntityID(entityDynamicID);
-				m_dynamicComponents[entityDynamicID].m_action = action;
+				return m_dynamicComponents[entityDynamicID].m_idle;
 			}
 
-			int StatusComponents::GetMovement_D(int entityDynamicID)
+			void StatusComponents::SetIdleStatus_D(int entityDynamicID, IdleStatusType idleStatus)
 			{
 				CheckDynamicEntityID(entityDynamicID);
-				return m_dynamicComponents[entityDynamicID].m_movement;
+				m_dynamicComponents[entityDynamicID].m_idle = idleStatus;
 			}
 
-			void StatusComponents::SetMovement_D(int entityDynamicID, MovementType movement)
-			{
-				CheckDynamicEntityID(entityDynamicID);
-				m_dynamicComponents[entityDynamicID].m_movement = movement;
-			}
-
-			int StatusComponents::GetStatus_D(int entityDynamicID)
+			int StatusComponents::GetActiveStatus_D(int entityDynamicID)
 			{
 				CheckDynamicEntityID(entityDynamicID);
 				return m_dynamicComponents[entityDynamicID].m_status;
 			}
 
-			void StatusComponents::SetStatus_D(int entityDynamicID, StatusType status)
+			void StatusComponents::SetActiveStatus_D(int entityDynamicID, ActiveStatusType status)
 			{
 				CheckDynamicEntityID(entityDynamicID);
 				m_dynamicComponents[entityDynamicID].m_status = status;
@@ -90,6 +86,47 @@ namespace Heroes
 			{
 				CheckStaticEntityID(entityStaticID);
 				m_staticComponents[entityStaticID].m_deathTimer = deathTimer;
+			}
+
+			int StatusComponents::GetBusyStatusStartTime_D(int entityDynamicID)
+			{
+				CheckDynamicEntityID(entityDynamicID);
+				return m_dynamicComponents[entityDynamicID].m_busyStatusStartTime;
+			}
+
+			int StatusComponents::GetBusyStatusTotalTime_D(int entityDynamicID)
+			{
+				CheckDynamicEntityID(entityDynamicID);
+				return m_dynamicComponents[entityDynamicID].m_busyStatusTotalTime;
+			}
+
+			void StatusComponents::UpdateEntityStatusComponent(int dynamicEntityID)
+			{
+				CheckDynamicEntityID(dynamicEntityID);
+				if (m_dynamicComponents[dynamicEntityID].m_busy != BusyStatusType::NONE)
+				{
+					int currentTime = SDL_GetTicks();
+					if (m_dynamicComponents[dynamicEntityID].m_busyStatusStartTime + m_dynamicComponents[dynamicEntityID].m_busyStatusTotalTime < currentTime)
+					{
+						m_dynamicComponents[dynamicEntityID].m_busy = BusyStatusType::NONE;
+					}
+				}
+			}
+
+			bool StatusComponents::SetBusyStatus(int entityDynamicID, BusyStatusType busyStatus, int busyStatusTotalTime)
+			{
+				g_assert(busyStatusTotalTime > 0);
+				CheckDynamicEntityID(entityDynamicID);
+				if (m_dynamicComponents[entityDynamicID].m_busy != BusyStatusType::NONE)
+				{
+					return false;
+				}
+				else
+				{
+					m_dynamicComponents[entityDynamicID].m_busy = busyStatus;
+					m_dynamicComponents[entityDynamicID].m_busyStatusTotalTime = busyStatusTotalTime;
+					m_dynamicComponents[entityDynamicID].m_busyStatusStartTime = SDL_GetTicks();
+				}
 			}
 
 		} // namespace GamePlay

@@ -20,7 +20,7 @@ namespace Heroes
 
 			TileMap::~TileMap()
 			{
-				SDL_assert(m_initialized);
+				g_assert(m_initialized);
 
 				CleanUp();
 			}
@@ -32,8 +32,8 @@ namespace Heroes
 			*/
 			void TileMap::Load(const char* tileMapFile, SDL_Window* window, SDL_Renderer* renderer)
 			{
-				SDL_assert(tileMapFile != nullptr);
-				SDL_assert(window != nullptr);
+				g_assert(tileMapFile != nullptr);
+				g_assert(window != nullptr);
 
 				// if a tile map has already been intialized clean it up
 				if (m_initialized)
@@ -43,19 +43,19 @@ namespace Heroes
 
 				// open file
 				std::ifstream in(tileMapFile, std::ifstream::in);
-				SDL_assert(in.is_open());
+				g_assert(in.is_open());
 
 				// read tile width
-				SDL_assert(in >> m_worldTileWidth);
-				SDL_assert(m_worldTileWidth >= TileMapConstants::MIN_WORLD_TILE_SIZE);
+				g_assert(in >> m_worldTileWidth);
+				g_assert(m_worldTileWidth >= TileMapConstants::MIN_WORLD_TILE_SIZE);
 
 				// read tile height
-				SDL_assert(in >> m_worldTileHeight);
-				SDL_assert(m_worldTileHeight >= TileMapConstants::MIN_WORLD_TILE_SIZE);
+				g_assert(in >> m_worldTileHeight);
+				g_assert(m_worldTileHeight >= TileMapConstants::MIN_WORLD_TILE_SIZE);
 
 				int numberOfTileTextures = 0;
-				SDL_assert(in >> numberOfTileTextures);
-				SDL_assert(numberOfTileTextures > 0);
+				g_assert(in >> numberOfTileTextures);
+				g_assert(numberOfTileTextures > 0);
 
 				// array for tile file names
 				char tileFile[64];
@@ -72,11 +72,11 @@ namespace Heroes
 				for (int i = 0; i < numberOfTileTextures; i++)
 				{
 					in.getline(tileFile, TileMapConstants::MAX_TILE_TEXTURE_FILE_SIZE);
-					SDL_assert(in.fail() == false);
+					g_assert(in.fail() == false);
 
 					// Create the surface cache
 					SDL_Texture* testTexture = m_sdlUtilityTool.LoadImageTexture(tileFile, renderer);
-					SDL_assert(testTexture != nullptr);
+					g_assert(testTexture != nullptr);
 					m_textureCache.push_back(testTexture);
 
 					// check that all tile dimensions agree for each i and i + 1
@@ -84,8 +84,8 @@ namespace Heroes
 					{
 						SDL_QueryTexture(m_textureCache[i - 1], NULL, NULL, &tilew1, &tileh1);
 						SDL_QueryTexture(m_textureCache[i], NULL, NULL, &tilew2, &tileh2);
-						SDL_assert(tilew1 == tileh1 && tilew2 == tileh2);
-						SDL_assert(tilew1 == tilew2);
+						g_assert(tilew1 == tileh1 && tilew2 == tileh2);
+						g_assert(tilew1 == tilew2);
 						
 					}
 
@@ -104,8 +104,8 @@ namespace Heroes
 				for (int i = 0; i < m_worldTileWidth * m_worldTileHeight; i++)
 				{
 					m_textureMap.push_back(TileInfoType());
-					SDL_assert(in >> m_textureMap[i].m_surface);
-					SDL_assert(m_textureMap[i].m_surface >= 0);
+					g_assert(in >> m_textureMap[i].m_surface);
+					g_assert(m_textureMap[i].m_surface >= 0);
 					m_textureMap[i].m_x = (i % m_worldTileWidth) * m_tileDimension;
 					m_textureMap[i].m_y = (i / m_worldTileWidth) * m_tileDimension;
 				}
@@ -125,11 +125,11 @@ namespace Heroes
 
 			void TileMap::CleanUp()
 			{
-				SDL_assert(m_initialized);
+				g_assert(m_initialized);
 
 				for (int i = 0; i < static_cast<int>(m_textureCache.size()); i++)
 				{
-					SDL_assert(m_textureCache[i] != nullptr);
+					g_assert(m_textureCache[i] != nullptr);
 					m_sdlUtilityTool.DestroyTexture(m_textureCache[i]);
 					m_textureCache[i] = nullptr;
 				}
@@ -140,9 +140,9 @@ namespace Heroes
 
 			void TileMap::Render(b2Vec2& simulationPoint, SDL_Renderer* renderer)
 			{
-				SDL_assert(m_initialized);
-				SDL_assert(m_tileDimension != 0);
-				SDL_assert(renderer != nullptr);
+				g_assert(m_initialized);
+				g_assert(m_tileDimension != 0);
+				g_assert(renderer != nullptr);
 
 				// first calculate the corner of the screen in world pixel coordinates
 				// from the center of the camera in simulation coordinates
