@@ -14,12 +14,12 @@ namespace Heroes
 
 				void MainEntityTargetSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller)
 				{
-					Uint8 buttonA = SDL_GameControllerGetButton(controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);
+					Uint8 buttonA = SDL_GameControllerGetButton(controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER);
 
 					if (buttonA)
 					{
 						// set basic attack 1.5 secs
-						entityMemory.m_statusComponents.SetBusyStatus(targetEntity, BusyStatusType::BASIC_ATTACK, 750);
+						entityMemory.m_statusComponents.SetBusyStatus(targetEntity, BusyStatusType::BASIC_ATTACK, entityMemory.m_actionComponents.GetNormalAttackSpeed_S(entityMemory.m_statusComponents.GetStaticEntityID_D(targetEntity)) * 100);
 					}
 				}
 

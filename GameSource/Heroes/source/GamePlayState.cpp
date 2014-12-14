@@ -31,16 +31,31 @@ namespace Heroes
 
 				m_tileMap.Load("./Resources/Levels/Maps/TestMap.map", m_sdlWindow, m_sdlRenderer);
 
-				m_entityLoader.LoadEntityFile("./Resources/Entities/Warrior.xml", m_entityMemory, m_sdlRenderer);
+				std::string warrior = m_entityLoader.LoadEntityFile("./Resources/Entities/Warrior.xml", m_entityMemory, m_sdlRenderer);
+				std::string testEntity = m_entityLoader.LoadEntityFile("./Resources/Entities/TestEntity.xml", m_entityMemory, m_sdlRenderer);
+				std::string rock = m_entityLoader.LoadEntityFile("./Resources/Entities/Rock.xml", m_entityMemory, m_sdlRenderer);
 
-				b2Vec2 orientation;
-				orientation.x = 0;
-				orientation.y = 1;
-				EntityDynamicIDType one = m_entityMemory.LoadDynamicWarrior(b2Vec2_zero, orientation);
-				m_entityMemory.LoadDynamicWarrior(b2Vec2(1, 1), orientation);
-				m_entityMemory.LoadDynamicWarrior(b2Vec2(2, 2), orientation);
-				m_entityMemory.LoadDynamicWarrior(b2Vec2(3, 3), orientation);
-				m_entityMemory.LoadDynamicWarrior(b2Vec2(4, 4), orientation);
+				b2Vec2 warriorOrientation;
+				warriorOrientation.x = -1;
+				warriorOrientation.y = 0;
+				EntityDynamicIDType one = m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(7, 7), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 5), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 7), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 9), warriorOrientation, m_entityMemory);
+
+				b2Vec2 testEntityOrientation;
+				testEntityOrientation.x = 1;
+				testEntityOrientation.y = 0;
+
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(11, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 5), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 9), testEntityOrientation, m_entityMemory);
+
+
+				m_entityLoader.LoadDynamicEntity(rock, b2Vec2(9, 4), b2Vec2_zero, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(rock, b2Vec2(10, 11), b2Vec2_zero, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(rock, b2Vec2(6, 6), b2Vec2_zero, m_entityMemory);
 
 				m_mainEntityID = m_entityMemory.OverrideMainEntity(one);
 

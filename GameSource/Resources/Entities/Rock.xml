@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
-<!--Warrior Entity xml file-->
+<!--TestEntity Entity xml file-->
 <Entity>
     <SystemsComponent></SystemsComponent>
     <StatusComponent>
-        <Name>Warrior</Name>
+        <Name>Rock</Name>
         <DeathTimer>10</DeathTimer>
     </StatusComponent>
     <HealthComponent>
@@ -22,18 +22,18 @@
         <MovementSpeed>10</MovementSpeed>
     </MovementComponent>
     <PhysicsComponent>
-        <EntityType>AllyBody</EntityType>
-        <BodyType>2</BodyType>
+        <EntityType>EnvironmentBody</EntityType>
+        <BodyType>0</BodyType>
     </PhysicsComponent>
     <RenderComponent>
         <StatusTexture>./Resources/Textures/HealthBar.png</StatusTexture>
-        <StandingAnimation>./Resources/Textures/WarriorStandingAnimation.png</StandingAnimation>
-        <StandingAnimationFrames>12</StandingAnimationFrames>
-        <StandingAnimationTime>750</StandingAnimationTime>
-        <MovingAnimation>./Resources/Textures/WarriorMovingAnimation.png</MovingAnimation>
-        <MovingAnimationFrames>12</MovingAnimationFrames>
-        <MovingAnimationTime>750</MovingAnimationTime>
-        <BasicAttackingAnimation>./Resources/Textures/WarriorBasicAttackAnimation.png</BasicAttackingAnimation>
-        <BasicAttackingAnimationFrames>24</BasicAttackingAnimationFrames>
+        <StandingAnimation>./Resources/Textures/Rock.png</StandingAnimation>
+        <StandingAnimationFrames>1</StandingAnimationFrames>
+        <StandingAnimationTime>1000</StandingAnimationTime>
+        <MovingAnimation>./Resources/Textures/Rock.png</MovingAnimation>
+        <MovingAnimationFrames>1</MovingAnimationFrames>
+        <MovingAnimationTime>1000</MovingAnimationTime>
+        <BasicAttackingAnimation>./Resources/Textures/Rock.png</BasicAttackingAnimation>
+        <BasicAttackingAnimationFrames>1</BasicAttackingAnimationFrames>
     </RenderComponent>
 </Entity>

@@ -47,44 +47,6 @@ namespace Heroes
 				m_dynamicComponents[entityDynamicID].m_angle = angle;
 			}
 
-
-
-			int RenderComponents::GetTextureWidth_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_textureWidth;
-			}
-
-			void RenderComponents::SetTextureWidth_S(int entityStaticID, int textureWidth)
-			{
-				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_textureWidth = textureWidth;
-			}
-
-			int RenderComponents::GetTextureHeight_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_textureHeight;
-			}
-
-			void RenderComponents::SetTextureHeight_S(int entityStaticID, int textureHeight)
-			{
-				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_textureHeight = textureHeight;
-			}
-
-			SDL_Texture* RenderComponents::GetEntityTexture_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_entityTexture;
-			}
-
-			void RenderComponents::SetEntityTexture_S(int entityStaticID, SDL_Texture* entityTexture)
-			{
-				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_entityTexture = entityTexture;
-			}
-
 			SDL_Texture* RenderComponents::GetStatusTexture_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
@@ -108,27 +70,6 @@ namespace Heroes
 				b2Vec2 cameraLocation = camera.GetSimCenter();
 				b2Vec2 entitylocation = m_entityMemory.m_physicsComponents.GetEntityBody_D(dynamicEntityID)->GetPosition();
 				b2Vec2 entityOrientation = m_entityMemory.m_targetComponents.GetOrientation_D(dynamicEntityID);
-
-				// 2) Determine the Destination Rectangle
-
-				SDL_Rect dst;
-
-				// determine pixel location from simulation world
-				dst.x = Meter2Pixel(entitylocation.x) - m_entityMemory.m_renderComponents.GetStandingTextureSize_S(staticID) / 2;
-				dst.y = Meter2Pixel(entitylocation.y) - m_entityMemory.m_renderComponents.GetStandingTextureSize_S(staticID) / 2;
-
-				// make relative to the main entities location
-
-				dst.x = dst.x - static_cast<int>(cameraLocation.x * PIXEL_TO_METER) + displayMode.w / 2;
-				dst.y = dst.y - static_cast<int>(cameraLocation.y * PIXEL_TO_METER) + displayMode.h / 2;
-
-				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->x = dst.x;
-				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->y = dst.y;
-
-				// set the orientation of animation
-				m_entityMemory.m_renderComponents.SetAngle_D(dynamicEntityID, (atan2(entityOrientation.y, entityOrientation.x)) * (180.0f / static_cast<float>(M_PI)) - 90.0f);
-
-				// 3) Determine the Source Rectangle and Animation
 
 				// determine the static data
 
@@ -156,6 +97,7 @@ namespace Heroes
 							staticAnimationTimeMilli = m_staticComponents[staticID].m_movingAnimationTimeMilli;
 							staticAnimationFrameSize = m_staticComponents[staticID].m_movingFrameSize;
 							animationTexture = m_staticComponents[staticID].m_movingFramesTexture;
+	
 						}
 					}
 					else
@@ -166,7 +108,7 @@ namespace Heroes
 						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(dynamicEntityID) == BusyStatusType::BASIC_ATTACK)
 						{
 							staticFrames = m_staticComponents[staticID].m_basicAttackFrames;
-							staticAnimationTimeMilli = m_staticComponents[staticID].m_basicAttackAnimationTimeMilli;
+							staticAnimationTimeMilli = m_entityMemory.m_actionComponents.GetNormalAttackSpeed_S(staticID) * 100;
 							staticAnimationFrameSize = m_staticComponents[staticID].m_basicAttackFrameSize;
 							animationTexture = m_staticComponents[staticID].m_basicAttackFramesTexture;
 						}
@@ -181,6 +123,29 @@ namespace Heroes
 				g_assert(staticAnimationTimeMilli > 0);
 				g_assert(staticAnimationFrameSize > 0);
 				g_assert(animationTexture != nullptr);
+
+				// 2) Determine the Destination Rectangle
+
+				SDL_Rect dst;
+
+				// determine pixel location from simulation world
+				dst.x = Meter2Pixel(entitylocation.x) - staticAnimationFrameSize / 2;
+				dst.y = Meter2Pixel(entitylocation.y) - staticAnimationFrameSize / 2;
+
+				// make relative to the main entities location
+
+				dst.x = dst.x - static_cast<int>(cameraLocation.x * PIXEL_TO_METER) + displayMode.w / 2;
+				dst.y = dst.y - static_cast<int>(cameraLocation.y * PIXEL_TO_METER) + displayMode.h / 2;
+
+				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->w = staticAnimationFrameSize;
+				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->h = staticAnimationFrameSize;
+				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->x = dst.x;
+				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->y = dst.y;
+
+				// set the orientation of animation
+				m_entityMemory.m_renderComponents.SetAngle_D(dynamicEntityID, (atan2(entityOrientation.y, entityOrientation.x)) * (180.0f / static_cast<float>(M_PI)) - 90.0f);
+
+				// 3) Determine the Source Rectangle and Animation
 
 				// animation stuff
 				int currentTime = SDL_GetTicks();
@@ -215,7 +180,10 @@ namespace Heroes
 
 				// frame is not necessary but is helpful for understanding
 				m_dynamicComponents[dynamicEntityID].m_frame = ((currentTime - m_dynamicComponents[dynamicEntityID].m_animationTimeMilli) * staticFrames / staticAnimationTimeMilli);
+				m_dynamicComponents[dynamicEntityID].m_srcRect.w = staticAnimationFrameSize;
+				m_dynamicComponents[dynamicEntityID].m_srcRect.h = staticAnimationFrameSize;
 				m_dynamicComponents[dynamicEntityID].m_srcRect.x = m_dynamicComponents[dynamicEntityID].m_frame * (staticAnimationFrameSize);
+				m_dynamicComponents[dynamicEntityID].m_srcRect.y = 0;
 				m_dynamicComponents[dynamicEntityID].m_animationTexture = animationTexture;
 
 				// 4) Determine the Status Rectangle
@@ -366,12 +334,6 @@ namespace Heroes
 				return m_staticComponents[entityStaticID].m_basicAttackFrames;
 			}
 
-			int RenderComponents::GetBasicAttackAnimationTimeMilli_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_basicAttackAnimationTimeMilli;
-			}
-
 			SDL_Texture* RenderComponents::GetBasicAttackFramesTexture_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
@@ -388,12 +350,6 @@ namespace Heroes
 			{
 				CheckStaticEntityID(entityStaticID);
 				m_staticComponents[entityStaticID].m_basicAttackFrames = basicAttackFrames;
-			}
-
-			void RenderComponents::SetBasicAttackAnimationTimeMilli_S(int entityStaticID, int basicAttackAnimationTimeMilli)
-			{
-				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_basicAttackAnimationTimeMilli = basicAttackAnimationTimeMilli;
 			}
 
 			void RenderComponents::SetBasicAttackFramesTexture_S(int entityStaticID, SDL_Texture* basicAttackFramesTextures)

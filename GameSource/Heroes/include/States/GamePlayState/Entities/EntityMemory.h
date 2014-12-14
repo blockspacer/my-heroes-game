@@ -4,6 +4,7 @@
 #include <vector>
 #include <map> // future find better implementation
 #include <array>
+#include <mutex>
 
 #include <tinyxml2.h>
 
@@ -62,8 +63,6 @@ namespace Heroes
 
 				EntityDynamicIDType OverrideMainEntity(EntityDynamicIDType entityID);
 
-				EntityDynamicIDType LoadDynamicWarrior(b2Vec2 position, b2Vec2 orientation);
-
 				// Releases the entities specified in the list
 				void ReleaseEntites(std::list<EntityDynamicIDType>& entityIDs);
 
@@ -75,6 +74,8 @@ namespace Heroes
 				//int GetWindowWidth();
 				//int GetWindowHeight();
 				int GetMainEntityDynamicID();
+
+				int GetStaticID();
 
 				SystemsComponents m_systemsComponents{ *this };
 				StatusComponents m_statusComponents{ *this };
@@ -95,6 +96,8 @@ namespace Heroes
 				int m_windowHeight{ 0 };
 				int m_mainEntityDynamicID{ -1 };
 				int m_freeStaticEntityID{ 0 };
+
+				std::mutex m_lock; // for static IDs
 
 				b2World m_entityWorld{ b2Vec2_zero };
 

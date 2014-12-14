@@ -88,6 +88,20 @@ namespace Heroes
 				m_staticComponents[entityStaticID].m_deathTimer = deathTimer;
 			}
 
+
+
+			std::string StatusComponents::GetName_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_name;
+			}
+
+			void StatusComponents::SetName_S(int entityStaticID, std::string name)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_name = name;
+			}
+
 			int StatusComponents::GetBusyStatusStartTime_D(int entityDynamicID)
 			{
 				CheckDynamicEntityID(entityDynamicID);
@@ -127,6 +141,8 @@ namespace Heroes
 					m_dynamicComponents[entityDynamicID].m_busyStatusTotalTime = busyStatusTotalTime;
 					m_dynamicComponents[entityDynamicID].m_busyStatusStartTime = SDL_GetTicks();
 				}
+
+				return true;
 			}
 
 		} // namespace GamePlay

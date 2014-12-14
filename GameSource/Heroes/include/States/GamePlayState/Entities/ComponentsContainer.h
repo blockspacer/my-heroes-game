@@ -11,7 +11,7 @@ namespace Heroes
 			enum ComponentContainerConstants
 			{
 				DYNAMIC_ENTITY_MEMORY_SIZE = 1000,
-				STATIC_ENTITY_MEMORY_SIZE = 1
+				STATIC_ENTITY_MEMORY_SIZE = 50
 			};
 
 			void CheckDynamicEntityID(int entityDynamicID);

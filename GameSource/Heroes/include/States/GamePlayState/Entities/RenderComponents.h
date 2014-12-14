@@ -25,6 +25,7 @@ namespace Heroes
 				int m_frame{ 0 };
 				int m_animationTimeMilli{ 0 };
 				SDL_Texture* m_animationTexture{ nullptr };
+
 				float m_angle{ -1.0f }; // direction of texture
 
 				bool m_busyStartAnimation{ true };
@@ -47,15 +48,8 @@ namespace Heroes
 
 				int m_basicAttackFrameSize{ 0 };
 				int m_basicAttackFrames{ 0 };
-				int m_basicAttackAnimationTimeMilli{ 0 };
 				SDL_Texture* m_basicAttackFramesTexture{ nullptr };
 
-
-				// old texture stuff
-				int m_textureWidth{ 0 };
-				int m_textureHeight{ 0 };
-
-				SDL_Texture* m_entityTexture{ nullptr }; // not an animation surface
 				SDL_Texture* m_statusTexture{ nullptr };
 			};
 
@@ -88,12 +82,6 @@ namespace Heroes
 
 				// STATIC GETTERS
 
-				int GetTextureWidth_S(int entityStaticID);
-
-				int GetTextureHeight_S(int entityStaticID);
-
-				SDL_Texture* GetEntityTexture_S(int entityStaticID);
-
 				SDL_Texture* GetStatusTexture_S(int entityStaticID);
 
 				// new animation functions
@@ -110,7 +98,6 @@ namespace Heroes
 
 				int GetBasicAttackTextureSize_S(int entityStaticID);
 				int GetBasicAttackFrames_S(int entityStaticID);
-				int GetBasicAttackAnimationTimeMilli_S(int entityStaticID);
 				SDL_Texture* GetBasicAttackFramesTexture_S(int entityStaticID);
 
 				// UTILITY FUNCTIONS
@@ -122,12 +109,6 @@ namespace Heroes
 				friend class EntityLoader;
 
 				// STATIC SETTERS
-
-				void SetTextureWidth_S(int entityStaticID, int textureWidth);
-
-				void SetTextureHeight_S(int entityStaticID, int textureHeight);
-
-				void SetEntityTexture_S(int entityStaticID, SDL_Texture* entityTexture);
 
 				void SetStatusTexture_S(int entityStaticID, SDL_Texture* statusTexture);
 
@@ -145,7 +126,6 @@ namespace Heroes
 
 				void SetBasicAttackTextureSize_S(int entityStaticID, int basicAttackTextureSize);
 				void SetBasicAttackFrames_S(int entityStaticID, int basicAttackFrames);
-				void SetBasicAttackAnimationTimeMilli_S(int entityStaticID, int basicAttackAnimationTimeMilli);
 				void SetBasicAttackFramesTexture_S(int entityStaticID, SDL_Texture* basicAttackFramesTextures);
 			};
 

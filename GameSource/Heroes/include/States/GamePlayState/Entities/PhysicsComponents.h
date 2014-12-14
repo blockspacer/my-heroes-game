@@ -3,6 +3,7 @@
 #include <list>
 #include <Box2D/Dynamics/b2Body.h>
 
+#include "States/GamePlayState/Entities/EntityComponentConstants.h"
 #include "States/GamePlayState/Entities/ComponentsContainer.h"
 
 namespace Heroes
@@ -19,6 +20,9 @@ namespace Heroes
 
 			struct StaticPhysicsComponent final
 			{
+				EntityCollisionMasks m_collisionMask{ ENVIRONMENT_BODY };
+				EntityCollisionCategories m_collisionCategory{ ENVIRONMENT_BODY_COL };
+				b2BodyType m_bodyType{ b2_staticBody };
 			};
 
 			class PhysicsComponents : public ComponentsContainer<DynamicPhysicsComponent, StaticPhysicsComponent>
@@ -38,6 +42,12 @@ namespace Heroes
 
 				// STATIC GETTERS
 
+				int GetBodyType_S(int entityStaticID);
+
+				int GetCollisionMask_S(int entityStaticID);
+
+				int GetCollisionCategory_S(int entityStaticID);
+
 				// UTILITY FUNCTIONS			
 
 			private:
@@ -46,6 +56,11 @@ namespace Heroes
 
 				// STATIC SETTERS				
 				
+				void SetBodyType_S(int entityStaticID, b2BodyType bodyType);
+
+				void SetCollisionMask_S(int entityStaticID, EntityCollisionMasks collisionMask);
+
+				void SetCollisionCategory_S(int entityStaticID, EntityCollisionCategories collisionCategory);
 			};
 		} // namespace GamePlay
 	} // namespace States

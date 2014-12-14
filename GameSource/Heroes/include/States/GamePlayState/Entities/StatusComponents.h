@@ -48,6 +48,7 @@ namespace Heroes
 
 			struct StaticStatusComponent final
 			{
+				std::string m_name{ "" };
 				int m_deathTimer{ -1 }; // max death count down
 			};
 
@@ -86,6 +87,8 @@ namespace Heroes
 
 				int GetDeathTimer_S(int entityStaticID);
 
+				std::string GetName_S(int entityStaticID);
+
 				// UTILITY FUNCTIONS
 
 				void UpdateEntityStatusComponent(int dynamicEntityID);
@@ -99,6 +102,8 @@ namespace Heroes
 				// STATIC SETTERS
 
 				void SetDeathTimer_S(int entityStaticID, int deathTimer);
+
+				void SetName_S(int entityStaticID, std::string name);
 			};
 
 		} // namespace GamePlay

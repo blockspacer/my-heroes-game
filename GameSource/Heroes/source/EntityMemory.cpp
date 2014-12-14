@@ -41,86 +41,12 @@ namespace Heroes
 					// manually delete entity texture
 					for (int i = 0; i < m_freeStaticEntityID; i++)
 					{
-						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetEntityTexture_S(i));
+						//m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetEntityTexture_S(i));
 						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetStatusTexture_S(i));
 						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetStandingFramesTexture_S(i));
 						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetMovingFramesTexture_S(i));
 						m_sdlUtilityTool.DestroyTexture(m_renderComponents.GetBasicAttackFramesTexture_S(i));
 					}
-				}
-
-				EntityDynamicIDType EntityMemory::LoadDynamicWarrior(b2Vec2 position, b2Vec2 orientation)
-				{
-					EntityStaticIDType staticWarriorID = m_staticEntityMap["Warrior"];
-
-					EntityDynamicIDType id = m_freeEntities.front();
-					
-
-					// manually load the player controlled entity
-
-					m_systemsComponents.SetTargetSystem_D(id, m_systemsComponents.GetTargetSystem_S(staticWarriorID));
-					m_systemsComponents.SetDirectionSystem_D(id, m_systemsComponents.GetDirectionSystem_S(staticWarriorID));
-
-					m_statusComponents.SetStaticEntityID_D(id, staticWarriorID); // warrior is the only static entity
-					m_statusComponents.SetActiveStatus_D(id, ActiveStatusType::ALIVE);
-					m_statusComponents.SetIdleStatus_D(id, IdleStatusType::STANDING);
-					m_statusComponents.SetDeathTimer_D(id, m_statusComponents.GetDeathTimer_S(staticWarriorID));
-
-					m_healthComponents.SetNormalHealth_D(id, m_healthComponents.GetNormalHealth_S(staticWarriorID) / 2);
-					m_healthComponents.SetDirectDamage_D(id, 0);
-					m_healthComponents.SetDirectDamageSource_D(id, -1);
-
-					// TODO
-					// m_physicsComponents
-					b2BodyDef def;
-					b2FixtureDef fixDef;
-					def.type = b2_dynamicBody;
-					def.position = position; // center
-					def.angle = 0;
-					def.fixedRotation = true;
-					m_physicsComponents.SetEntityBody_D(id, m_entityWorld.CreateBody(&def));
-					m_physicsComponents.GetEntityBody_D(id)->SetUserData((void*)id);
-					std::cout << m_physicsComponents.GetEntityBody_D(id)->GetUserData() << std::endl;
-					b2CircleShape* shape = new b2CircleShape;
-					shape->m_radius = 0.5;
-					shape->m_p = b2Vec2(0, 0.25);
-					m_physicsComponents.GetEntityShapes_D(id)->push_back(shape);
-					fixDef.shape = shape;
-					fixDef.density = 1;
-					fixDef.friction = 1;
-					fixDef.isSensor = false;
-					fixDef.filter.categoryBits = EntityCollisionMasks::ALLY_BODY;
-					fixDef.filter.maskBits = EntityCollisionCategories::ALLY_BODY_COL;
-					m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&fixDef);
-					// m_targetComponents
-					// m_actionComponents
-					// m_directionComponents
-					m_directionComponents.SetDirection_D(id, orientation);
-					m_targetComponents.SetOrientation_D(id, orientation);
-					// m_movementComponents
-					// m_renderComponents
-
-					
-					m_renderComponents.GetDestinationRect_D(id)->w = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
-					m_renderComponents.GetDestinationRect_D(id)->h = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
-					m_renderComponents.GetDestinationRect_D(id)->x = -32;
-					m_renderComponents.GetDestinationRect_D(id)->y = -32;
-					m_renderComponents.GetStatusRect_D(id)->h = 8;
-					m_renderComponents.GetStatusRect_D(id)->w = m_renderComponents.GetTextureWidth_S(staticWarriorID);
-					m_renderComponents.SetAngle_D(id, 0.0f);
-
-					// animation stuff
-					m_renderComponents.GetSourceRect_D(id)->w = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
-					m_renderComponents.GetSourceRect_D(id)->h = m_renderComponents.GetStandingTextureSize_S(staticWarriorID);
-					m_renderComponents.GetSourceRect_D(id)->x = 0;
-					m_renderComponents.GetSourceRect_D(id)->y = 0;
-					m_renderComponents.SetAnimationTimeMilli_D(id, SDL_GetTicks());
-					m_renderComponents.SetFrame_D(id, 0);
-
-					m_freeEntities.pop_front();
-					m_usedEntities.push_back(id);
-
-					return id;
 				}
 
 				EntityDynamicIDType EntityMemory::OverrideMainEntity(EntityDynamicIDType entityID)
@@ -161,6 +87,15 @@ namespace Heroes
 				{
 					g_assert(m_mainEntityDynamicID >= 0);
 					return m_mainEntityDynamicID;
+				}
+
+				int EntityMemory::GetStaticID()
+				{
+					std::lock_guard<std::mutex> lock(m_lock);
+
+					int id = m_freeStaticEntityID++;
+
+					return id;
 				}
 					
 		} // namespace GamePlay

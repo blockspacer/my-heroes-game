@@ -4,6 +4,7 @@
 #include <vector>
 #include <map> // future find better implementation
 
+
 #include <tinyxml2.h>
 
 #include "Engine/SDLUtilityTool.h"
@@ -24,9 +25,22 @@ namespace Heroes
 				~EntityLoader();
 
 				// Loads a single entity returning its id
-				void LoadEntityFile(const char* entityFile, EntityMemory& entityMemory, SDL_Renderer* renderer);
+				std::string LoadEntityFile(const char* entityFile, EntityMemory& entityMemory, SDL_Renderer* renderer);
+				int LoadDynamicEntity(std::string staticName, b2Vec2 position, b2Vec2 orientation, EntityMemory& entityMemory);
 
 			private:
+
+				// These functions recieve the first element in the respective category
+				// * not the element of that category
+				bool LoadSystemsComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadStatusComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadHealthComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadTargetComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadActionComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadDirectionComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadMovementComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadPhysicsComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadRenderComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory, SDL_Renderer* renderer);
 
 				Engine::SDLUtilityTool& m_sdlUtilityTool;
 
