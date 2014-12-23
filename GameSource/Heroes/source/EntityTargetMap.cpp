@@ -175,7 +175,14 @@ namespace Heroes
 								insertionPoint->m_before = newEntry;
 							}
 
+							
 						}
+
+						newEntry->m_fixtures = 1;
+					}
+					else if (newEntry->m_dynamicID == target)
+					{
+						newEntry->m_fixtures++;
 					}
 				}
 			}
@@ -193,16 +200,22 @@ namespace Heroes
 
 				if (entry->m_dynamicID != -1)
 				{
-					m_numberOfTargets--;
-					// target is first and last
-					RemoveEntryFromInternalList(entry);
+					if (entry->m_fixtures == 1)
+					{
+						m_numberOfTargets--;
+						// target is first and last
+						RemoveEntryFromInternalList(entry);
 
-					// cleanup entry
-					entry->m_dynamicID = -1;
-					entry->m_before = nullptr;
-					entry->m_after = nullptr;
+						// cleanup entry
+						entry->m_dynamicID = -1;
+						entry->m_before = nullptr;
+						entry->m_after = nullptr;
+					}
+					else
+					{
+						entry->m_fixtures--;
+					}	
 				}
-
 			}
 
 			int EntityTargetMap::GetNumberOfTargets()

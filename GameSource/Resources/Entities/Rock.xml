@@ -4,6 +4,7 @@
     <SystemsComponent></SystemsComponent>
     <StatusComponent>
         <Name>Rock</Name>
+        <Type>NA</Type>
     </StatusComponent>
     <HealthComponent>
         <HealthNormal>100</HealthNormal>

@@ -38,14 +38,14 @@ namespace Heroes
 
 			private:
 
-				void QuerySimulationZone(std::list<EntityDynamicIDType>& entityList);
-				void QueryVisionZone(std::list<EntityDynamicIDType>& entityList);
-				void RenderEntites(std::list<EntityDynamicIDType> entityList);
+				void QuerySimulationZone(std::unordered_set<EntityDynamicIDType>& entitySet);
+				void QueryVisionZone(std::unordered_set<EntityDynamicIDType>& entitySet);
+				void RenderEntites(std::unordered_set<EntityDynamicIDType> entitySet);
 
 				// temporary point for camera to follow
 				b2Vec2 m_simulationPoint{ b2Vec2_zero };
 
-				std::list<EntityDynamicIDType> m_entityList;
+				std::unordered_set<EntityDynamicIDType> m_entitySet;
 
 				
 				GamePlay::EntityLoader m_entityLoader{ m_sdlUtilityTool };

@@ -4,6 +4,7 @@
     <SystemsComponent></SystemsComponent>
     <StatusComponent>
         <Name>TestEntity</Name>
+        <Type>Actor</Type>
     </StatusComponent>
     <HealthComponent>
         <HealthNormal>100</HealthNormal>

@@ -93,7 +93,7 @@ namespace Heroes
 				return m_dynamicComponents[entityDynamicID].m_busyStatusTotalTime;
 			}
 
-			void StatusComponents::UpdateEntityStatusComponent(int dynamicEntityID)
+			void StatusComponents::UpdateEntityStatusComponent_D(int dynamicEntityID)
 			{
 				CheckDynamicEntityID(dynamicEntityID);
 				if (m_dynamicComponents[dynamicEntityID].m_busy != BusyStatusType::NONE)
@@ -115,8 +115,13 @@ namespace Heroes
 				}
 			}
 
-			bool StatusComponents::SetBusyStatus(int entityDynamicID, BusyStatusType busyStatus, int busyStatusTotalTime)
+			bool StatusComponents::SetBusyStatus_D(int entityDynamicID, BusyStatusType busyStatus, int busyStatusTotalTime)
 			{
+				if (busyStatus == BusyStatusType::DEAD)
+				{
+					int a = 8;
+				}
+
 				g_assert(busyStatusTotalTime > 0);
 				CheckDynamicEntityID(entityDynamicID);
 				if (m_dynamicComponents[entityDynamicID].m_busy == BusyStatusType::NONE ||
@@ -132,6 +137,18 @@ namespace Heroes
 				}
 
 				return true;
+			}
+
+			int StatusComponents::GetActiveStatus_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_status;
+			}
+
+			void StatusComponents::SetActiveStatus_S(int entityStaticID, ActiveStatusType activeStatus)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_status = activeStatus;
 			}
 
 		} // namespace GamePlay

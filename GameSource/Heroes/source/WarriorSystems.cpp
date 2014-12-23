@@ -27,7 +27,7 @@ namespace Heroes
 					if (entityMemory.m_healthComponents.GetNormalHealth_D(targetEntity) <= 0)
 					{
 						//entityMemory.m_statusComponents.SetBusyStatus(targetEntity, BusyStatusType::DEAD, entityMemory.m_healthComponents.GetDeathTimer_S(targetEntity) * 100);
-						entityMemory.m_statusComponents.SetBusyStatus(targetEntity, BusyStatusType::DEAD, 1000);
+						entityMemory.m_statusComponents.SetBusyStatus_D(targetEntity, BusyStatusType::DEAD, 1000);
 					}
 					
 				}
@@ -49,12 +49,12 @@ namespace Heroes
 							centralizedPosition.Normalize();
 							entityMemory.m_AIComponents.SetOrientation_D(targetEntity, centralizedPosition);
 							entityMemory.m_AIComponents.SetDirection_D(targetEntity, -1 * centralizedPosition);
-							entityMemory.m_AIComponents.SetMovementPercentage_D(targetEntity, 0.1);
+							entityMemory.m_AIComponents.SetMovementPercentage_D(targetEntity, 0.1f);
 
 							// check attack distance and attack
 							if (distanceToTarget < entityMemory.m_actionComponents.GetNormalAttackRange_S(staticID))
 							{
-								entityMemory.m_statusComponents.SetBusyStatus(targetEntity, BusyStatusType::BASIC_ATTACK, entityMemory.m_actionComponents.GetNormalAttackSpeed_S(entityMemory.m_statusComponents.GetStaticEntityID_D(targetEntity)) * 100);
+								entityMemory.m_statusComponents.SetBusyStatus_D(targetEntity, BusyStatusType::BASIC_ATTACK, entityMemory.m_actionComponents.GetNormalAttackSpeed_S(entityMemory.m_statusComponents.GetStaticEntityID_D(targetEntity)) * 100);
 							}
 						}
 					}

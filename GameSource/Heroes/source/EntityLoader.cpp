@@ -26,6 +26,11 @@ namespace Heroes
 
 			const char* STATUS_COMPONENT = "StatusComponent";
 			const char* STATUS_COMPONENT_NAME = "Name";
+			const char* STATUS_COMPONENT_TYPE = "Type";
+
+			const char* STATUS_TYPE_NA = "NA";
+			const char* STATUS_TYPE_ACTOR = "Actor";
+			const char* STATUS_TYPE_EFFECT = "Effect";
 
 			const char* HEALTH_COMPONENT = "HealthComponent";
 			const char* HEALTH_COMPONENT_HEALTH_NORMAL = "HealthNormal";
@@ -99,7 +104,7 @@ namespace Heroes
 
 				// status component
 				entityMemory.m_statusComponents.SetStaticEntityID_D(id, staticID); // warrior is the only static entity
-				entityMemory.m_statusComponents.SetActiveStatus_D(id, ActiveStatusType::ACTOR);
+				entityMemory.m_statusComponents.SetActiveStatus_D(id, static_cast<ActiveStatusType>(entityMemory.m_statusComponents.GetActiveStatus_S(staticID)));
 				entityMemory.m_statusComponents.SetIdleStatus_D(id, IdleStatusType::STANDING);
 				
 				// health component
@@ -282,6 +287,30 @@ namespace Heroes
 
 						entityMemory.m_statusComponents.SetName_S(staticID, text);
 						g_assert(entityMemory.m_statusComponents.GetName_S(staticID).compare("") != 0);
+					}
+					else if (elementName.compare(STATUS_COMPONENT_TYPE) == 0)
+					{
+						text = element->GetText();
+
+						if (text.compare(STATUS_TYPE_NA) == 0)
+						{
+							entityMemory.m_statusComponents.SetActiveStatus_S(staticID, ActiveStatusType::NA);
+							g_assert(entityMemory.m_statusComponents.GetActiveStatus_S(staticID) == ActiveStatusType::NA);
+						}
+						else if (text.compare(STATUS_TYPE_ACTOR) == 0)
+						{
+							entityMemory.m_statusComponents.SetActiveStatus_S(staticID, ActiveStatusType::ACTOR);
+							g_assert(entityMemory.m_statusComponents.GetActiveStatus_S(staticID) == ActiveStatusType::ACTOR);
+						}
+						else if (text.compare(STATUS_TYPE_EFFECT) == 0)
+						{
+							entityMemory.m_statusComponents.SetActiveStatus_S(staticID, ActiveStatusType::EFFECT);
+							g_assert(entityMemory.m_statusComponents.GetActiveStatus_S(staticID) == ActiveStatusType::EFFECT);
+						}
+						else
+						{
+							return false;
+						}
 					}
 					else
 					{

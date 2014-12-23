@@ -53,7 +53,7 @@ namespace Heroes
 
 				virtual bool ReportFixture(b2Fixture* fixture);
 
-				std::list<EntityDynamicIDType> * m_queryList{ nullptr };
+				std::unordered_set<EntityDynamicIDType> * m_querySet{ nullptr };
 			};
 
 			class EntityMemory final
@@ -65,11 +65,8 @@ namespace Heroes
 
 				EntityDynamicIDType OverrideMainEntity(EntityDynamicIDType entityID);
 
-				// Releases the entities specified in the list
-				void ReleaseEntites(std::list<EntityDynamicIDType>& entityIDs);
-
 				// Queries the b2 world with the AABB and returns a list of the entities
-				void QueryEntityWorld(std::list<EntityDynamicIDType>& entityList, b2AABB boundingArea);
+				void QueryEntityWorld(std::unordered_set<EntityDynamicIDType>& entitySet, b2AABB boundingArea);
 
 				void UpdateEntityWorld(float time);
 

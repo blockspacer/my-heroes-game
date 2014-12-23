@@ -84,16 +84,35 @@ namespace Heroes
 				}
 			}
 
-
+			// Mutiple fixture problem
 			bool EntityQuery::ReportFixture(b2Fixture* fixture)
 			{
 				//quick fix
 				if (!fixture->IsSensor())
 				{
-					// logic to get id of the body and then add it to the list
-					assert(sizeof(void*) == sizeof(EntityDynamicIDType));
-					m_queryList->push_back((EntityDynamicIDType)fixture->GetBody()->GetUserData());
 
+					//b2Body* body = fixture->GetBody();
+
+					//// go over all the bodies fixture to check whether it has been added
+					//b2Fixture* fixtureList = body->GetFixtureList();
+					//bool bodyAdded = false;
+
+					//while (fixtureList != nullptr && !bodyAdded)
+					//{
+					//	// bodyAdded = ?
+					//	fixtureList = fixtureList->GetNext();
+					//}
+
+					//// logic to get id of the body and then add it to the list
+					//
+					//if (!bodyAdded)
+					//{
+					//	assert(sizeof(void*) == sizeof(EntityDynamicIDType));
+					//	m_queryList->push_back((EntityDynamicIDType)fixture->GetBody()->GetUserData());
+					//}
+
+					assert(sizeof(void*) == sizeof(EntityDynamicIDType));
+					m_querySet->insert((EntityDynamicIDType)fixture->GetBody()->GetUserData());
 				}
 				
 				return true;
@@ -153,20 +172,12 @@ namespace Heroes
 				return entityID;
 			}
 
-			void EntityMemory::ReleaseEntites(std::list<EntityDynamicIDType>& entityIDs)
+			void EntityMemory::QueryEntityWorld(std::unordered_set<EntityDynamicIDType>& entitySet, b2AABB boundingArea)
 			{
-				for (EntityDynamicIDType &c : entityIDs)
-				{
-					g_assert(false);
-				}
-			}
-
-			void EntityMemory::QueryEntityWorld(std::list<EntityDynamicIDType>& entityList, b2AABB boundingArea)
-			{
-				g_assert(entityList.size() == 0);
+				g_assert(entitySet.size() == 0);
 
 				EntityQuery entityQuery;
-				entityQuery.m_queryList = &entityList;
+				entityQuery.m_querySet = &entitySet;
 
 				m_entityWorld.QueryAABB(&entityQuery, boundingArea);
 			}

@@ -11,6 +11,7 @@ namespace Heroes
 	namespace Engine
 	{
 		const uint32_t SDL_INIT_FLAGS = SDL_INIT_GAMECONTROLLER | SDL_INIT_EVENTS | SDL_INIT_VIDEO;
+		const uint32_t SDL_IMG_INIT_FLAGS = IMG_INIT_PNG;
 
 		/**
 		 * This is a class that handles all the SDL object 

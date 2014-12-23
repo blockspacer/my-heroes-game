@@ -51,7 +51,7 @@ namespace Heroes
 			struct StaticStatusComponent final
 			{
 				std::string m_name{ "" };
-				
+				ActiveStatusType m_status{ ActiveStatusType::NA }; // whether entity is dead
 			};
 
 			class StatusComponents : public ComponentsContainer<DynamicStatusComponent, StaticStatusComponent>
@@ -77,7 +77,7 @@ namespace Heroes
 
 				void SetActiveStatus_D(int entityDynamicID, ActiveStatusType status);
 
-
+				int GetActiveStatus_S(int entityStaticID);
 
 				int GetStaticEntityID_D(int entityDynamicID);
 
@@ -91,9 +91,9 @@ namespace Heroes
 
 				// UTILITY FUNCTIONS
 
-				void UpdateEntityStatusComponent(int dynamicEntityID);
+				void UpdateEntityStatusComponent_D(int dynamicEntityID);
 
-				bool SetBusyStatus(int entityDynamicID, BusyStatusType busyStatus, int busyStatusTotalTime);
+				bool SetBusyStatus_D(int entityDynamicID, BusyStatusType busyStatus, int busyStatusTotalTime);
 
 			private:
 
@@ -101,7 +101,7 @@ namespace Heroes
 
 				// STATIC SETTERS
 
-				
+				void SetActiveStatus_S(int entityStaticID, ActiveStatusType activeStatus);
 
 				void SetName_S(int entityStaticID, std::string name);
 			};

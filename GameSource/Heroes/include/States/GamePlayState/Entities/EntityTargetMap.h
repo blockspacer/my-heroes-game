@@ -16,6 +16,7 @@ namespace Heroes
 				TargetMapEntry* m_after{ nullptr };
 				int m_dynamicID{ -1 };
 				int m_value{ 0 };
+				int m_fixtures{ 0 };
 			};
 
 			enum EntityTargetMapConstants

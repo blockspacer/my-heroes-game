@@ -145,29 +145,29 @@ namespace Heroes
 				// list of active entiites should be local
 				// threading does not affect this scheme
 				
-				std::list<GamePlay::EntityDynamicIDType> entityList;
+				std::unordered_set<GamePlay::EntityDynamicIDType> entityList;
 
 				 // update camera
 				m_entityMemory.UpdateEntityWorld(0.030f);
 				m_camera.SetCameraFollow(static_cast<b2Vec2>(m_entityMemory.m_physicsComponents.GetEntityBody_D(m_mainEntityID)->GetPosition()));
 
 				 // list for entities
-				m_entityList.clear();
-				QuerySimulationZone(m_entityList);
+				m_entitySet.clear();
+				QuerySimulationZone(m_entitySet);
 
 				// Status
-				for (auto entityID : m_entityList)
+				for (auto entityID : m_entitySet)
 				{
 					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
 						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
 					{
-						m_entityMemory.m_statusComponents.UpdateEntityStatusComponent(entityID);
+						m_entityMemory.m_statusComponents.UpdateEntityStatusComponent_D(entityID);
 					}
 					
 				}
 
 				// Health
-				for (auto entityID : m_entityList)
+				for (auto entityID : m_entitySet)
 				{
 					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
 						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
@@ -177,7 +177,7 @@ namespace Heroes
 				}
 
 				// AI
-				for (auto entityID : m_entityList)
+				for (auto entityID : m_entitySet)
 				{
 					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
 						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
@@ -191,7 +191,7 @@ namespace Heroes
 				
 
 				// Action
-				for (auto entityID : m_entityList)
+				for (auto entityID : m_entitySet)
 				{
 					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
 						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
@@ -211,7 +211,7 @@ namespace Heroes
 				}
 
 				// Movement
-				for (auto entityID : m_entityList)
+				for (auto entityID : m_entitySet)
 				{
 					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
 						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
@@ -225,13 +225,13 @@ namespace Heroes
 				}
 
 				// Render
-				for (auto entityID : m_entityList)
+				for (auto entityID : m_entitySet)
 				{
 					m_entityMemory.m_renderComponents.UpdateEntityRenderComponent(entityID, m_camera, m_sdlWindow);
 				}
 
 				// Cleanup
-				for (auto entityID : m_entityList)
+				for (auto entityID : m_entitySet)
 				{
 					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::TOMBSTONE)
 					{
@@ -241,45 +241,45 @@ namespace Heroes
 				
 			}
 
-			void GamePlayState::QuerySimulationZone(std::list<EntityDynamicIDType>& entityList)
+			void GamePlayState::QuerySimulationZone(std::unordered_set<EntityDynamicIDType>& entitySet)
 			{
 				b2AABB activeSimulationRegion;
 				m_camera.GetActiveZone(activeSimulationRegion); // get active region
-				m_entityMemory.QueryEntityWorld(entityList, activeSimulationRegion); // get entities in active region
+				m_entityMemory.QueryEntityWorld(entitySet, activeSimulationRegion); // get entities in active region
 			}
 
-			void GamePlayState::QueryVisionZone(std::list<EntityDynamicIDType>& entityList)
+			void GamePlayState::QueryVisionZone(std::unordered_set<EntityDynamicIDType>& entitySet)
 			{
 				b2AABB visibleSimulationRegion;
 				m_camera.GetVisionZone(visibleSimulationRegion, m_sdlWindow); // get visible region
-				m_entityMemory.QueryEntityWorld(entityList, visibleSimulationRegion); // get entities in visible region
+				m_entityMemory.QueryEntityWorld(entitySet, visibleSimulationRegion); // get entities in visible region
 			}
 
 			void GamePlayState::Render()
 			{
 				// get the entities
-				m_entityList.clear();
-				QueryVisionZone(m_entityList);
+				m_entitySet.clear();
+				QueryVisionZone(m_entitySet);
 
 				// render the game
 				SDL_RenderClear(m_sdlRenderer);
 
 				ClearSurface();
 				m_tileMap.Render(m_camera.GetSimCenter(), m_sdlRenderer);
-				m_entityList.clear();
-				QuerySimulationZone(m_entityList);
-				RenderEntites(m_entityList);
+				m_entitySet.clear();
+				QuerySimulationZone(m_entitySet);
+				RenderEntites(m_entitySet);
 
 				SDL_RenderPresent(m_sdlRenderer);
 			}
 
-			void GamePlayState::RenderEntites(std::list<EntityDynamicIDType> entityList)
+			void GamePlayState::RenderEntites(std::unordered_set<EntityDynamicIDType> entitySet)
 			{
 				// shadows
 				int mainEntityTarget = m_entityMemory.m_AIComponents.GetTarget_D(m_mainEntityID, m_entityMemory);
 
 				// render the textures
-				for (auto entityID : entityList)
+				for (auto entityID : entitySet)
 				{
 					
 
@@ -297,7 +297,7 @@ namespace Heroes
 				}
 
 				// render the Status TODO
-				for (auto entityID : entityList)
+				for (auto entityID : entitySet)
 				{
 					SDL_RenderCopy(m_sdlRenderer, 
 						m_entityMemory.m_renderComponents.GetStatusTexture_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID)),
