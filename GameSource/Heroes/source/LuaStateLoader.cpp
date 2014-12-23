@@ -7,9 +7,8 @@
 #include "States/GamePlayState/Entities/ComponentsContainer.h"
 #include "States/GamePlayState/Entities/StatusComponents.h"
 #include "States/GamePlayState/Entities/HealthComponents.h"
-#include "States/GamePlayState/Entities/TargetComponents.h"
+#include "States/GamePlayState/Entities/AIComponents.h"
 #include "States/GamePlayState/Entities/ActionComponents.h"
-#include "States/GamePlayState/Entities/DirectionComponents.h"
 #include "States/GamePlayState/Entities/MovementComponents.h"
 #include "States/GamePlayState/LuaStateLoader.h"
 
@@ -142,13 +141,13 @@ namespace Heroes
 					//	ALIVE,
 					//	DEAD
 					//};
-					luabind::class_<ActiveStatusType>("ActiveStatusType")
+					/*luabind::class_<ActiveStatusType>("ActiveStatusType")
 					.enum_("Constants")
 					[
-						luabind::value("ALIVE", ActiveStatusType::ALIVE),
-						luabind::value("DEAD", ActiveStatusType::DEAD),
-						luabind::value("NA", ActiveStatusType::NA)
-					],
+						luabind::value("ALIVE", ActiveStatusType::ACTIVE),
+						luabind::value("DEAD", ActiveStatusType::INACTIVE),
+						luabind::value("NA", ActiveStatusType::TOMBSTONE)
+					],*/
 
 					//struct DynamicStatusComponent
 					//{
@@ -180,33 +179,26 @@ namespace Heroes
 					.def("SetNormalHealth_D", &HealthComponents::SetNormalHealth_D)
 					.def("GetNormalHealth_S", &HealthComponents::GetNormalHealth_S),
 
-					luabind::class_<TargetComponents>("TargetComponentsType")
-					.def("GetTarget_D", &TargetComponents::GetTarget_D),
+					luabind::class_<AIComponents>("AIComponentsType")
+					.def("GetTarget_D", &AIComponents::GetTarget_D),
 
 					luabind::class_<ActionComponents>("ActionComponentsType")
-					.def("GetNormalAttackDamage_S", &ActionComponents::GetNormalAttackDamage_S),
+					.def("GetNormalAttackDamage_S", &ActionComponents::GetNormalAttackDamage_S)
 
-					luabind::class_<DirectionComponents>("DirectionComponentsType")
-					.def("GetDirectionX_D", &DirectionComponents::GetDirectionX_D)
-					.def("GetDirectionY_D", &DirectionComponents::GetDirectionY_D)
-					.def("SetDirection_D", (void(DirectionComponents::*)(int entityDynamicID, float x, float y)) &DirectionComponents::SetDirection_D)
-					.def("GetMovementPercentage_D", &DirectionComponents::GetMovementPercentage_D)
-					.def("SetMovementPercentage_D", &DirectionComponents::SetMovementPercentage_D)
 				];
 
 				// bind all the components to global space in luaState
 				//luabind::globals(luaState)["StatusComponents"] = &entityMemory.m_statusComponents;
 				luabind::globals(luaState)["HealthComponents"] = &entityMemory.m_healthComponents;
-				luabind::globals(luaState)["TargetComponents"] = &entityMemory.m_targetComponents;
+				luabind::globals(luaState)["AIComponents"] = &entityMemory.m_AIComponents;
 				luabind::globals(luaState)["ActionComponents"] = &entityMemory.m_actionComponents;
-				luabind::globals(luaState)["DirectionComponents"] = &entityMemory.m_directionComponents;
 				/*luabind::globals(luaState)["StaticStatusComponents"] = entityMemory.m_staticStatusComponents;
 
 				luabind::globals(luaState)["DynamicHealthComponents"] = entityMemory.m_dynamicHealthComponents;
 				luabind::globals(luaState)["StaticHealthComponents"] = entityMemory.m_staticHealthComponents;
 
-				luabind::globals(luaState)["DynamicTargetComponents"] = entityMemory.m_dynamicTargetComponents;
-				luabind::globals(luaState)["StaticTargetComponents"] = entityMemory.m_staticTargetComponents;
+				luabind::globals(luaState)["DynamicAIComponents"] = entityMemory.m_dynamicAIComponents;
+				luabind::globals(luaState)["StaticAIComponents"] = entityMemory.m_staticAIComponents;
 
 				luabind::globals(luaState)["DynamicActionComponents"] = entityMemory.m_dynamicActionComponents;
 				luabind::globals(luaState)["StaticActionComponents"] = entityMemory.m_staticActionComponents;

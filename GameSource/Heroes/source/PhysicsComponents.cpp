@@ -35,34 +35,34 @@ namespace Heroes
 				return m_staticComponents[entityStaticID].m_bodyType;
 			}
 
-			int PhysicsComponents::GetCollisionMask_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_collisionMask;
-			}
-
-			int PhysicsComponents::GetCollisionCategory_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_collisionCategory;
-			}
-
 			void PhysicsComponents::SetBodyType_S(int entityStaticID, b2BodyType bodyType)
 			{
 				CheckStaticEntityID(entityStaticID);
 				m_staticComponents[entityStaticID].m_bodyType = bodyType;
 			}
 
-			void PhysicsComponents::SetCollisionMask_S(int entityStaticID, EntityCollisionMasks collisionMask)
+			b2FixtureDef PhysicsComponents::GetBodyDef_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_collisionMask = collisionMask;
+				return m_staticComponents[entityStaticID].m_bodyDef;
 			}
 
-			void PhysicsComponents::SetCollisionCategory_S(int entityStaticID, EntityCollisionCategories collisionCategory)
+			void PhysicsComponents::SetBodyDef_S(int entityStaticID, b2FixtureDef bodyDef)
 			{
 				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_collisionCategory = collisionCategory;
+				m_staticComponents[entityStaticID].m_bodyDef = bodyDef;
+			}
+
+			b2FixtureDef PhysicsComponents::GetVisionDef_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_visionDef;
+			}
+
+			void PhysicsComponents::SetVisionDef_S(int entityStaticID, b2FixtureDef visionDef)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_visionDef = visionDef;
 			}
 
 		} // namespace GamePlay

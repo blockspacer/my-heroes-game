@@ -38,6 +38,12 @@ namespace Heroes
 				return m_staticComponents[entityStaticID].m_normalAttackSpeed;
 			}
 
+			int ActionComponents::GetNormalAttackRange_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_normalAttackRange;
+			}
+
 			float ActionComponents::GetNormalAttackDamagePoint_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
@@ -56,6 +62,13 @@ namespace Heroes
 				CheckStaticEntityID(entityStaticID);
 				g_assert(normalAttackSpeed > 0);
 				m_staticComponents[entityStaticID].m_normalAttackSpeed = normalAttackSpeed;
+			}
+
+			void ActionComponents::SetNormalAttackRange_S(int entityStaticID, int normalAttackRange)
+			{
+				CheckStaticEntityID(entityStaticID);
+				g_assert(normalAttackRange > 0);
+				m_staticComponents[entityStaticID].m_normalAttackRange = normalAttackRange;
 			}
 
 			void ActionComponents::SetNormalAttackDamagePoint_S(int entityStaticID, float normalAttackDamagePoint)

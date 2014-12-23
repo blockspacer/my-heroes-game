@@ -56,6 +56,19 @@ namespace Heroes
 				m_dynamicComponents[entityDynamicID].m_damageDirectSource = directDamageSource;
 			}
 
+			int HealthComponents::GetDeathTimer_D(int entityDynamicID)
+			{
+				CheckDynamicEntityID(entityDynamicID);
+				return m_dynamicComponents[entityDynamicID].m_deathStartTime;
+			}
+
+			void HealthComponents::SetDeathTimer_D(int entityDynamicID, int deathStartTime)
+			{
+				CheckDynamicEntityID(entityDynamicID);
+				m_dynamicComponents[entityDynamicID].m_deathStartTime = deathStartTime;
+			}
+
+
 			int HealthComponents::GetNormalHealth_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
@@ -66,6 +79,18 @@ namespace Heroes
 			{
 				CheckStaticEntityID(entityStaticID);
 				m_staticComponents[entityStaticID].m_healthNormal = normalHealth;
+			}
+
+			int HealthComponents::GetDeathTimer_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_deathTime;
+			}
+
+			void HealthComponents::SetDeathTimer_S(int entityStaticID, int deathTime)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_deathTime = deathTime;
 			}
 
 		} // namespace GamePlay

@@ -25,28 +25,27 @@ namespace Heroes
 			const char* SYSTEMS_COMPONENT = "SystemsComponent";
 
 			const char* STATUS_COMPONENT = "StatusComponent";
-			const char* STATUS_COMPONENT_DEATH_TIMER = "DeathTimer";
 			const char* STATUS_COMPONENT_NAME = "Name";
 
 			const char* HEALTH_COMPONENT = "HealthComponent";
 			const char* HEALTH_COMPONENT_HEALTH_NORMAL = "HealthNormal";
-			
-			const char* TARGET_COMPONENT = "TargetComponent";
-			const char* TARGET_COMPONENT_TRACKING_RANGE = "TrackingRange";
+			const char* HEALTH_COMPONENT_DEATH_TIMER = "DeathTimer";
+
+			const char* AI_COMPONENT = "AIComponent";
+			const char* AI_COMPONENT_TRACKING_RANGE = "TrackingRange";
 
 			const char* ACTION_COMPONENT = "ActionComponent";
 			const char* ACTION_COMPONENT_NORMAL_ATTACK_DAMAGE = "NormalAttackDamage";
 			const char* ACTION_COMPONENT_NORMAL_ATTACK_SPEED = "NormalAttackSpeed";
+			const char* ACTION_COMPONENT_NORMAL_ATTACK_RANGE = "NormalAttackRange";
 			const char* ACTION_COMPONENT_NORMAL_ATTACK_DAMAGE_POINT = "NormalAttackDamagePoint";
-
-			const char* DIRECTION_COMPONENT = "DirectionComponent";
 
 			const char* MOVEMENT_COMPONENT = "MovementComponent";
 			const char* MOVEMENT_COMPONENT_MOVEMENT_SPEED = "MovementSpeed";
 
 			const char* PHYSICS_COMPONENT = "PhysicsComponent";
-			const char* PHYSICS_COMPONENT_ENTITY_TYPE = "EntityType";
-			// these are the sub categories of EntityType
+			const char* PHYSICS_COMPONENT_ENTITY_BODY = "EntityBody";
+			// these are the sub categories of EntityBody
 			const char* ENTITY_TYPE_ALLY_BODY = "AllyBody";
 			const char* ENTITY_TYPE_ALLY_SENSOR = "AllySensor";
 			const char* ENTITY_TYPE_ENEMY_BODY = "EnemyBody";
@@ -55,6 +54,14 @@ namespace Heroes
 			const char* ENTITY_TYPE_ENVIRONMENT_SENSOR = "EnvironmentSensor";
 			// end of subcategories
 			const char* PHYSICS_COMPONENT_BODY_TYPE = "BodyType";
+			const char* PHYSICS_COMPONENT_BODY_DENSITY = "BodyDensity";
+			const char* PHYSICS_COMPONENT_BODY_FRICTION = "BodyFriction";
+			const char* PHYSICS_COMPONENT_BODY_SHAPE = "BodyShape";
+			const char* PHYSICS_COMPONENT_ENTITY_SENSOR = "EntitySensor";
+			const char* PHYSICS_COMPONENT_SENSOR_SHAPE = "SensorShape";
+			// these are the sub categories of EntityType
+			const char* SHAPE_CIRCLE = "Circle";
+			// end of subcategories
 			
 			const char* RENDER_COMPONENT = "RenderComponent";
 			const char* RENDER_COMPONENT_STATUS_TEXTURE = "StatusTexture";
@@ -88,18 +95,17 @@ namespace Heroes
 
 
 				// system component
-				entityMemory.m_systemsComponents.SetTargetSystem_D(id, entityMemory.m_systemsComponents.GetTargetSystem_S(staticID));
-				entityMemory.m_systemsComponents.SetDirectionSystem_D(id, entityMemory.m_systemsComponents.GetDirectionSystem_S(staticID));
+				entityMemory.m_systemsComponents.SetAISystem_D(id, entityMemory.m_systemsComponents.GetAISystem_S(staticID));
 
 				// status component
 				entityMemory.m_statusComponents.SetStaticEntityID_D(id, staticID); // warrior is the only static entity
-				entityMemory.m_statusComponents.SetActiveStatus_D(id, ActiveStatusType::ALIVE);
+				entityMemory.m_statusComponents.SetActiveStatus_D(id, ActiveStatusType::ACTOR);
 				entityMemory.m_statusComponents.SetIdleStatus_D(id, IdleStatusType::STANDING);
-				entityMemory.m_statusComponents.SetDeathTimer_D(id, entityMemory.m_statusComponents.GetDeathTimer_S(staticID));
-
+				
 				// health component
 				entityMemory.m_healthComponents.SetNormalHealth_D(id, entityMemory.m_healthComponents.GetNormalHealth_S(staticID));
-				
+				entityMemory.m_healthComponents.SetDeathTimer_D(id, entityMemory.m_healthComponents.GetDeathTimer_S(staticID));
+
 				// target component
 
 				// action component
@@ -109,7 +115,7 @@ namespace Heroes
 				// TODO
 				// physics component
 				b2BodyDef def;
-				b2FixtureDef fixDef;
+
 				def.type = static_cast<b2BodyType>(entityMemory.m_physicsComponents.GetBodyType_S(staticID));
 				def.position = position; // center
 				def.angle = 0;
@@ -117,22 +123,18 @@ namespace Heroes
 				entityMemory.m_physicsComponents.SetEntityBody_D(id, entityMemory.m_entityWorld.CreateBody(&def));
 				entityMemory.m_physicsComponents.GetEntityBody_D(id)->SetUserData((void*)id);
 
-				b2CircleShape* shape = new b2CircleShape;
-				shape->m_radius = 0.5;
-				shape->m_p = b2Vec2(0, 0.25);
-				entityMemory.m_physicsComponents.GetEntityShapes_D(id)->push_back(shape);
-				fixDef.shape = shape;
-				fixDef.density = 1;
-				fixDef.friction = 1;
-				fixDef.isSensor = false;
-				fixDef.filter.categoryBits = entityMemory.m_physicsComponents.GetCollisionMask_S(staticID);
-				fixDef.filter.maskBits = entityMemory.m_physicsComponents.GetCollisionCategory_S(staticID);
-				entityMemory.m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&fixDef);
-				// m_targetComponents
+				
+				entityMemory.m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&entityMemory.m_physicsComponents.GetBodyDef_S(staticID));
+				if (!entityMemory.m_physicsComponents.GetBodyDef_S(staticID).isSensor)
+				{
+					entityMemory.m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&entityMemory.m_physicsComponents.GetVisionDef_S(staticID));
+				}			
+				// m_AIComponents
 				// m_actionComponents
 				// m_directionComponents
-				entityMemory.m_directionComponents.SetDirection_D(id, orientation);
-				entityMemory.m_targetComponents.SetOrientation_D(id, orientation);
+				entityMemory.m_AIComponents.SetDirection_D(id, orientation);
+				entityMemory.m_AIComponents.SetOrientation_D(id, orientation);
+				entityMemory.m_AIComponents.SetTargetMapSource_D(id);
 				// m_movementComponents
 				// m_renderComponents
 
@@ -194,17 +196,13 @@ namespace Heroes
 					{
 						g_assert(LoadHealthComponent(firstChild, staticID, entityMemory));
 					}
-					else if (elementName.compare(TARGET_COMPONENT) == 0)
+					else if (elementName.compare(AI_COMPONENT) == 0)
 					{
-						g_assert(LoadTargetComponent(firstChild, staticID, entityMemory));
+						g_assert(LoadAIComponent(firstChild, staticID, entityMemory));
 					}
 					else if (elementName.compare(ACTION_COMPONENT) == 0)
 					{
 						g_assert(LoadActionComponent(firstChild, staticID, entityMemory));
-					}
-					else if (elementName.compare(DIRECTION_COMPONENT) == 0)
-					{
-						g_assert(LoadDirectionComponent(firstChild, staticID, entityMemory));
 					}
 					else if (elementName.compare(MOVEMENT_COMPONENT) == 0)
 					{
@@ -254,9 +252,8 @@ namespace Heroes
 				// manually load the systems these will eventually be scripts
 				entityMemory.m_systemsComponents.SetStatusSystem_S(staticID, WarriorSystems::WarriorStatusSystem);
 				entityMemory.m_systemsComponents.SetHealthSystem_S(staticID, WarriorSystems::WarriorHealthSystem);
-				entityMemory.m_systemsComponents.SetTargetSystem_S(staticID, WarriorSystems::WarriorTargetSystem);
+				entityMemory.m_systemsComponents.SetAISystem_S(staticID, WarriorSystems::WarriorAISystem);
 				entityMemory.m_systemsComponents.SetActionSystem_S(staticID, WarriorSystems::WarriorActionSystem);
-				entityMemory.m_systemsComponents.SetDirectionSystem_S(staticID, WarriorSystems::WarriorDirectionSystem);
 				entityMemory.m_systemsComponents.SetMovementSystem_S(staticID, WarriorSystems::WarriorMovementSystem);
 
 				return true;
@@ -285,13 +282,6 @@ namespace Heroes
 
 						entityMemory.m_statusComponents.SetName_S(staticID, text);
 						g_assert(entityMemory.m_statusComponents.GetName_S(staticID).compare("") != 0);
-					}
-					else if (elementName.compare(STATUS_COMPONENT_DEATH_TIMER) == 0)
-					{
-						text = element->GetText();
-
-						entityMemory.m_statusComponents.SetDeathTimer_S(staticID, atoi(text.c_str()));
-						g_assert(entityMemory.m_statusComponents.GetDeathTimer_S(staticID) >= 0);
 					}
 					else
 					{
@@ -326,6 +316,13 @@ namespace Heroes
 						entityMemory.m_healthComponents.SetNormalHealth_S(staticID, atoi(text.c_str()));
 						g_assert(entityMemory.m_healthComponents.GetNormalHealth_S(staticID) >= 0);
 					}
+					else if (elementName.compare(HEALTH_COMPONENT_DEATH_TIMER) == 0)
+					{
+						text = element->GetText();
+
+						entityMemory.m_healthComponents.SetDeathTimer_S(staticID, atoi(text.c_str()));
+						g_assert(entityMemory.m_healthComponents.GetDeathTimer_S(staticID) > 0);
+					}
 					else
 					{
 						return false;
@@ -337,7 +334,7 @@ namespace Heroes
 				return true;
 			}
 
-			bool EntityLoader::LoadTargetComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory)
+			bool EntityLoader::LoadAIComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory)
 			{
 				// Loads:
 				// TrackingRange
@@ -352,12 +349,12 @@ namespace Heroes
 					elementName = element->Name();
 
 					// decision on what part of the static entity we are loading
-					if (elementName.compare(TARGET_COMPONENT_TRACKING_RANGE) == 0)
+					if (elementName.compare(AI_COMPONENT_TRACKING_RANGE) == 0)
 					{
 						text = element->GetText();
 
-						entityMemory.m_targetComponents.SetTrackingRange_S(staticID, static_cast<float>(atof(text.c_str())));
-						g_assert(entityMemory.m_targetComponents.GetTrackingRange_S(staticID) > 0);
+						entityMemory.m_AIComponents.SetTrackingRange_S(staticID, static_cast<float>(atof(text.c_str())));
+						g_assert(entityMemory.m_AIComponents.GetTrackingRange_S(staticID) > 0);
 					}
 					else
 					{
@@ -401,6 +398,13 @@ namespace Heroes
 						entityMemory.m_actionComponents.SetNormalAttackSpeed_S(staticID, atoi(text.c_str()));
 						g_assert(entityMemory.m_actionComponents.GetNormalAttackSpeed_S(staticID) > 0);
 					}
+					else if (elementName.compare(ACTION_COMPONENT_NORMAL_ATTACK_RANGE) == 0)
+					{
+						text = element->GetText();
+
+						entityMemory.m_actionComponents.SetNormalAttackRange_S(staticID, atoi(text.c_str()));
+						g_assert(entityMemory.m_actionComponents.GetNormalAttackRange_S(staticID) > 0);
+					}
 					else if (elementName.compare(ACTION_COMPONENT_NORMAL_ATTACK_DAMAGE_POINT) == 0)
 					{
 						text = element->GetText();
@@ -413,28 +417,6 @@ namespace Heroes
 					{
 						return false;
 					}
-
-					element = element->NextSiblingElement();
-				}
-
-				return true;
-			}
-
-			bool EntityLoader::LoadDirectionComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory)
-			{
-				// Loads:
-
-				std::string elementName;
-				std::string text;
-
-				while (element != nullptr)
-				{
-					text.clear();
-					elementName.clear();
-					elementName = element->Name();
-
-					// decision on what part of the static entity we are loading
-					return false;
 
 					element = element->NextSiblingElement();
 				}
@@ -483,6 +465,9 @@ namespace Heroes
 				std::string elementName;
 				std::string text;
 
+				b2FixtureDef bodyDef;
+				b2FixtureDef visionDef;
+
 				while (element != nullptr)
 				{
 					text.clear();
@@ -497,48 +482,125 @@ namespace Heroes
 						g_assert(entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 0 ||
 							     entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 2);
 					}
-					else if(elementName.compare(PHYSICS_COMPONENT_ENTITY_TYPE) == 0)
+					else if(elementName.compare(PHYSICS_COMPONENT_ENTITY_BODY) == 0)
 					{
 						text = element->GetText();
 
 						if (text.compare(ENTITY_TYPE_ALLY_BODY) == 0)
 						{
-							entityMemory.m_physicsComponents.SetCollisionMask_S(staticID, EntityCollisionMasks::ALLY_BODY);
-							entityMemory.m_physicsComponents.SetCollisionCategory_S(staticID, EntityCollisionCategories::ALLY_BODY_COL);
+							bodyDef.filter.maskBits = EntityCollisionMasks::ALLY_BODY;
+							bodyDef.filter.categoryBits = EntityCollisionCategories::ALLY_BODY_COL;
+							bodyDef.isSensor = false;
 						}
 						else if (text.compare(ENTITY_TYPE_ALLY_SENSOR) == 0)
 						{
-							entityMemory.m_physicsComponents.SetCollisionMask_S(staticID, EntityCollisionMasks::ALLY_SENSOR);
-							entityMemory.m_physicsComponents.SetCollisionCategory_S(staticID, EntityCollisionCategories::ALLY_SENSOR_COL);
+							bodyDef.filter.maskBits = EntityCollisionMasks::ALLY_SENSOR;
+							bodyDef.filter.categoryBits = EntityCollisionCategories::ALLY_SENSOR_COL;
+							bodyDef.isSensor = true;
 						}
 						else if (text.compare(ENTITY_TYPE_ENEMY_BODY) == 0)
 						{
-							entityMemory.m_physicsComponents.SetCollisionMask_S(staticID, EntityCollisionMasks::ENEMY_BODY);
-							entityMemory.m_physicsComponents.SetCollisionCategory_S(staticID, EntityCollisionCategories::ENEMY_BODY_COL);
+							bodyDef.filter.maskBits = EntityCollisionMasks::ENEMY_BODY;
+							bodyDef.filter.categoryBits = EntityCollisionCategories::ENEMY_BODY_COL;
+							bodyDef.isSensor = false;
 						}
 						else if (text.compare(ENTITY_TYPE_ENEMY_SENSOR) == 0)
 						{
-							entityMemory.m_physicsComponents.SetCollisionMask_S(staticID, EntityCollisionMasks::ENEMY_SENSOR);
-							entityMemory.m_physicsComponents.SetCollisionCategory_S(staticID, EntityCollisionCategories::ENEMY_SENSOR_COL);
+							bodyDef.filter.maskBits = EntityCollisionMasks::ENEMY_SENSOR;
+							bodyDef.filter.categoryBits = EntityCollisionCategories::ENEMY_SENSOR_COL;
+							bodyDef.isSensor = true;
 						}
 						else if (text.compare(ENTITY_TYPE_ENVIRONMENT_BODY) == 0)
 						{
-							entityMemory.m_physicsComponents.SetCollisionMask_S(staticID, EntityCollisionMasks::ENVIRONMENT_BODY);
-							entityMemory.m_physicsComponents.SetCollisionCategory_S(staticID, EntityCollisionCategories::ENVIRONMENT_BODY_COL);
+							bodyDef.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_BODY;
+							bodyDef.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_BODY_COL;
+							bodyDef.isSensor = false;
 						}
 						else if (text.compare(ENTITY_TYPE_ENVIRONMENT_SENSOR) == 0)
 						{
-							entityMemory.m_physicsComponents.SetCollisionMask_S(staticID, EntityCollisionMasks::ENVIRONMENT_SENSOR);
-							entityMemory.m_physicsComponents.SetCollisionCategory_S(staticID, EntityCollisionCategories::ENVIRONMENT_SENSOR_COL);
+							bodyDef.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_SENSOR;
+							bodyDef.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_SENSOR_COL;
+							bodyDef.isSensor = true;
 						}
 						else
 						{
 							return false;
 						}
 
-						entityMemory.m_physicsComponents.SetBodyType_S(staticID, static_cast<b2BodyType>(atoi(text.c_str())));
-						g_assert(entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 0 ||
-							entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 2);
+					}
+					else if (elementName.compare(PHYSICS_COMPONENT_BODY_DENSITY) == 0)
+					{
+						text = element->GetText();
+						bodyDef.density = static_cast<float>(atof(text.c_str()));
+						
+					}
+					else if (elementName.compare(PHYSICS_COMPONENT_BODY_FRICTION) == 0)
+					{
+						text = element->GetText();
+						bodyDef.friction = static_cast<float>(atof(text.c_str()));
+						
+					}
+					else if (elementName.compare(PHYSICS_COMPONENT_BODY_SHAPE) == 0)
+					{
+						text = element->GetText();
+
+						if (text.compare(SHAPE_CIRCLE) == 0)
+						{
+							b2CircleShape* shape = new b2CircleShape; // im responsible
+							shape->m_radius = 0.5;
+							shape->m_p = b2Vec2(0, 0.25);
+							bodyDef.shape = shape;
+						}
+						else
+						{
+							return false;
+						}
+
+					}
+					else if (elementName.compare(PHYSICS_COMPONENT_ENTITY_SENSOR) == 0)
+					{
+						text = element->GetText();
+
+						if (text.compare(ENTITY_TYPE_ALLY_SENSOR) == 0)
+						{
+							visionDef.filter.maskBits = EntityCollisionMasks::ALLY_SENSOR;
+							visionDef.filter.categoryBits = EntityCollisionCategories::ALLY_SENSOR_COL;
+							visionDef.isSensor = true;
+						}
+						else if (text.compare(ENTITY_TYPE_ENEMY_SENSOR) == 0)
+						{
+							visionDef.filter.maskBits = EntityCollisionMasks::ENEMY_SENSOR;
+							visionDef.filter.categoryBits = EntityCollisionCategories::ENEMY_SENSOR_COL;
+							visionDef.isSensor = true;
+						}
+						else if (text.compare(ENTITY_TYPE_ENVIRONMENT_SENSOR) == 0)
+						{
+							visionDef.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_SENSOR;
+							visionDef.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_SENSOR_COL;
+							visionDef.isSensor = true;
+						}
+						else
+						{
+							return false;
+						}
+
+					}
+					else if (elementName.compare(PHYSICS_COMPONENT_SENSOR_SHAPE) == 0)
+					{
+						text = element->GetText();
+
+						if (text.compare(SHAPE_CIRCLE) == 0)
+						{
+							b2CircleShape* shape = new b2CircleShape; // im responsible
+							shape->m_radius = 5;
+							shape->m_p = b2Vec2(0, 0.25);
+							visionDef.shape = shape;
+						}
+						else
+						{
+							return false;
+						}
+
 					}
 					else
 					{
@@ -547,6 +609,24 @@ namespace Heroes
 
 					element = element->NextSiblingElement();
 				}
+
+				// test the components of fixdef then assign
+				g_assert(bodyDef.shape != nullptr);
+				g_assert(bodyDef.filter.maskBits != 0);
+				g_assert(bodyDef.filter.categoryBits != 0);
+				g_assert(bodyDef.density > 0.0f);
+				g_assert(bodyDef.friction > 0.0f);
+
+				// not a sensor
+				if (!bodyDef.isSensor)
+				{
+					g_assert(visionDef.shape != nullptr);
+					g_assert(visionDef.filter.maskBits != 0);
+					g_assert(visionDef.filter.categoryBits != 0);
+				}
+
+				entityMemory.m_physicsComponents.SetBodyDef_S(staticID, bodyDef);
+				entityMemory.m_physicsComponents.SetVisionDef_S(staticID, visionDef);
 
 				return true;
 			}
@@ -682,6 +762,50 @@ namespace Heroes
 				}
 
 				return true;
+			}
+
+			void EntityLoader::UnloadDynamicEntity(int dynamicID, EntityMemory& entityMemory)
+			{
+				// manually load the player controlled entity
+
+
+				// system component
+				entityMemory.m_systemsComponents.SetAISystem_D(dynamicID, nullptr);
+
+				// status component
+				entityMemory.m_statusComponents.SetStaticEntityID_D(dynamicID, -1); // warrior is the only static entity
+				entityMemory.m_statusComponents.SetActiveStatus_D(dynamicID, ActiveStatusType::NA);
+				entityMemory.m_statusComponents.SetIdleStatus_D(dynamicID, IdleStatusType::STANDING);
+
+				// health component
+				entityMemory.m_healthComponents.SetNormalHealth_D(dynamicID, 0);
+				entityMemory.m_healthComponents.SetDeathTimer_D(dynamicID, 0);
+
+				// target component
+
+				// action component
+				entityMemory.m_healthComponents.SetDirectDamage_D(dynamicID, 0);
+				entityMemory.m_healthComponents.SetDirectDamageSource_D(dynamicID, -1);
+
+				b2Body* body = entityMemory.m_physicsComponents.GetEntityBody_D(dynamicID);
+				entityMemory.m_entityWorld.DestroyBody(body);
+
+				// m_AIComponents
+				// m_actionComponents
+				// m_directionComponents
+				entityMemory.m_AIComponents.SetDirection_D(dynamicID, b2Vec2_zero);
+				entityMemory.m_AIComponents.SetOrientation_D(dynamicID, b2Vec2_zero);
+				// clear targets
+
+				entityMemory.m_renderComponents.GetStatusRect_D(dynamicID)->h = 0;
+				entityMemory.m_renderComponents.GetStatusRect_D(dynamicID)->w = 0; // TODO
+				//m_renderComponents.SetAngle_D(id, 0.0f);
+
+				
+
+				entityMemory.m_freeEntities.push_front(dynamicID);
+				//entityMemory.m_usedEntities.push_back(dynamicID); // TODO fix this
+
 			}
 
 		} // namespace GamePlay

@@ -13,11 +13,13 @@ namespace Heroes
 				int m_healthNormal{ -1 };
 				int m_damageDirect{ -1 };
 				int m_damageDirectSource{ -1 };
+				int m_deathStartTime{ -1 }; // amount until this entity should be cleaned up
 			};
 
 			struct StaticHealthComponent final
 			{
 				int m_healthNormal{ -1 };
+				int m_deathTime{ -1 }; // max death count down
 			};
 
 			class HealthComponents : public ComponentsContainer<DynamicHealthComponent, StaticHealthComponent>
@@ -41,9 +43,15 @@ namespace Heroes
 
 				void SetDirectDamageSource_D(int entityDynamicID, int directDamageSource);
 
+				int GetDeathTimer_D(int entityDynamicID);
+
+				void SetDeathTimer_D(int entityDynamicID, int deathTimer);
+
 				// STATIC GETTERS
 
 				int GetNormalHealth_S(int entityStaticID);
+
+				int GetDeathTimer_S(int entityStaticID);
 
 				// UTILITY FUNCTIONS			
 
@@ -54,6 +62,8 @@ namespace Heroes
 				// STATIC SETTERS
 
 				void SetNormalHealth_S(int entityStaticID, int normalHealth);
+
+				void SetDeathTimer_S(int entityStaticID, int deathTimer);
 			};
 
 		} // namespace GamePlay

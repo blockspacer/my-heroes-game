@@ -1,5 +1,7 @@
 #pragma once
 
+#include <unordered_map>
+
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "SDL_image.h"
@@ -42,6 +44,9 @@ namespace Heroes
 			SDL_Surface* LoadImageSurface(const char* file);
 			SDL_Texture* LoadImageTexture(const char* file, SDL_Renderer* renderer);
 
+			SDL_Thread* CreateThread(SDL_ThreadFunction, const char* name, void* data);
+			void WaitThread(SDL_Thread* thread, int* returnValue);
+
 			/**
 			* Prints what current resources are being used
 			*/
@@ -71,6 +76,8 @@ namespace Heroes
 			int m_sdlSurfaces{ 0 };
 			int m_sdlTextures{ 0 };
 			int m_sdlControllers{ 0 };
+			int m_sdlThreads{ 0 };
+			std::unordered_map<std::string, SDL_Thread*> m_threadMap;
 
 			int m_sdlFonts{ 0 };
 

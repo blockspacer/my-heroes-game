@@ -13,6 +13,7 @@ namespace Heroes
 			enum BusyStatusType
 			{
 				NONE,
+				DEAD,
 				STUNNED,
 				BASIC_ATTACK,
 				SPECIAL_ATTACK
@@ -27,9 +28,10 @@ namespace Heroes
 
 			enum ActiveStatusType
 			{
-				ALIVE,
-				DEAD,
-				NA
+				ACTOR,
+				EFFECT,
+				NA,
+				TOMBSTONE
 			};
 
 			struct DynamicStatusComponent final
@@ -41,15 +43,15 @@ namespace Heroes
 				int m_busyStatusTotalTime{ 0 };
 
 				IdleStatusType m_idle{ IdleStatusType::STANDING };
-				ActiveStatusType m_status{ ActiveStatusType::DEAD }; // whether entity is dead
-				int m_deathTimer{ -1 }; // amount until this entity should be cleaned up
+				ActiveStatusType m_status{ ActiveStatusType::NA }; // whether entity is dead
+				
 				StaticEntityIDType m_staticEntityID{ -1 };
 			};
 
 			struct StaticStatusComponent final
 			{
 				std::string m_name{ "" };
-				int m_deathTimer{ -1 }; // max death count down
+				
 			};
 
 			class StatusComponents : public ComponentsContainer<DynamicStatusComponent, StaticStatusComponent>
@@ -75,9 +77,7 @@ namespace Heroes
 
 				void SetActiveStatus_D(int entityDynamicID, ActiveStatusType status);
 
-				int GetDeathTimer_D(int entityDynamicID);
 
-				void SetDeathTimer_D(int entityDynamicID, int deathTimer);
 
 				int GetStaticEntityID_D(int entityDynamicID);
 
@@ -85,7 +85,7 @@ namespace Heroes
 
 				// STATIC GETTERS
 
-				int GetDeathTimer_S(int entityStaticID);
+				
 
 				std::string GetName_S(int entityStaticID);
 
@@ -101,7 +101,7 @@ namespace Heroes
 
 				// STATIC SETTERS
 
-				void SetDeathTimer_S(int entityStaticID, int deathTimer);
+				
 
 				void SetName_S(int entityStaticID, std::string name);
 			};

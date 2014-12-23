@@ -20,28 +20,16 @@ namespace Heroes
 
 			// STATIC SETTERS
 
-			GamePlay::EntityDecisionSystemFunc SystemsComponents::GetDirectionSystem_D(int entityDynamicID)
+			GamePlay::EntityDecisionSystemFunc SystemsComponents::GetAISystem_D(int entityDynamicID)
 			{
 				CheckDynamicEntityID(entityDynamicID);
-				return m_dynamicComponents[entityDynamicID].m_directionSystem;
+				return m_dynamicComponents[entityDynamicID].m_AISystem;
 			}
 
-			void SystemsComponents::SetDirectionSystem_D(int entityDynamicID, GamePlay::EntityDecisionSystemFunc directionSystem)
+			void SystemsComponents::SetAISystem_D(int entityDynamicID, GamePlay::EntityDecisionSystemFunc AISystem)
 			{
 				CheckDynamicEntityID(entityDynamicID);
-				m_dynamicComponents[entityDynamicID].m_directionSystem = directionSystem;
-			}
-
-			GamePlay::EntityDecisionSystemFunc SystemsComponents::GetTargetSystem_D(int entityDynamicID)
-			{
-				CheckDynamicEntityID(entityDynamicID);
-				return m_dynamicComponents[entityDynamicID].m_targetSystem;
-			}
-
-			void SystemsComponents::SetTargetSystem_D(int entityDynamicID, GamePlay::EntityDecisionSystemFunc targetSystem)
-			{
-				CheckDynamicEntityID(entityDynamicID);
-				m_dynamicComponents[entityDynamicID].m_targetSystem = targetSystem;
+				m_dynamicComponents[entityDynamicID].m_AISystem = AISystem;
 			}
 
 			GamePlay::EntitySystemFunc SystemsComponents::GetStatusSystem_S(int entityStaticID)
@@ -68,16 +56,16 @@ namespace Heroes
 				m_staticComponents[entityStaticID].m_healthSystem = healthSystem;
 			}
 
-			GamePlay::EntityDecisionSystemFunc SystemsComponents::GetTargetSystem_S(int entityStaticID)
+			GamePlay::EntityDecisionSystemFunc SystemsComponents::GetAISystem_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_targetSystem;
+				return m_staticComponents[entityStaticID].m_AISystem;
 			}
 
-			void SystemsComponents::SetTargetSystem_S(int entityStaticID, GamePlay::EntityDecisionSystemFunc targetSystem)
+			void SystemsComponents::SetAISystem_S(int entityStaticID, GamePlay::EntityDecisionSystemFunc AISystem)
 			{
 				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_targetSystem = targetSystem;
+				m_staticComponents[entityStaticID].m_AISystem = AISystem;
 			}
 
 			GamePlay::EntitySystemFunc SystemsComponents::GetActionSystem_S(int entityStaticID)
@@ -90,18 +78,6 @@ namespace Heroes
 			{
 				CheckStaticEntityID(entityStaticID);
 				m_staticComponents[entityStaticID].m_actionSystem = actionSystem;
-			}
-
-			GamePlay::EntityDecisionSystemFunc SystemsComponents::GetDirectionSystem_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_directionSystem;
-			}
-
-			void SystemsComponents::SetDirectionSystem_S(int entityStaticID, GamePlay::EntityDecisionSystemFunc directionSystem)
-			{
-				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_directionSystem = directionSystem;
 			}
 
 			GamePlay::EntitySystemFunc SystemsComponents::GetMovementSystem_S(int entityStaticID)

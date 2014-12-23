@@ -60,7 +60,7 @@ namespace Heroes
 			g_assert(m_controller != nullptr);
 
 			// set the events to be ignored
-			SDL_JoystickEventState(SDL_QUERY);
+			//SDL_JoystickEventState(SDL_ENABLE);
 		}
 
 		State::~State()

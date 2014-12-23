@@ -14,9 +14,8 @@
 #include "States/GamePlayState/Entities/SystemsComponents.h"
 #include "States/GamePlayState/Entities/StatusComponents.h"
 #include "States/GamePlayState/Entities/HealthComponents.h"
-#include "States/GamePlayState/Entities/TargetComponents.h"
+#include "States/GamePlayState/Entities/AIComponents.h"
 #include "States/GamePlayState/Entities/ActionComponents.h"
-#include "States/GamePlayState/Entities/DirectionComponents.h"
 #include "States/GamePlayState/Entities/MovementComponents.h"
 #include "States/GamePlayState/Entities/PhysicsComponents.h"
 #include "States/GamePlayState/Entities/RenderComponents.h"
@@ -30,6 +29,7 @@ namespace Heroes
 			typedef int EntityDynamicIDType;
 			typedef int EntityStaticIDType;
 
+			//class EntityContactListner;
 			class EntityLoader;
 			class StatusComponents;
 
@@ -39,11 +39,13 @@ namespace Heroes
 				HEALTH,
 				TARGET,
 				ACTION,
-				DIRECTION,
 				MOVEMENT,
 				RENDER,
 				PHYSICS
 			};
+
+
+
 
 			class EntityQuery final : public b2QueryCallback
 			{
@@ -80,14 +82,28 @@ namespace Heroes
 				SystemsComponents m_systemsComponents{ *this };
 				StatusComponents m_statusComponents{ *this };
 				HealthComponents m_healthComponents{ *this };
-				TargetComponents m_targetComponents{ *this };
+				AIComponents m_AIComponents{ *this };
 				ActionComponents m_actionComponents{ *this };
-				DirectionComponents m_directionComponents{ *this };
 				MovementComponents m_movementComponents{ *this };
 				RenderComponents m_renderComponents{ *this };
 				PhysicsComponents m_physicsComponents{ *this };
 
 			private:
+
+				class EntityContactListener : public b2ContactListener
+				{
+				public:
+
+					EntityContactListener(EntityMemory& entityMemory);
+
+				private:
+					void BeginContact(b2Contact* contact);
+
+					void EndContact(b2Contact* contact);
+
+					EntityMemory& m_entityMemory;
+
+				};
 
 				friend class EntityLoader;
 
@@ -100,6 +116,7 @@ namespace Heroes
 				std::mutex m_lock; // for static IDs
 
 				b2World m_entityWorld{ b2Vec2_zero };
+				EntityContactListener m_entityContactListener{ *this };
 
 				// internally management system
 				std::list<EntityDynamicIDType> m_freeEntities;
@@ -107,6 +124,7 @@ namespace Heroes
 
 				std::map<std::string, EntityStaticIDType> m_staticEntityMap;
 			};
+
 		} // namespace GamePlay
 	} // namespace States
 } //namespace Heroes

@@ -69,6 +69,8 @@ namespace Heroes
 				// make sure that the screen shows up correct initially
 				UpdateTexture();
 
+				m_inputHandler.Start("MainMenuStateInputThread");
+
 				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Created Main Menu State");
 			}
 
@@ -88,8 +90,8 @@ namespace Heroes
 			{
 
 				// read events or windows gets mad
-				SDL_Event sdlEvent;
-				if (SDL_WaitEventTimeout(&sdlEvent, 0)) {}
+				//SDL_Event sdlEvent;
+				//if (SDL_WaitEventTimeout(&sdlEvent, 0)) {}
 
 				// read the buttons and axis
 				Uint8 buttonA = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);

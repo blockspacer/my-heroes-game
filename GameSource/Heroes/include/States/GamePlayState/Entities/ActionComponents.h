@@ -11,12 +11,14 @@ namespace Heroes
 			struct DynamicActionComponent final
 			{
 				bool m_normalAttackDamagePoint{ false };
+
 			};
 
 			struct StaticActionComponent final
 			{
 				int m_normalAttackDamage{ -1 };
 				int m_normalAttackSpeed{ 0 };
+				int m_normalAttackRange{ 0 };
 				float m_normalAttackDamagePoint{ 0.0f };
 			};
 
@@ -36,6 +38,7 @@ namespace Heroes
 
 				int GetNormalAttackDamage_S(int entityStaticID);
 				int GetNormalAttackSpeed_S(int entityStaticID);
+				int GetNormalAttackRange_S(int entityStaticID);
 				float GetNormalAttackDamagePoint_S(int entityStaticID);
 
 				// UTILITY FUNCTIONS			
@@ -48,6 +51,7 @@ namespace Heroes
 
 				void SetNormalAttackDamage_S(int entityStaticID, int normalAttackDamage);
 				void SetNormalAttackSpeed_S(int entityStaticID, int normalAttackSpeed);
+				void SetNormalAttackRange_S(int entityStaticID, int normalAttackRange);
 				void SetNormalAttackDamagePoint_S(int entityStaticID, float normalAttackDamagePoint);
 			};
 

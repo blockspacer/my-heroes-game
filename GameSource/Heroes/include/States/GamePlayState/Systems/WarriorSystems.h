@@ -15,11 +15,9 @@ namespace Heroes
 				
 				void WarriorHealthSystem(int targetEntity, GamePlay::EntityMemory& entityMemory);
 
-				void WarriorTargetSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
+				void WarriorAISystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller, Engine::InputHandler& inputHandler);
 
 				void WarriorActionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory);
-
-				void WarriorDirectionSystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller);
 
 				void WarriorMovementSystem(int targetEntity, GamePlay::EntityMemory& entityMemory);
 

@@ -4,26 +4,31 @@
     <SystemsComponent></SystemsComponent>
     <StatusComponent>
         <Name>Warrior</Name>
-        <DeathTimer>10</DeathTimer>
     </StatusComponent>
     <HealthComponent>
         <HealthNormal>100</HealthNormal>
+        <DeathTimer>10</DeathTimer>
     </HealthComponent>
-    <TargetComponent>
-        <TrackingRange>100</TrackingRange>
-    </TargetComponent>
+    <AIComponent>
+        <TrackingRange>7</TrackingRange>
+    </AIComponent>
     <ActionComponent>
-        <NormalAttackDamage>100</NormalAttackDamage>
+        <NormalAttackDamage>10</NormalAttackDamage>
         <NormalAttackSpeed>3</NormalAttackSpeed>
+        <NormalAttackRange>2</NormalAttackRange>
         <NormalAttackDamagePoint>0.5</NormalAttackDamagePoint>
     </ActionComponent>
-    <DirectionComponent></DirectionComponent>
     <MovementComponent>
         <MovementSpeed>10</MovementSpeed>
     </MovementComponent>
     <PhysicsComponent>
-        <EntityType>AllyBody</EntityType>
+        <EntityBody>AllyBody</EntityBody>
         <BodyType>2</BodyType>
+        <BodyDensity>1</BodyDensity>
+        <BodyFriction>1</BodyFriction>
+        <BodyShape>Circle</BodyShape>
+        <EntitySensor>AllySensor</EntitySensor>
+        <SensorShape>Circle</SensorShape>
     </PhysicsComponent>
     <RenderComponent>
         <StatusTexture>./Resources/Textures/HealthBar.png</StatusTexture>

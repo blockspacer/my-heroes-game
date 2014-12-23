@@ -201,7 +201,29 @@ namespace Heroes
 			return imageTexture;
 		}
 
-		SDL_Texture* LoadImageTexture(const char* file);
+		SDL_Thread* SDLUtilityTool::CreateThread(SDL_ThreadFunction threadFunction, const char* name, void* data)
+		{
+			g_assert(m_initialized);
+			g_assert(name != nullptr);
+			g_assert(data != nullptr);
+			g_assert(m_threadMap.count(name) == 0);
+			SDL_Thread* thread = SDL_CreateThread(threadFunction, name, data);
+			g_assert(thread != nullptr);
+			m_threadMap[name] = thread;
+			m_sdlThreads++;
+			m_totalResources++;
+			return thread;
+		}
+
+		void SDLUtilityTool::WaitThread(SDL_Thread* thread, int* returnValue)
+		{
+			g_assert(thread != nullptr);
+			g_assert(returnValue != nullptr);
+			m_threadMap.erase(SDL_GetThreadName(thread));
+			SDL_WaitThread(thread, returnValue);
+			m_sdlThreads--;
+			m_totalResources--;
+		}
 
 		void SDLUtilityTool::PrintStatus()
 		{

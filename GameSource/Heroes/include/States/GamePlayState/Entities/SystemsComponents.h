@@ -11,22 +11,20 @@ namespace Heroes
 		{
 			struct DynamicSystemsComponent final
 			{
-				//luabind::object m_targetSystem;
+				//luabind::object m_AISystem;
 				//luabind::object m_directionSystem;
-				GamePlay::EntityDecisionSystemFunc m_targetSystem;
-				GamePlay::EntityDecisionSystemFunc m_directionSystem;
+				GamePlay::EntityDecisionSystemFunc m_AISystem;
 			};
 
 			struct StaticSystemsComponent final
 			{
-				//luabind::object m_targetSystem;
+				//luabind::object m_AISystem;
 				//luabind::object m_directionSystem;
 
 				GamePlay::EntitySystemFunc m_statusSystem;
 				GamePlay::EntitySystemFunc m_healthSystem;
-				GamePlay::EntityDecisionSystemFunc m_targetSystem;
+				GamePlay::EntityDecisionSystemFunc m_AISystem;
 				GamePlay::EntitySystemFunc m_actionSystem;
-				GamePlay::EntityDecisionSystemFunc m_directionSystem;
 				GamePlay::EntitySystemFunc m_movementSystem;
 				GamePlay::EntityRenderFunc m_renderUpdateSystem;
 			};
@@ -39,13 +37,9 @@ namespace Heroes
 
 				// DYNAMIC GETTERS AND SETTERS
 
-				GamePlay::EntityDecisionSystemFunc GetDirectionSystem_D(int entityDynamicID);
+				GamePlay::EntityDecisionSystemFunc GetAISystem_D(int entityDynamicID);
 
-				void SetDirectionSystem_D(int entityDynamicID, GamePlay::EntityDecisionSystemFunc directionSystem);
-
-				GamePlay::EntityDecisionSystemFunc GetTargetSystem_D(int entityDynamicID);
-
-				void SetTargetSystem_D(int entityDynamicID, GamePlay::EntityDecisionSystemFunc targetSystem);
+				void SetAISystem_D(int entityDynamicID, GamePlay::EntityDecisionSystemFunc AISystem);
 
 				// STATIC GETTERS
 
@@ -53,11 +47,9 @@ namespace Heroes
 
 				GamePlay::EntitySystemFunc GetHealthSystem_S(int entityStaticID);
 
-				GamePlay::EntityDecisionSystemFunc GetTargetSystem_S(int entityStaticID);
+				GamePlay::EntityDecisionSystemFunc GetAISystem_S(int entityStaticID);
 
 				GamePlay::EntitySystemFunc GetActionSystem_S(int entityStaticID);
-				
-				GamePlay::EntityDecisionSystemFunc GetDirectionSystem_S(int entityStaticID);
 
 				GamePlay::EntitySystemFunc GetMovementSystem_S(int entityStaticID);
 
@@ -75,11 +67,9 @@ namespace Heroes
 
 				void SetHealthSystem_S(int entityStaticID, GamePlay::EntitySystemFunc healthSystem);
 
-				void SetTargetSystem_S(int entityStaticID, GamePlay::EntityDecisionSystemFunc targetSystem);
+				void SetAISystem_S(int entityStaticID, GamePlay::EntityDecisionSystemFunc AISystem);
 
 				void SetActionSystem_S(int entityStaticID, GamePlay::EntitySystemFunc actionSystem);
-
-				void SetDirectionSystem_S(int entityStaticID, GamePlay::EntityDecisionSystemFunc directionSystem);
 
 				void SetMovementSystem_S(int entityStaticID, GamePlay::EntitySystemFunc movementSystem);
 

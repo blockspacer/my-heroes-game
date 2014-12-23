@@ -2,6 +2,7 @@
 
 #include <list>
 #include <Box2D/Dynamics/b2Body.h>
+#include <Box2D/Dynamics/b2Fixture.h>
 
 #include "States/GamePlayState/Entities/EntityComponentConstants.h"
 #include "States/GamePlayState/Entities/ComponentsContainer.h"
@@ -20,8 +21,8 @@ namespace Heroes
 
 			struct StaticPhysicsComponent final
 			{
-				EntityCollisionMasks m_collisionMask{ ENVIRONMENT_BODY };
-				EntityCollisionCategories m_collisionCategory{ ENVIRONMENT_BODY_COL };
+				b2FixtureDef m_bodyDef; // memory leak
+				b2FixtureDef m_visionDef; // memory leak
 				b2BodyType m_bodyType{ b2_staticBody };
 			};
 
@@ -44,9 +45,7 @@ namespace Heroes
 
 				int GetBodyType_S(int entityStaticID);
 
-				int GetCollisionMask_S(int entityStaticID);
-
-				int GetCollisionCategory_S(int entityStaticID);
+				
 
 				// UTILITY FUNCTIONS			
 
@@ -58,9 +57,13 @@ namespace Heroes
 				
 				void SetBodyType_S(int entityStaticID, b2BodyType bodyType);
 
-				void SetCollisionMask_S(int entityStaticID, EntityCollisionMasks collisionMask);
+				b2FixtureDef GetBodyDef_S(int entityStaticID);
 
-				void SetCollisionCategory_S(int entityStaticID, EntityCollisionCategories collisionCategory);
+				void SetBodyDef_S(int entityStaticID, b2FixtureDef bodyDef);
+
+				b2FixtureDef GetVisionDef_S(int entityStaticID);
+
+				void SetVisionDef_S(int entityStaticID, b2FixtureDef visionDef);
 			};
 		} // namespace GamePlay
 	} // namespace States

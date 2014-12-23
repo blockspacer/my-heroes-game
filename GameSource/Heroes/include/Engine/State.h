@@ -3,6 +3,7 @@
 #include <stdint.h>
 
 #include "Engine/SDLUtilityTool.h"
+#include "Engine/InputHandler.h"
 
 namespace Heroes
 {
@@ -149,6 +150,7 @@ namespace Heroes
 			StateCreationPackage m_stateCreatePackage;
 
 			SDLUtilityTool& m_sdlUtilityTool;
+			InputHandler m_inputHandler{ m_sdlUtilityTool };
 
 			// all states will have a basic sdl visuals and input
 			SDL_Window* m_sdlWindow{ nullptr };

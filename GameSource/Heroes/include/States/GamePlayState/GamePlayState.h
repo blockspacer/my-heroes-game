@@ -24,6 +24,8 @@ namespace Heroes
 				AXIS_EPSILON = 10000
 			};
 
+
+
 			class GamePlayState final : public Engine::State
 			{
 			public:
@@ -45,12 +47,18 @@ namespace Heroes
 
 				std::list<EntityDynamicIDType> m_entityList;
 
+				
 				GamePlay::EntityLoader m_entityLoader{ m_sdlUtilityTool };
 				GamePlay::EntityMemory m_entityMemory{ m_sdlUtilityTool, m_sdlWindow };
 				GamePlay::Camera m_camera{ m_simulationPoint };
 				GamePlay::TileMap m_tileMap{ m_sdlUtilityTool };
 
 				int m_mainEntityID{ -1 };
+
+				// TEMPORARY
+				SDL_Texture* m_targetTexture{ nullptr };
+				int targetSystemUpdateTime{ 125 };
+				int targetSystemLastUpdate{ 0 };
 
 			};
 		} // namespace GamePlay

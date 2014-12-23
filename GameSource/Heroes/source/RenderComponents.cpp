@@ -1,5 +1,6 @@
 
 #include <iostream>
+#include <algorithm>
 #include "Engine/Log.h"
 #include "States/GamePlayState/Entities/RenderComponents.h"
 #include "States/GamePlayState/b2Conversion.h"
@@ -69,7 +70,7 @@ namespace Heroes
 				EntityStaticIDType staticID = m_entityMemory.m_statusComponents.GetStaticEntityID_D(dynamicEntityID);
 				b2Vec2 cameraLocation = camera.GetSimCenter();
 				b2Vec2 entitylocation = m_entityMemory.m_physicsComponents.GetEntityBody_D(dynamicEntityID)->GetPosition();
-				b2Vec2 entityOrientation = m_entityMemory.m_targetComponents.GetOrientation_D(dynamicEntityID);
+				b2Vec2 entityOrientation = m_entityMemory.m_AIComponents.GetOrientation_D(dynamicEntityID);
 
 				// determine the static data
 
@@ -78,45 +79,45 @@ namespace Heroes
 				int staticAnimationTimeMilli = 0;
 				SDL_Texture* animationTexture = nullptr;
 
-				if (m_entityMemory.m_statusComponents.GetActiveStatus_D(dynamicEntityID) == ActiveStatusType::ALIVE ||
-					m_entityMemory.m_statusComponents.GetActiveStatus_D(dynamicEntityID) == ActiveStatusType::NA)
+				if (m_entityMemory.m_statusComponents.GetBusyStatus_D(dynamicEntityID) == BusyStatusType::NONE)
 				{
-					if (m_entityMemory.m_statusComponents.GetBusyStatus_D(dynamicEntityID) == BusyStatusType::NONE)
+					// idle animations
+					if (m_entityMemory.m_statusComponents.GetIdleStatus_D(dynamicEntityID) == IdleStatusType::STANDING)
 					{
-						// idle animations
-						if (m_entityMemory.m_statusComponents.GetIdleStatus_D(dynamicEntityID) == IdleStatusType::STANDING)
-						{
-							staticFrames = m_staticComponents[staticID].m_standingFrames;
-							staticAnimationTimeMilli = m_staticComponents[staticID].m_standingAnimationTimeMilli;
-							staticAnimationFrameSize = m_staticComponents[staticID].m_standingFrameSize;
-							animationTexture = m_staticComponents[staticID].m_standingFramesTexture;
-						}
-						else if (m_entityMemory.m_statusComponents.GetIdleStatus_D(dynamicEntityID) == IdleStatusType::MOVING)
-						{
-							staticFrames = m_staticComponents[staticID].m_movingFrames;
-							staticAnimationTimeMilli = m_staticComponents[staticID].m_movingAnimationTimeMilli;
-							staticAnimationFrameSize = m_staticComponents[staticID].m_movingFrameSize;
-							animationTexture = m_staticComponents[staticID].m_movingFramesTexture;
+						staticFrames = m_staticComponents[staticID].m_standingFrames;
+						staticAnimationTimeMilli = m_staticComponents[staticID].m_standingAnimationTimeMilli;
+						staticAnimationFrameSize = m_staticComponents[staticID].m_standingFrameSize;
+						animationTexture = m_staticComponents[staticID].m_standingFramesTexture;
+					}
+					else if (m_entityMemory.m_statusComponents.GetIdleStatus_D(dynamicEntityID) == IdleStatusType::MOVING)
+					{
+						staticFrames = m_staticComponents[staticID].m_movingFrames;
+						staticAnimationTimeMilli = m_staticComponents[staticID].m_movingAnimationTimeMilli;
+						staticAnimationFrameSize = m_staticComponents[staticID].m_movingFrameSize;
+						animationTexture = m_staticComponents[staticID].m_movingFramesTexture;
 	
-						}
 					}
-					else
-					{
-						// busy animations
 
-						// basic animation
-						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(dynamicEntityID) == BusyStatusType::BASIC_ATTACK)
-						{
-							staticFrames = m_staticComponents[staticID].m_basicAttackFrames;
-							staticAnimationTimeMilli = m_entityMemory.m_actionComponents.GetNormalAttackSpeed_S(staticID) * 100;
-							staticAnimationFrameSize = m_staticComponents[staticID].m_basicAttackFrameSize;
-							animationTexture = m_staticComponents[staticID].m_basicAttackFramesTexture;
-						}
-					}
 				}
 				else
 				{
-					// dead animation ?
+					// busy animations
+
+					// basic animation
+					if (m_entityMemory.m_statusComponents.GetBusyStatus_D(dynamicEntityID) == BusyStatusType::BASIC_ATTACK)
+					{
+						staticFrames = m_staticComponents[staticID].m_basicAttackFrames;
+						staticAnimationTimeMilli = m_entityMemory.m_actionComponents.GetNormalAttackSpeed_S(staticID) * 100;
+						staticAnimationFrameSize = m_staticComponents[staticID].m_basicAttackFrameSize;
+						animationTexture = m_staticComponents[staticID].m_basicAttackFramesTexture;
+					}
+					else if (m_entityMemory.m_statusComponents.GetBusyStatus_D(dynamicEntityID) == BusyStatusType::DEAD)
+					{
+						staticFrames = m_staticComponents[staticID].m_basicAttackFrames;
+						staticAnimationTimeMilli = m_entityMemory.m_healthComponents.GetDeathTimer_S(staticID) * 100;
+						staticAnimationFrameSize = m_staticComponents[staticID].m_basicAttackFrameSize;
+						animationTexture = m_staticComponents[staticID].m_basicAttackFramesTexture;
+					}
 				}
 
 				g_assert(staticFrames > 0);
@@ -179,7 +180,7 @@ namespace Heroes
 				
 
 				// frame is not necessary but is helpful for understanding
-				m_dynamicComponents[dynamicEntityID].m_frame = ((currentTime - m_dynamicComponents[dynamicEntityID].m_animationTimeMilli) * staticFrames / staticAnimationTimeMilli);
+				m_dynamicComponents[dynamicEntityID].m_frame = std::min(staticFrames - 1, ((currentTime - m_dynamicComponents[dynamicEntityID].m_animationTimeMilli) * staticFrames / staticAnimationTimeMilli));
 				m_dynamicComponents[dynamicEntityID].m_srcRect.w = staticAnimationFrameSize;
 				m_dynamicComponents[dynamicEntityID].m_srcRect.h = staticAnimationFrameSize;
 				m_dynamicComponents[dynamicEntityID].m_srcRect.x = m_dynamicComponents[dynamicEntityID].m_frame * (staticAnimationFrameSize);
@@ -189,7 +190,6 @@ namespace Heroes
 				// 4) Determine the Status Rectangle
 
 				// this needs to be re though
-				m_entityMemory.m_healthComponents.SetNormalHealth_D(dynamicEntityID, (m_entityMemory.m_healthComponents.GetNormalHealth_D(dynamicEntityID) + 1) % m_entityMemory.m_healthComponents.GetNormalHealth_S(staticID));
 				float healthPercentage = (m_entityMemory.m_healthComponents.GetNormalHealth_D(dynamicEntityID) * 1.0f) / m_entityMemory.m_healthComponents.GetNormalHealth_S(staticID);
 				m_entityMemory.m_renderComponents.GetStatusRect_D(dynamicEntityID)->w = static_cast<int>(staticAnimationFrameSize * healthPercentage);
 				m_entityMemory.m_renderComponents.GetStatusRect_D(dynamicEntityID)->x = dst.x;

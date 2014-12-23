@@ -27,6 +27,7 @@ namespace Heroes
 				// Loads a single entity returning its id
 				std::string LoadEntityFile(const char* entityFile, EntityMemory& entityMemory, SDL_Renderer* renderer);
 				int LoadDynamicEntity(std::string staticName, b2Vec2 position, b2Vec2 orientation, EntityMemory& entityMemory);
+				void UnloadDynamicEntity(int dynamicID, EntityMemory& entityMemory);
 
 			private:
 
@@ -35,9 +36,8 @@ namespace Heroes
 				bool LoadSystemsComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadStatusComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadHealthComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
-				bool LoadTargetComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadAIComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadActionComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
-				bool LoadDirectionComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadMovementComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadPhysicsComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadRenderComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory, SDL_Renderer* renderer);

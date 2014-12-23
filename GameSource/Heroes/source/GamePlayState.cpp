@@ -11,6 +11,9 @@ namespace Heroes
 	{
 		namespace GamePlay
 		{
+
+
+
 			void printInfo(float x) {
 				std::cout << x << std::endl;
 			}
@@ -29,6 +32,8 @@ namespace Heroes
 				
 			{
 
+				
+
 				m_tileMap.Load("./Resources/Levels/Maps/TestMap.map", m_sdlWindow, m_sdlRenderer);
 
 				std::string warrior = m_entityLoader.LoadEntityFile("./Resources/Entities/Warrior.xml", m_entityMemory, m_sdlRenderer);
@@ -46,7 +51,6 @@ namespace Heroes
 				b2Vec2 testEntityOrientation;
 				testEntityOrientation.x = 1;
 				testEntityOrientation.y = 0;
-
 				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(11, 7), testEntityOrientation, m_entityMemory);
 				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 5), testEntityOrientation, m_entityMemory);
 				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 7), testEntityOrientation, m_entityMemory);
@@ -59,11 +63,17 @@ namespace Heroes
 
 				m_mainEntityID = m_entityMemory.OverrideMainEntity(one);
 
+				m_targetTexture = m_sdlUtilityTool.LoadImageTexture("./Resources/Textures/Target.png", m_sdlRenderer);
+
+				m_inputHandler.Start("GamePlayStateInputThread");
+
+
 				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Created Game Play State");
 			}
 
 			GamePlayState::~GamePlayState()
 			{
+				m_sdlUtilityTool.DestroyTexture(m_targetTexture); // temporary
 				g_Log_Write_L1(LOG_DESTRUCTION_EVENT, "Destroyed Game Play State");
 			}
 
@@ -148,35 +158,47 @@ namespace Heroes
 				// Status
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_statusComponents.UpdateEntityStatusComponent(entityID);
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
+						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
+					{
+						m_entityMemory.m_statusComponents.UpdateEntityStatusComponent(entityID);
+					}
+					
 				}
 
 				// Health
 				for (auto entityID : m_entityList)
 				{
-					m_entityMemory.m_systemsComponents.GetHealthSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
+						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
+					{
+						m_entityMemory.m_systemsComponents.GetHealthSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
+					}
 				}
 
-				// Target
+				// AI
 				for (auto entityID : m_entityList)
 				{
-					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
+						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
 					{
 						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) == BusyStatusType::NONE)
 						{
-							m_entityMemory.m_systemsComponents.GetTargetSystem_D(entityID)(entityID, m_entityMemory, m_controller);
+							m_entityMemory.m_systemsComponents.GetAISystem_D(entityID)(entityID, m_entityMemory, m_controller, m_inputHandler);
 						}
-						
 					}
 				}
+				
 
 				// Action
 				for (auto entityID : m_entityList)
 				{
-					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
+						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
 					{
 						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) != BusyStatusType::NONE)
 						{
+							// no death ai
 							m_entityMemory.m_systemsComponents.GetActionSystem_S(m_entityMemory.m_statusComponents.GetStaticEntityID_D(entityID))(entityID, m_entityMemory);
 
 							if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) == BusyStatusType::BASIC_ATTACK)
@@ -188,19 +210,11 @@ namespace Heroes
 					}
 				}
 
-				// Direction
-				for (auto entityID : m_entityList)
-				{
-					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
-					{
-						m_entityMemory.m_systemsComponents.GetDirectionSystem_D(entityID)(entityID, m_entityMemory, m_controller);
-					}
-				}
-
 				// Movement
 				for (auto entityID : m_entityList)
 				{
-					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) != ActiveStatusType::DEAD)
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::ACTOR ||
+						m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::EFFECT)
 					{
 						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) == BusyStatusType::NONE)
 						{
@@ -214,6 +228,15 @@ namespace Heroes
 				for (auto entityID : m_entityList)
 				{
 					m_entityMemory.m_renderComponents.UpdateEntityRenderComponent(entityID, m_camera, m_sdlWindow);
+				}
+
+				// Cleanup
+				for (auto entityID : m_entityList)
+				{
+					if (m_entityMemory.m_statusComponents.GetActiveStatus_D(entityID) == ActiveStatusType::TOMBSTONE)
+					{
+						m_entityLoader.UnloadDynamicEntity(entityID, m_entityMemory);
+					}
 				}
 				
 			}
@@ -243,6 +266,8 @@ namespace Heroes
 
 				ClearSurface();
 				m_tileMap.Render(m_camera.GetSimCenter(), m_sdlRenderer);
+				m_entityList.clear();
+				QuerySimulationZone(m_entityList);
 				RenderEntites(m_entityList);
 
 				SDL_RenderPresent(m_sdlRenderer);
@@ -251,16 +276,24 @@ namespace Heroes
 			void GamePlayState::RenderEntites(std::list<EntityDynamicIDType> entityList)
 			{
 				// shadows
+				int mainEntityTarget = m_entityMemory.m_AIComponents.GetTarget_D(m_mainEntityID, m_entityMemory);
 
 				// render the textures
 				for (auto entityID : entityList)
 				{
+					
+
 					SDL_RenderCopyEx(m_sdlRenderer, 
 						m_entityMemory.m_renderComponents.GetAnimationTexture_D(entityID),
 						m_entityMemory.m_renderComponents.GetSourceRect_D(entityID), 
 						m_entityMemory.m_renderComponents.GetDestinationRect_D(entityID), m_entityMemory.m_renderComponents.GetAngle_D(entityID),
 						NULL, 
 						SDL_FLIP_NONE);
+
+					if (entityID == mainEntityTarget)
+					{
+						SDL_RenderCopy(m_sdlRenderer, m_targetTexture, NULL, m_entityMemory.m_renderComponents.GetDestinationRect_D(entityID));
+					}
 				}
 
 				// render the Status TODO

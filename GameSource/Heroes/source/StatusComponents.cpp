@@ -52,17 +52,6 @@ namespace Heroes
 				m_dynamicComponents[entityDynamicID].m_status = status;
 			}
 
-			int StatusComponents::GetDeathTimer_D(int entityDynamicID)
-			{
-				CheckDynamicEntityID(entityDynamicID);
-				return m_dynamicComponents[entityDynamicID].m_deathTimer;
-			}
-
-			void StatusComponents::SetDeathTimer_D(int entityDynamicID, int deathTimer)
-			{
-				CheckDynamicEntityID(entityDynamicID);
-				m_dynamicComponents[entityDynamicID].m_deathTimer = deathTimer;
-			}
 
 			int StatusComponents::GetStaticEntityID_D(int entityDynamicID)
 			{
@@ -76,17 +65,7 @@ namespace Heroes
 				m_dynamicComponents[entityDynamicID].m_staticEntityID = staticEntityID;
 			}
 
-			int StatusComponents::GetDeathTimer_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_deathTimer;
-			}
 
-			void StatusComponents::SetDeathTimer_S(int entityStaticID, int deathTimer)
-			{
-				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_deathTimer = deathTimer;
-			}
 
 
 
@@ -122,7 +101,16 @@ namespace Heroes
 					int currentTime = SDL_GetTicks();
 					if (m_dynamicComponents[dynamicEntityID].m_busyStatusStartTime + m_dynamicComponents[dynamicEntityID].m_busyStatusTotalTime < currentTime)
 					{
-						m_dynamicComponents[dynamicEntityID].m_busy = BusyStatusType::NONE;
+						// if the entity is dead and the animation ends set the active state the be cleanedup
+						if (m_dynamicComponents[dynamicEntityID].m_busy == BusyStatusType::DEAD)
+						{
+							m_dynamicComponents[dynamicEntityID].m_status = ActiveStatusType::TOMBSTONE;
+						}
+						else
+						{
+							m_dynamicComponents[dynamicEntityID].m_busy = BusyStatusType::NONE;
+						}
+						
 					}
 				}
 			}
@@ -131,15 +119,16 @@ namespace Heroes
 			{
 				g_assert(busyStatusTotalTime > 0);
 				CheckDynamicEntityID(entityDynamicID);
-				if (m_dynamicComponents[entityDynamicID].m_busy != BusyStatusType::NONE)
-				{
-					return false;
-				}
-				else
+				if (m_dynamicComponents[entityDynamicID].m_busy == BusyStatusType::NONE ||
+					(busyStatus == BusyStatusType::DEAD && m_dynamicComponents[entityDynamicID].m_busy != BusyStatusType::DEAD))
 				{
 					m_dynamicComponents[entityDynamicID].m_busy = busyStatus;
 					m_dynamicComponents[entityDynamicID].m_busyStatusTotalTime = busyStatusTotalTime;
 					m_dynamicComponents[entityDynamicID].m_busyStatusStartTime = SDL_GetTicks();
+				}
+				else
+				{
+					return false;
 				}
 
 				return true;
