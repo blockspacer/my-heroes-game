@@ -40,6 +40,7 @@ namespace Heroes
 				bool LoadActionComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadMovementComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
 				bool LoadPhysicsComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory);
+				bool LoadBodyDef(tinyxml2::XMLElement* element, b2FixtureDef& bodyDef);
 				bool LoadRenderComponent(tinyxml2::XMLElement* element, int staticID, EntityMemory& entityMemory, SDL_Renderer* renderer);
 
 				Engine::SDLUtilityTool& m_sdlUtilityTool;

@@ -16,13 +16,15 @@ namespace Heroes
 			struct DynamicPhysicsComponent final
 			{
 				b2Body* m_entityBody{ nullptr }; // single body of the entity
-				std::list<b2Shape*> m_entityShapes; // number of shapes that make up the entity
 			};
 
 			struct StaticPhysicsComponent final
 			{
-				b2FixtureDef m_bodyDef; // memory leak
+				b2FixtureDef m_bodyDefA; // memory leak
+				b2FixtureDef m_bodyDefB; // memory leak
 				b2FixtureDef m_visionDef; // memory leak
+				int m_width{ 0 };
+				int m_length{ 0 };
 				b2BodyType m_bodyType{ b2_staticBody };
 			};
 
@@ -45,7 +47,9 @@ namespace Heroes
 
 				int GetBodyType_S(int entityStaticID);
 
-				
+				int GetWidth_S(int entityStaticID);
+
+				int GetLength_S(int entityStaticID);
 
 				// UTILITY FUNCTIONS			
 
@@ -57,13 +61,19 @@ namespace Heroes
 				
 				void SetBodyType_S(int entityStaticID, b2BodyType bodyType);
 
-				b2FixtureDef GetBodyDef_S(int entityStaticID);
+				b2FixtureDef GetBodyDefA_S(int entityStaticID);
+				b2FixtureDef GetBodyDefB_S(int entityStaticID);
 
-				void SetBodyDef_S(int entityStaticID, b2FixtureDef bodyDef);
+				void SetBodyDefA_S(int entityStaticID, b2FixtureDef bodyDef);
+				void SetBodyDefB_S(int entityStaticID, b2FixtureDef bodyDef);
 
 				b2FixtureDef GetVisionDef_S(int entityStaticID);
 
 				void SetVisionDef_S(int entityStaticID, b2FixtureDef visionDef);
+
+				void SetWidth_S(int entityStaticID, int width);
+
+				void SetLength_S(int entityStaticID, int length);
 			};
 		} // namespace GamePlay
 	} // namespace States

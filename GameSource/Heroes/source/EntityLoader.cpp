@@ -59,13 +59,23 @@ namespace Heroes
 			const char* ENTITY_TYPE_ENVIRONMENT_SENSOR = "EnvironmentSensor";
 			// end of subcategories
 			const char* PHYSICS_COMPONENT_BODY_TYPE = "BodyType";
-			const char* PHYSICS_COMPONENT_BODY_DENSITY = "BodyDensity";
-			const char* PHYSICS_COMPONENT_BODY_FRICTION = "BodyFriction";
-			const char* PHYSICS_COMPONENT_BODY_SHAPE = "BodyShape";
+			const char* PHYSICS_COMPONENT_B2_TYPE = "B2Type";
+			const char* PHYSICS_COMPONENT_BODY_DEF_A = "BodyDefA";
+			const char* PHYSICS_COMPONENT_BODY_DEF_B = "BodyDefB";
+
+			const char* PHYSICS_COMPONENT_BODY_DEF_DENSITY = "Density";
+			const char* PHYSICS_COMPONENT_BODY_DEF_FRICTION = "Friction";
+			const char* PHYSICS_COMPONENT_BODY_DEF_SHAPE = "Shape";
+
+
 			const char* PHYSICS_COMPONENT_ENTITY_SENSOR = "EntitySensor";
+			const char* PHYSICS_COMPONENT_SENSOR_TYPE = "SensorType";
 			const char* PHYSICS_COMPONENT_SENSOR_SHAPE = "SensorShape";
 			// these are the sub categories of EntityType
+			const char* SHAPE = "Shape";
 			const char* SHAPE_CIRCLE = "Circle";
+			const char* SHAPE_WIDTH = "Width";
+			const char* SHAPE_LENGTH = "Length";
 			// end of subcategories
 			
 			const char* RENDER_COMPONENT = "RenderComponent";
@@ -128,9 +138,19 @@ namespace Heroes
 				entityMemory.m_physicsComponents.SetEntityBody_D(id, entityMemory.m_entityWorld.CreateBody(&def));
 				entityMemory.m_physicsComponents.GetEntityBody_D(id)->SetUserData((void*)id);
 
+				// build bodies A and B
+				if (entityMemory.m_physicsComponents.GetBodyDefA_S(staticID).shape != nullptr)
+				{
+					entityMemory.m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&entityMemory.m_physicsComponents.GetBodyDefA_S(staticID));
+				}
 				
-				entityMemory.m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&entityMemory.m_physicsComponents.GetBodyDef_S(staticID));
-				if (!entityMemory.m_physicsComponents.GetBodyDef_S(staticID).isSensor)
+				if (entityMemory.m_physicsComponents.GetBodyDefB_S(staticID).shape != nullptr)
+				{
+					entityMemory.m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&entityMemory.m_physicsComponents.GetBodyDefB_S(staticID));
+				}
+
+				// if body definition A is not a sensor build the sensor
+				if (!entityMemory.m_physicsComponents.GetBodyDefA_S(staticID).isSensor)
 				{
 					entityMemory.m_physicsComponents.GetEntityBody_D(id)->CreateFixture(&entityMemory.m_physicsComponents.GetVisionDef_S(staticID));
 				}			
@@ -494,8 +514,20 @@ namespace Heroes
 				std::string elementName;
 				std::string text;
 
-				b2FixtureDef bodyDef;
+				// These variables hold the potentil body definitions for any entity
+				// They are checked for correctness at the end of this function
+
+				b2FixtureDef bodyDefA;
+				bool bodyDefASet = false;
+				b2FixtureDef bodyDefB;
+				bool bodyDefBSet = false;
 				b2FixtureDef visionDef;
+				bool visionDefSet = false;
+
+				// This while loop has 3 decisions
+				// 1) Body Type
+				// 2) Entity Body
+				// 3) Entity Sensor
 
 				while (element != nullptr)
 				{
@@ -504,58 +536,269 @@ namespace Heroes
 					elementName = element->Name();
 
 					// decision on what part of the static entity we are loading
-					if (elementName.compare(PHYSICS_COMPONENT_BODY_TYPE) == 0)
+					
+					if (elementName.compare(PHYSICS_COMPONENT_ENTITY_BODY) == 0)
+					{
+						// loop over body type and body def
+
+						tinyxml2::XMLElement* entityBodyElement = element->FirstChildElement();
+						std::string entityBodyElementName;
+
+						while (entityBodyElement != nullptr)
+						{
+							entityBodyElementName.clear();
+							entityBodyElementName = entityBodyElement->Name();
+
+							text.clear();
+
+							if (entityBodyElementName.compare(PHYSICS_COMPONENT_BODY_TYPE) == 0)
+							{
+								text = entityBodyElement->GetText();
+
+								if (text.compare(ENTITY_TYPE_ALLY_BODY) == 0)
+								{
+									bodyDefA.filter.maskBits = EntityCollisionMasks::ALLY_BODY;
+									bodyDefA.filter.categoryBits = EntityCollisionCategories::ALLY_BODY_COL;
+									bodyDefA.isSensor = false;
+
+								}
+								else if (text.compare(ENTITY_TYPE_ALLY_SENSOR) == 0)
+								{
+									bodyDefA.filter.maskBits = EntityCollisionMasks::ALLY_SENSOR;
+									bodyDefA.filter.categoryBits = EntityCollisionCategories::ALLY_SENSOR_COL;
+									bodyDefA.isSensor = true;
+								}
+								else if (text.compare(ENTITY_TYPE_ENEMY_BODY) == 0)
+								{
+									bodyDefA.filter.maskBits = EntityCollisionMasks::ENEMY_BODY;
+									bodyDefA.filter.categoryBits = EntityCollisionCategories::ENEMY_BODY_COL;
+									bodyDefA.isSensor = false;
+								}
+								else if (text.compare(ENTITY_TYPE_ENEMY_SENSOR) == 0)
+								{
+									bodyDefA.filter.maskBits = EntityCollisionMasks::ENEMY_SENSOR;
+									bodyDefA.filter.categoryBits = EntityCollisionCategories::ENEMY_SENSOR_COL;
+									bodyDefA.isSensor = true;
+								}
+								else if (text.compare(ENTITY_TYPE_ENVIRONMENT_BODY) == 0)
+								{
+									bodyDefA.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_BODY;
+									bodyDefA.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_BODY_COL;
+									bodyDefA.isSensor = false;
+								}
+								else if (text.compare(ENTITY_TYPE_ENVIRONMENT_SENSOR) == 0)
+								{
+									bodyDefA.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_SENSOR;
+									bodyDefA.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_SENSOR_COL;
+									bodyDefA.isSensor = true;
+								}
+								else
+								{
+									return false;
+								}
+
+								bodyDefB.filter.maskBits = bodyDefA.filter.maskBits;
+								bodyDefB.filter.categoryBits = bodyDefA.filter.categoryBits;
+								bodyDefB.isSensor = bodyDefA.isSensor;
+							}
+							else if (entityBodyElementName.compare(PHYSICS_COMPONENT_B2_TYPE) == 0)
+							{
+								text = entityBodyElement->GetText();
+								entityMemory.m_physicsComponents.SetBodyType_S(staticID, static_cast<b2BodyType>(atoi(text.c_str())));
+								g_assert(entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 0 ||
+									entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 2);
+							}
+							else if (entityBodyElementName.compare(PHYSICS_COMPONENT_BODY_DEF_A) == 0)
+							{
+								g_assert(LoadBodyDef(entityBodyElement->FirstChildElement(), bodyDefA));
+								bodyDefASet = true;
+							}
+							else if (entityBodyElementName.compare(PHYSICS_COMPONENT_BODY_DEF_B) == 0)
+							{
+								g_assert(LoadBodyDef(entityBodyElement->FirstChildElement(), bodyDefB));
+								bodyDefBSet = true;
+							}
+							else
+							{
+								return false;
+							}
+
+							entityBodyElement = entityBodyElement->NextSiblingElement();
+						}
+
+					}
+					else if (elementName.compare(PHYSICS_COMPONENT_ENTITY_SENSOR) == 0)
+					{
+						// loop over body type and body def
+						visionDefSet = true;
+
+						tinyxml2::XMLElement* entitySensorElement = element->FirstChildElement();
+						std::string entitySensorElementName;
+
+						while (entitySensorElement != nullptr)
+						{
+							entitySensorElementName.clear();
+							entitySensorElementName = entitySensorElement->Name();
+
+							text.clear();
+
+							if (entitySensorElementName.compare(PHYSICS_COMPONENT_SENSOR_TYPE) == 0)
+							{
+								text = entitySensorElement->GetText();
+
+								if (text.compare(ENTITY_TYPE_ALLY_SENSOR) == 0)
+								{
+									visionDef.filter.maskBits = EntityCollisionMasks::ALLY_SENSOR;
+									visionDef.filter.categoryBits = EntityCollisionCategories::ALLY_SENSOR_COL;
+									visionDef.isSensor = true;
+								}
+								else if (text.compare(ENTITY_TYPE_ENEMY_SENSOR) == 0)
+								{
+									visionDef.filter.maskBits = EntityCollisionMasks::ENEMY_SENSOR;
+									visionDef.filter.categoryBits = EntityCollisionCategories::ENEMY_SENSOR_COL;
+									visionDef.isSensor = true;
+								}
+								else if (text.compare(ENTITY_TYPE_ENVIRONMENT_SENSOR) == 0)
+								{
+									visionDef.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_SENSOR;
+									visionDef.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_SENSOR_COL;
+									visionDef.isSensor = true;
+								}
+								else
+								{
+									return false;
+								}
+							}
+							else if (entitySensorElementName.compare(PHYSICS_COMPONENT_SENSOR_SHAPE) == 0)
+							{
+								// load shape
+								// TODO
+								text = entitySensorElement->GetText();
+
+								if (text.compare(SHAPE_CIRCLE) == 0)
+								{
+									b2CircleShape* shape = new b2CircleShape; // im responsible
+									shape->m_radius = 5;
+									shape->m_p = b2Vec2(0, 0.25);
+									visionDef.shape = shape;
+								}
+								else
+								{
+									return false;
+								}
+
+							}
+							else
+							{
+								return false;
+							}
+
+							entitySensorElement = entitySensorElement->NextSiblingElement();
+						}
+
+					}
+
+					element = element->NextSiblingElement();
+				}
+
+				// These are checks on the body definitions to make sure that they make sense
+
+				if (bodyDefASet)
+				{
+					g_assert(bodyDefA.shape != nullptr);
+					g_assert(bodyDefA.filter.maskBits != 0);
+					g_assert(bodyDefA.filter.categoryBits != 0);
+					g_assert(bodyDefA.density > 0.0f);
+					g_assert(bodyDefA.friction > 0.0f);
+					entityMemory.m_physicsComponents.SetBodyDefA_S(staticID, bodyDefA);
+				}
+
+				if (bodyDefBSet)
+				{
+					g_assert(bodyDefB.shape != nullptr);
+					g_assert(bodyDefB.filter.maskBits != 0);
+					g_assert(bodyDefB.filter.categoryBits != 0);
+					g_assert(bodyDefB.density > 0.0f);
+					g_assert(bodyDefB.friction > 0.0f);
+					entityMemory.m_physicsComponents.SetBodyDefB_S(staticID, bodyDefB);
+				}
+
+				if (visionDefSet)
+				{
+					g_assert(!bodyDefA.isSensor);
+					g_assert(!bodyDefB.isSensor);
+					g_assert(visionDef.shape != nullptr);
+					g_assert(visionDef.filter.maskBits != 0);
+					g_assert(visionDef.filter.categoryBits != 0);
+					entityMemory.m_physicsComponents.SetVisionDef_S(staticID, visionDef);
+				}
+
+				return true;
+			}
+
+			bool EntityLoader::LoadBodyDef(tinyxml2::XMLElement* element, b2FixtureDef& bodyDef)
+			{
+				std::string elementName;
+				std::string text;
+
+				// These variables hold the potentil body definitions for any entity
+				// They are checked for correctness at the end of this function
+
+				b2FixtureDef bodyDefA;
+				bool bodyDefASet = false;
+				b2FixtureDef bodyDefB;
+				bool bodyDefBSet = false;
+				b2FixtureDef visionDef;
+				bool visionDefSet = false;
+
+				// This while loop has 3 decisions
+				// 1) Body Type
+				// 2) Entity Body
+				// 3) Entity Sensor
+
+				while (element != nullptr)
+				{
+					text.clear();
+					elementName.clear();
+					elementName = element->Name();
+
+					if (elementName.compare(PHYSICS_COMPONENT_BODY_DEF_DENSITY) == 0)
 					{
 						text = element->GetText();
-						entityMemory.m_physicsComponents.SetBodyType_S(staticID, static_cast<b2BodyType>(atoi(text.c_str())));
-						g_assert(entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 0 ||
-							     entityMemory.m_physicsComponents.GetBodyType_S(staticID) == 2);
+						bodyDef.density = static_cast<float>(atof(text.c_str()));
+
 					}
-					else if(elementName.compare(PHYSICS_COMPONENT_ENTITY_BODY) == 0)
+					else if (elementName.compare(PHYSICS_COMPONENT_BODY_DEF_FRICTION) == 0)
+					{
+						text = element->GetText();
+						bodyDef.friction = static_cast<float>(atof(text.c_str()));
+
+					}
+					else if (elementName.compare(PHYSICS_COMPONENT_BODY_DEF_SHAPE) == 0)
 					{
 						text = element->GetText();
 
-						if (text.compare(ENTITY_TYPE_ALLY_BODY) == 0)
+						if (text.compare(SHAPE_CIRCLE) == 0)
 						{
-							bodyDef.filter.maskBits = EntityCollisionMasks::ALLY_BODY;
-							bodyDef.filter.categoryBits = EntityCollisionCategories::ALLY_BODY_COL;
-							bodyDef.isSensor = false;
-						}
-						else if (text.compare(ENTITY_TYPE_ALLY_SENSOR) == 0)
-						{
-							bodyDef.filter.maskBits = EntityCollisionMasks::ALLY_SENSOR;
-							bodyDef.filter.categoryBits = EntityCollisionCategories::ALLY_SENSOR_COL;
-							bodyDef.isSensor = true;
-						}
-						else if (text.compare(ENTITY_TYPE_ENEMY_BODY) == 0)
-						{
-							bodyDef.filter.maskBits = EntityCollisionMasks::ENEMY_BODY;
-							bodyDef.filter.categoryBits = EntityCollisionCategories::ENEMY_BODY_COL;
-							bodyDef.isSensor = false;
-						}
-						else if (text.compare(ENTITY_TYPE_ENEMY_SENSOR) == 0)
-						{
-							bodyDef.filter.maskBits = EntityCollisionMasks::ENEMY_SENSOR;
-							bodyDef.filter.categoryBits = EntityCollisionCategories::ENEMY_SENSOR_COL;
-							bodyDef.isSensor = true;
-						}
-						else if (text.compare(ENTITY_TYPE_ENVIRONMENT_BODY) == 0)
-						{
-							bodyDef.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_BODY;
-							bodyDef.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_BODY_COL;
-							bodyDef.isSensor = false;
-						}
-						else if (text.compare(ENTITY_TYPE_ENVIRONMENT_SENSOR) == 0)
-						{
-							bodyDef.filter.maskBits = EntityCollisionMasks::ENVIRONMENT_SENSOR;
-							bodyDef.filter.categoryBits = EntityCollisionCategories::ENVIRONMENT_SENSOR_COL;
-							bodyDef.isSensor = true;
+							b2CircleShape* shape = new b2CircleShape; // im responsible
+							shape->m_radius = 0.5;
+							shape->m_p = b2Vec2(0, 0.25);
+							bodyDef.shape = shape;
 						}
 						else
 						{
 							return false;
 						}
 
+					}
+					else
+					{
+						return false;
+					}
+
+					element = element->NextSiblingElement();
+				}
+				/*
 					}
 					else if (elementName.compare(PHYSICS_COMPONENT_BODY_DENSITY) == 0)
 					{
@@ -618,6 +861,36 @@ namespace Heroes
 					{
 						text = element->GetText();
 
+						
+						tinyxml2::XMLElement* child = element->FirstChildElement();
+
+						while (child != nullptr)
+						{
+							
+
+							elementName.clear();
+							elementName = element->Name();
+
+							if (elementName.compare() == 0)
+							{
+
+							}
+							else if ()
+							{
+
+							}
+							else if ()
+							{
+
+							}
+							else
+							{
+								return false;
+							}
+
+							child = child->NextSiblingElement();
+						}
+
 						if (text.compare(SHAPE_CIRCLE) == 0)
 						{
 							b2CircleShape* shape = new b2CircleShape; // im responsible
@@ -637,26 +910,7 @@ namespace Heroes
 					}
 
 					element = element->NextSiblingElement();
-				}
-
-				// test the components of fixdef then assign
-				g_assert(bodyDef.shape != nullptr);
-				g_assert(bodyDef.filter.maskBits != 0);
-				g_assert(bodyDef.filter.categoryBits != 0);
-				g_assert(bodyDef.density > 0.0f);
-				g_assert(bodyDef.friction > 0.0f);
-
-				// not a sensor
-				if (!bodyDef.isSensor)
-				{
-					g_assert(visionDef.shape != nullptr);
-					g_assert(visionDef.filter.maskBits != 0);
-					g_assert(visionDef.filter.categoryBits != 0);
-				}
-
-				entityMemory.m_physicsComponents.SetBodyDef_S(staticID, bodyDef);
-				entityMemory.m_physicsComponents.SetVisionDef_S(staticID, visionDef);
-
+				}*/
 				return true;
 			}
 

@@ -23,13 +23,19 @@
         <MovementSpeed>10</MovementSpeed>
     </MovementComponent>
     <PhysicsComponent>
-        <EntityBody>AllyBody</EntityBody>
-        <BodyType>2</BodyType>
-        <BodyDensity>1</BodyDensity>
-        <BodyFriction>1</BodyFriction>
-        <BodyShape>Circle</BodyShape>
-        <EntitySensor>AllySensor</EntitySensor>
-        <SensorShape>Circle</SensorShape>
+        <EntityBody>
+            <BodyType>AllyBody</BodyType>
+            <B2Type>2</B2Type>
+            <BodyDefA>
+                <Density>1</Density>
+                <Friction>1</Friction>
+                <Shape>Circle</Shape>
+            </BodyDefA>
+        </EntityBody>
+        <EntitySensor>
+            <SensorType>AllySensor</SensorType>
+            <SensorShape>Circle</SensorShape>
+        </EntitySensor>      
     </PhysicsComponent>
     <RenderComponent>
         <StatusTexture>./Resources/Textures/HealthBar.png</StatusTexture>

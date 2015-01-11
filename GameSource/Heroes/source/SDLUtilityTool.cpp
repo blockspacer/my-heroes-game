@@ -16,9 +16,11 @@ namespace Heroes
 			bool success = true;
 			if (!m_initialized)
 			{
-				success = success & (SDL_Init(SDL_INIT_FLAGS) == 0);
-				success = success & (TTF_Init() == 0);
 				success = success & (IMG_Init(SDL_IMG_INIT_FLAGS) == SDL_IMG_INIT_FLAGS);
+				success = success & (TTF_Init() == 0);
+				success = success & (SDL_Init(SDL_INIT_FLAGS) == 0);
+				
+				
 
 				if (success)
 				{

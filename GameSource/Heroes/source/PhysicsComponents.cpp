@@ -23,12 +23,6 @@ namespace Heroes
 				m_dynamicComponents[entityDynamicID].m_entityBody = entityBody;
 			}
 
-			std::list<b2Shape*>* PhysicsComponents::GetEntityShapes_D(int entityDynamicID)
-			{
-				CheckDynamicEntityID(entityDynamicID);
-				return &m_dynamicComponents[entityDynamicID].m_entityShapes;
-			}
-
 			int PhysicsComponents::GetBodyType_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
@@ -41,16 +35,28 @@ namespace Heroes
 				m_staticComponents[entityStaticID].m_bodyType = bodyType;
 			}
 
-			b2FixtureDef PhysicsComponents::GetBodyDef_S(int entityStaticID)
+			b2FixtureDef PhysicsComponents::GetBodyDefA_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_bodyDef;
+				return m_staticComponents[entityStaticID].m_bodyDefA;
 			}
 
-			void PhysicsComponents::SetBodyDef_S(int entityStaticID, b2FixtureDef bodyDef)
+			b2FixtureDef PhysicsComponents::GetBodyDefB_S(int entityStaticID)
 			{
 				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_bodyDef = bodyDef;
+				return m_staticComponents[entityStaticID].m_bodyDefB;
+			}
+
+			void PhysicsComponents::SetBodyDefA_S(int entityStaticID, b2FixtureDef bodyDef)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_bodyDefA = bodyDef;
+			}
+
+			void PhysicsComponents::SetBodyDefB_S(int entityStaticID, b2FixtureDef bodyDef)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_bodyDefB = bodyDef;
 			}
 
 			b2FixtureDef PhysicsComponents::GetVisionDef_S(int entityStaticID)
@@ -63,6 +69,30 @@ namespace Heroes
 			{
 				CheckStaticEntityID(entityStaticID);
 				m_staticComponents[entityStaticID].m_visionDef = visionDef;
+			}
+
+			int PhysicsComponents::GetWidth_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_width;
+			}
+
+			int PhysicsComponents::GetLength_S(int entityStaticID)
+			{
+				CheckStaticEntityID(entityStaticID);
+				return m_staticComponents[entityStaticID].m_length;
+			}
+
+			void PhysicsComponents::SetWidth_S(int entityStaticID, int width)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_width = width;
+			}
+
+			void PhysicsComponents::SetLength_S(int entityStaticID, int length)
+			{
+				CheckStaticEntityID(entityStaticID);
+				m_staticComponents[entityStaticID].m_length = length;
 			}
 
 		} // namespace GamePlay
