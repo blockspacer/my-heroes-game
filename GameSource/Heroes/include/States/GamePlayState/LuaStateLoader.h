@@ -1,3 +1,7 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented ? A lot of work
+
 #pragma once
 
 extern "C"

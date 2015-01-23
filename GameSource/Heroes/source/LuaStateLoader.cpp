@@ -1,3 +1,8 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented ?
+
+// Heavy Development
 
 #include "Engine/Log.h"
 #include <SDL_gamecontroller.h>
@@ -211,7 +216,7 @@ namespace Heroes
 				
 				}
 				catch (const std::exception &TheError) {
-					std::cout << TheError.what() << std::endl;
+					g_assert(false);
 				}
 			}
 

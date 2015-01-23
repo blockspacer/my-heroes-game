@@ -1,3 +1,9 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented 1/18/2015
+
+#include <sstream>
+
 #include "Engine/Log.h"
 #include "Engine/SDLUtilityTool.h"
 
@@ -17,11 +23,12 @@ namespace Heroes
 			if (!m_initialized)
 			{
 				success = success & (IMG_Init(SDL_IMG_INIT_FLAGS) == SDL_IMG_INIT_FLAGS);
+				LogSDLError();
 				success = success & (TTF_Init() == 0);
+				LogTTFError();
 				success = success & (SDL_Init(SDL_INIT_FLAGS) == 0);
+				LogIMGError();
 				
-				
-
 				if (success)
 				{
 					m_initialized = true;
@@ -47,12 +54,49 @@ namespace Heroes
 			return success;
 		}
 
+		void SDLUtilityTool::LogSDLError()
+		{
+			m_sdlErrorString = SDL_GetError();
+			if (m_sdlErrorString.compare("") != 0)
+			{
+				g_Log_Write_L2(LOG_SDL_ERROR, m_sdlErrorString.c_str());
+				m_sdlErrorString.clear();
+			}
+		}
+
+		void SDLUtilityTool::LogTTFError()
+		{
+			m_sdlErrorString = TTF_GetError();
+			if (m_sdlErrorString.compare("") != 0)
+			{
+				g_Log_Write_L2(LOG_SDL_TTF_ERROR, m_sdlErrorString.c_str());
+				m_sdlErrorString.clear();
+			}
+		}
+
+		void SDLUtilityTool::LogIMGError()
+		{
+			m_sdlErrorString = IMG_GetError();
+			if (m_sdlErrorString.compare("") != 0)
+			{
+				g_Log_Write_L2(LOG_SDL_IMG_ERROR, m_sdlErrorString.c_str());
+				m_sdlErrorString.clear();
+			}
+		}
+
+		/*
+		 * All the methods are fairly similar. They check the parameters and the
+		 * make the calls to the SDL functions and return the resource. They also
+		 * are responsible for maintaining the resource count of each resource type.
+		 */
+
 		SDL_Window* SDLUtilityTool::CreateWindow(const char *title,
 												 int x, int y, int w,
 												 int h, uint32_t flags)
 		{
 			g_assert(m_initialized);
 			SDL_Window* window = SDL_CreateWindow(title, x, y, w, h, flags);
+			LogSDLError();
 			g_assert(window != nullptr);
 			m_sdlWindows++;
 			m_totalResources++;
@@ -64,6 +108,7 @@ namespace Heroes
 			g_assert(m_initialized);
 			g_assert(window != nullptr);
 			SDL_DestroyWindow(window);
+			LogSDLError();
 			m_sdlWindows--;
 			m_totalResources--;
 		}
@@ -73,6 +118,7 @@ namespace Heroes
 		{
 			g_assert(m_initialized);
 			SDL_Renderer* renderer = SDL_CreateRenderer(window, index, flags);
+			LogSDLError();
 			g_assert(renderer != nullptr);
 			m_sdlRenderers++;
 			m_totalResources++;
@@ -84,6 +130,7 @@ namespace Heroes
 			g_assert(m_initialized);
 			g_assert(renderer != nullptr);
 			SDL_DestroyRenderer(renderer);
+			LogSDLError();
 			m_sdlRenderers--;
 			m_totalResources--;
 		}
@@ -98,6 +145,7 @@ namespace Heroes
 				0x0000FF00,
 				0x000000FF,
 				0xFF000000);
+			LogSDLError();
 			g_assert(surface != nullptr);
 			m_sdlSurfaces++;
 			m_totalResources++;
@@ -108,6 +156,7 @@ namespace Heroes
 			g_assert(m_initialized);
 			g_assert(surface != nullptr);
 			SDL_FreeSurface(surface);
+			LogSDLError();
 			m_sdlSurfaces--;
 			m_totalResources--;
 		}
@@ -116,6 +165,7 @@ namespace Heroes
 		{
 			g_assert(m_initialized);
 			SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+			LogSDLError();
 			g_assert(texture != nullptr);
 			m_sdlTextures++;
 			m_totalResources++;
@@ -127,6 +177,7 @@ namespace Heroes
 			g_assert(m_initialized);
 			g_assert(texture != nullptr);
 			SDL_DestroyTexture(texture);
+			LogSDLError();
 			m_sdlTextures--;
 			m_totalResources--;
 		}
@@ -135,6 +186,7 @@ namespace Heroes
 		{
 			g_assert(m_initialized);
 			TTF_Font* font = TTF_OpenFont(file, ptsize);
+			LogTTFError();
 			g_assert(font != nullptr);
 			m_sdlFonts++;
 			m_totalResources++;
@@ -146,6 +198,7 @@ namespace Heroes
 			g_assert(m_initialized);
 			g_assert(font != nullptr);
 			TTF_CloseFont(font);
+			LogTTFError();
 			m_sdlFonts--;
 			m_totalResources--;
 		}
@@ -155,6 +208,7 @@ namespace Heroes
 		{
 			g_assert(m_initialized);
 			SDL_Surface* surface = TTF_RenderText_Blended(font, text, fg);
+			LogTTFError();
 			g_assert(surface != nullptr);
 			m_sdlSurfaces++;
 			m_totalResources++;
@@ -165,6 +219,7 @@ namespace Heroes
 		{
 			g_assert(m_initialized);
 			SDL_GameController* controller = SDL_GameControllerOpen(controllerNum);
+			LogSDLError();
 			g_assert(controller != nullptr);
 			m_sdlControllers++;
 			m_totalResources++;
@@ -177,6 +232,7 @@ namespace Heroes
 			g_assert(m_initialized);
 			g_assert(controller != nullptr);
 			SDL_GameControllerClose(controller);
+			LogSDLError();
 			m_sdlControllers--;
 			m_totalResources--;
 		}
@@ -185,6 +241,7 @@ namespace Heroes
 		{
 			g_assert(m_initialized);
 			SDL_Surface* image = IMG_Load(file);
+			LogIMGError();
 			g_assert(image != nullptr);
 			m_sdlSurfaces++;
 			m_totalResources++;
@@ -197,8 +254,10 @@ namespace Heroes
 			SDL_Surface* imageSurface = LoadImageSurface(file);
 			g_assert(imageSurface != nullptr);
 			SDL_Texture* imageTexture = SDL_CreateTextureFromSurface(renderer, imageSurface);
+			LogSDLError();
 			g_assert(imageTexture != nullptr);
 			DestroySurface(imageSurface);
+			LogSDLError();
 			m_sdlTextures++;
 			m_totalResources++;
 			return imageTexture;
@@ -211,6 +270,7 @@ namespace Heroes
 			g_assert(data != nullptr);
 			g_assert(m_threadMap.count(name) == 0);
 			SDL_Thread* thread = SDL_CreateThread(threadFunction, name, data);
+			LogSDLError();
 			g_assert(thread != nullptr);
 			m_threadMap[name] = thread;
 			m_sdlThreads++;
@@ -223,22 +283,83 @@ namespace Heroes
 			g_assert(thread != nullptr);
 			g_assert(returnValue != nullptr);
 			m_threadMap.erase(SDL_GetThreadName(thread));
+			LogSDLError();
 			SDL_WaitThread(thread, returnValue);
+			LogSDLError();
 			m_sdlThreads--;
 			m_totalResources--;
 		}
 
-		void SDLUtilityTool::PrintStatus()
+		void SDLUtilityTool::WaitThread(const char* threadName, int* returnValue)
 		{
-			std::string logOutput;
-			// TODO
-			/*std::cerr << "Resources are not cleaned up." << std::endl;
-			std::cerr << "Windows: " << m_sdlWindows << std::endl;
-			std::cerr << "Renderers: " << m_sdlRenderers << std::endl;
-			std::cerr << "Surfaces: " << m_sdlSurfaces << std::endl;
-			std::cerr << "Textures: " << m_sdlTextures << std::endl;
-			std::cerr << "Fonts: " << m_sdlFonts << std::endl;
-			std::cerr << "Controllers: " << m_sdlControllers << std::endl;*/
+			g_assert(threadName != nullptr);
+			g_assert(returnValue != nullptr);
+			g_assert(m_threadMap.count(threadName) == 1);
+			SDL_Thread* thread = m_threadMap[threadName];
+			m_threadMap.erase(threadName);
+			SDL_WaitThread(thread, returnValue);
+			LogSDLError();
+			m_sdlThreads--;
+			m_totalResources--;
+		}
+
+		std::string SDLUtilityTool::StatusString()
+		{
+			std::string status;
+			std::stringstream stringCreator;
+			if (m_totalResources > 0)
+			{
+				stringCreator << "Resources are not cleaned up.\n\r";
+
+				// windows
+				stringCreator << "Windows: ";
+				stringCreator << m_sdlWindows;
+				stringCreator << "\n\r";
+
+				// renderers
+				stringCreator << "Renderers: ";
+				stringCreator << m_sdlRenderers;
+				stringCreator << "\n\r";
+
+				// surfaces
+				stringCreator << "Surfaces: ";
+				stringCreator << m_sdlSurfaces;
+				stringCreator << "\n\r";
+
+				// textures
+				stringCreator << "Textures: ";
+				stringCreator << m_sdlTextures;
+				stringCreator << "\n\r";
+
+				// threads
+				stringCreator << "Threads: ";
+				stringCreator << m_sdlThreads;
+				stringCreator << "\n\r";
+
+				// textures
+				stringCreator << "Controllers: ";
+				stringCreator << m_sdlControllers;
+				stringCreator << "\n\r";
+
+				// fonts
+				stringCreator << "Fonts: ";
+				stringCreator << m_sdlFonts;
+				stringCreator << "\n\r";
+
+			}
+			else if (m_totalResources == 0)
+			{
+				status.append("No Resources.\n\r");
+			}
+			else
+			{
+				status.append("Problem with Resource Management number of resources is negative ");
+				stringCreator << m_totalResources;
+				stringCreator << "\n\r";
+			}
+
+			status.append(stringCreator.str());
+			return status;
 		}
 
 	} // namespace Graphics

@@ -135,8 +135,8 @@ namespace Heroes
 
 				// make relative to the main entities location
 
-				dst.x = dst.x - static_cast<int>(cameraLocation.x * PIXEL_TO_METER) + displayMode.w / 2;
-				dst.y = dst.y - static_cast<int>(cameraLocation.y * PIXEL_TO_METER) + displayMode.h / 2;
+				dst.x = dst.x - static_cast<int>(cameraLocation.x * PIXEL_TO_SIM) + displayMode.w / 2;
+				dst.y = dst.y - static_cast<int>(cameraLocation.y * PIXEL_TO_SIM) + displayMode.h / 2;
 
 				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->w = staticAnimationFrameSize;
 				m_entityMemory.m_renderComponents.GetDestinationRect_D(dynamicEntityID)->h = staticAnimationFrameSize;

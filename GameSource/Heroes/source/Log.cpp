@@ -1,3 +1,6 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented IN PROGRESS
 
 #include <stdio.h>
 #include <string>
@@ -9,8 +12,10 @@ namespace Heroes
 {
 	namespace Engine
 	{
+
+		// useful constants for the name and access mode of the log file
 		const char* LOG_FILE = "Logs/HeroesLog";
-		const char* LOG_FILE_MODE = "w"; // new file everytime
+		const char* LOG_FILE_MODE = "w"; // this will create a blank document everytime
 
 		Log::Log()
 		{

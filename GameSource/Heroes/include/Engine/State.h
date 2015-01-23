@@ -1,3 +1,7 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented 1/23/2015
+
 #pragma once
 
 #include <stdint.h>
@@ -9,6 +13,21 @@ namespace Heroes
 {
 	namespace Engine
 	{
+		// ************************** HOW TO CREATE A STATE ******************************* //
+		/*
+		
+		1) Create a new class that extends State
+		2) You must implement an update function for your new state.
+		   The update function should progress the state in some way, either
+		   by getting input from the InputHandler or changing the next state to have a
+		   value (aka a StateCreationFunction and an optional void* data for that state). This can 
+		   be done easily by the SetNextState function. Finally the m_hasNextState has to be set to true
+		   for the state engine to know that it is time to transition.
+		3) (Optionally) override the render function for your state
+		4) The state engine will take care of the rest by calling Update, Render, HasNextState, GetNextState
+		
+		*/
+		// ******************************************************************************** //
 
 		/*
 		* This class represents the state creation data which is used for things like creating a
@@ -150,6 +169,9 @@ namespace Heroes
 			StateCreationPackage m_stateCreatePackage;
 
 			SDLUtilityTool& m_sdlUtilityTool;
+
+			// This is how states get input from the user, refer to InputHandler to
+			// see how to access specific input
 			InputHandler m_inputHandler{ m_sdlUtilityTool };
 
 			// all states will have a basic sdl visuals and input

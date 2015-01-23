@@ -70,7 +70,7 @@ namespace Heroes
 						// print the state of resources if they are not cleaned up
 						if (m_sdlUtilityTool.GetNumberOfSDLResources() != 0)
 						{
-							m_sdlUtilityTool.PrintStatus();
+							g_Log_Write_L1(LOG_SDL_RESOURCES, m_sdlUtilityTool.StatusString());		
 						}
 
 						// check that sdl resources are cleaned up

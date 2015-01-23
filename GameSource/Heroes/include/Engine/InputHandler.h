@@ -1,3 +1,7 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented ? Needs to have all GameController code migrated here
+
 #pragma once
 
 #include <mutex>
@@ -8,10 +12,15 @@ namespace Heroes
 	{
 		class SDLUtilityTool;
 
+		/*
+		 * This class should be the one place in the program that user input is recieved, if
+		 * not the desing is wrong. This class is not extendable and should be a singleton.
+		 */
 		class InputHandler final
 		{
 		public:
 
+			// Constructor requires the SDLUtilityTool
 			InputHandler(SDLUtilityTool& m_sdlUtilityTool);
 			~InputHandler();
 

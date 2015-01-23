@@ -1,3 +1,7 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented ? Need to migrate code to InputHandler
+
 #include "Engine/Log.h"
 #include "Engine/State.h"
 
@@ -5,6 +9,8 @@ namespace Heroes
 {
 	namespace Engine
 	{
+		// These functions are all just initialization code for a state
+
 		State* CreateEndState(Engine::SDLUtilityTool& sdlUtilityTool, StateCreationData& structData)
 		{
 			return nullptr;
@@ -35,9 +41,17 @@ namespace Heroes
 			return m_createStateFunc(sdlUtilityTool, stateCreationData);
 		}
 
+
+
 		State::State(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData) : m_sdlUtilityTool(sdlUtilityTool),
 			m_stateCreatePackage(Engine::CreateEndState, Engine::StateCreationData(Engine::NoStateCreationData, false))
-		{		
+		{
+			/*
+			 * This creates the common SDL resources that all states should need
+			 * Window, Renderer, Surface, Texture
+			 *
+			 */
+
 			m_sdlWindow = sdlUtilityTool.CreateWindow("Heroes", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, 1366, 768, SDL_WINDOW_SHOWN | SDL_WINDOW_OPENGL);
 			g_assert(m_sdlWindow != nullptr);
 
@@ -53,14 +67,12 @@ namespace Heroes
 			m_sdlTexture = sdlUtilityTool.CreateTextureFromSurface(m_sdlRenderer, m_sdlSurface);
 			g_assert(m_sdlTexture != nullptr);
 
+			// TODO - REMOVE THIS AND PUT IT IN THE INPUT HANDLER
 			g_assert(SDL_NumJoysticks() != 0);
 			if (SDL_IsGameController(0)) {
 				m_controller = sdlUtilityTool.GameControllerOpen(0);
 			}
 			g_assert(m_controller != nullptr);
-
-			// set the events to be ignored
-			//SDL_JoystickEventState(SDL_ENABLE);
 		}
 
 		State::~State()

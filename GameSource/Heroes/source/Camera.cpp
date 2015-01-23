@@ -44,11 +44,11 @@ namespace Heroes
 				SDL_DisplayMode displayMode;
 				SDL_GetWindowDisplayMode(window, &displayMode);
 
-				zone.lowerBound = b2Vec2(m_cameraFollow.x - (displayMode.w / (2.0f * ConversionScale::PIXEL_TO_METER)) - CameraVisionError::ERROR_IN_METERS,
-					m_cameraFollow.y - (displayMode.h / (2.0f * ConversionScale::PIXEL_TO_METER)) - CameraVisionError::ERROR_IN_METERS);
+				zone.lowerBound = b2Vec2(m_cameraFollow.x - (displayMode.w / (2.0f * ConversionScale::PIXEL_TO_SIM)) - CameraVisionError::ERROR_IN_METERS,
+					m_cameraFollow.y - (displayMode.h / (2.0f * ConversionScale::PIXEL_TO_SIM)) - CameraVisionError::ERROR_IN_METERS);
 				
-				zone.upperBound = b2Vec2(m_cameraFollow.x + (displayMode.w / (2.0f * ConversionScale::PIXEL_TO_METER)) + CameraVisionError::ERROR_IN_METERS,
-					m_cameraFollow.y + (displayMode.h / (2.0f * ConversionScale::PIXEL_TO_METER)) + CameraVisionError::ERROR_IN_METERS);
+				zone.upperBound = b2Vec2(m_cameraFollow.x + (displayMode.w / (2.0f * ConversionScale::PIXEL_TO_SIM)) + CameraVisionError::ERROR_IN_METERS,
+					m_cameraFollow.y + (displayMode.h / (2.0f * ConversionScale::PIXEL_TO_SIM)) + CameraVisionError::ERROR_IN_METERS);
 			}
 
 		} // namespace GamePlay

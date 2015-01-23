@@ -1,3 +1,7 @@
+// Heroes Game
+// Author: Samuel Hall
+// Last Commented 1/18/2015
+
 #include "Engine/Log.h"
 #include "States/GamePlayState/Entities/ComponentsContainer.h"
 

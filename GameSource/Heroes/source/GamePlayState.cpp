@@ -11,17 +11,6 @@ namespace Heroes
 	{
 		namespace GamePlay
 		{
-
-
-
-			void printInfo(float x) {
-				std::cout << x << std::endl;
-			}
-
-			int GetInt()
-			{
-				return 5;
-			}
 			
 			Engine::State* CreateGamePlayState(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData)
 			{
