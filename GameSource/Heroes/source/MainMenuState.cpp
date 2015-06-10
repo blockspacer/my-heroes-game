@@ -69,8 +69,6 @@ namespace Heroes
 				// make sure that the screen shows up correct initially
 				UpdateTexture();
 
-				m_inputHandler.Start("MainMenuStateInputThread");
-
 				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Created Main Menu State");
 			}
 
@@ -94,22 +92,27 @@ namespace Heroes
 				//if (SDL_WaitEventTimeout(&sdlEvent, 0)) {}
 
 				// read the buttons and axis
-				Uint8 buttonA = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);
-				Uint8 buttonUp = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP);
-				Uint8 buttonDown = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN);
-				Sint16 axis = SDL_GameControllerGetAxis(m_controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY);
+				//Uint8 buttonA = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);
+				//Uint8 buttonUp = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP);
+				//Uint8 buttonDown = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+				//Sint16 axis = SDL_GameControllerGetAxis(m_controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY);
+				ButtonState buttonAState = m_sdlUtilityTool.GetInputHandler().GetButton(SDL_CONTROLLER_BUTTON_A);
+				ButtonState buttonUpState = m_sdlUtilityTool.GetInputHandler().GetButton(SDL_CONTROLLER_BUTTON_DPAD_UP);
+				ButtonState buttonDownState = m_sdlUtilityTool.GetInputHandler().GetButton(SDL_CONTROLLER_BUTTON_DPAD_DOWN);
+				Sint16 leftAxisY = m_sdlUtilityTool.GetInputHandler().Left_Stick_Y();
 
-				if (buttonA)
+
+				if (buttonAState == ButtonState::BUTTON_PRESSED)
 				{
 					UpdateNextStatePackage();
 				}
 				else
 				{
-					if (axis > static_cast<Sint16>(Engine::XBOX_360_AXIS::AXIS_EPSILON) || buttonDown)
+					if (leftAxisY > static_cast<Sint16>(Engine::XBOX_360_AXIS::AXIS_EPSILON) || (buttonDownState == ButtonState::BUTTON_PRESSED))
 					{
 						m_optionDirection = 1;
 					}
-					else if (axis < -static_cast<Sint16>(Engine::XBOX_360_AXIS::AXIS_EPSILON) || buttonUp)
+					else if (leftAxisY < -static_cast<Sint16>(Engine::XBOX_360_AXIS::AXIS_EPSILON) || (buttonUpState == ButtonState::BUTTON_PRESSED))
 					{
 						m_optionDirection = -1;
 					}

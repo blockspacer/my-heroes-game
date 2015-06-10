@@ -11,6 +11,7 @@
 #include "SDL.h"
 #include "SDL_ttf.h"
 #include "SDL_image.h"
+#include "InputHandler.h"
 
 namespace Heroes
 {
@@ -53,11 +54,11 @@ namespace Heroes
 			void DestroyFont(TTF_Font* font);
 			SDL_Surface* RenderText_Blended(TTF_Font *font,
 				const char *text, SDL_Color fg);
-			SDL_GameController* GameControllerOpen(int controllerNum);
-			void GameControllerClose(SDL_GameController* controller);
+
 			SDL_Surface* LoadImageSurface(const char* file);
 			SDL_Texture* LoadImageTexture(const char* file, SDL_Renderer* renderer);
 
+			InputHandler& GetInputHandler();
 
 			/*
 			 * Returns a status string the has useful information about the current state of the SDLUtilityTool.
@@ -84,6 +85,10 @@ namespace Heroes
 			bool Init();
 			bool Destroy();
 
+			// called internally
+			bool InitInputHandler();
+			void DestroyInputHandler();
+
 			// This is called after any SDL call to log an error is there is one. It checks the value of the error string
 			// and then clears it to avoid duplicate error logging.
 			void LogSDLError();
@@ -93,6 +98,11 @@ namespace Heroes
 
 			// flag for knowing the state of tool
 			bool m_initialized{ false };
+
+			// InputHandler
+			InputHandler m_inputHandler;
+			SDL_GameController* m_inputController;
+			SDL_Thread* m_inputThread;
 
 			// variables to hold the number of resources
 			int m_sdlWindows{ 0 };

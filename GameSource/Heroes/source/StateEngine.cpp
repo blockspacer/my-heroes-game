@@ -30,11 +30,9 @@ namespace Heroes
 
 		void StateEngine::Run(StateCreationPackage stateCreationPackage)
 		{
+
 			// create the first state
-
 			State* state = nullptr;
-			
-
 			if (stateCreationPackage.m_createStateFunc.HasStateCreationFunc())
 			{
 				state = stateCreationPackage.m_createStateFunc.CallStateCreationFunction(m_sdlUtilityTool, stateCreationPackage.m_stateCreationData);

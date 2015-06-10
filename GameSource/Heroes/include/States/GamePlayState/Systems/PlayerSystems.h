@@ -12,7 +12,7 @@ namespace Heroes
 			namespace PlayerSystems
 			{
 
-				void MainEntityAISystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller, Engine::InputHandler& inputHandler);
+				void MainEntityAISystem(int targetEntity, GamePlay::EntityMemory& entityMemory, Engine::InputHandler& inputHandler);
 
 			} // namespace PlayerSystems
 		} // namespace GamePlay

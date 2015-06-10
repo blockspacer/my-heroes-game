@@ -3,6 +3,7 @@
 // Last Commented 1/18/2015
 
 #include <sstream>
+#include <iostream> // temporary
 
 #include "Engine/Log.h"
 #include "Engine/SDLUtilityTool.h"
@@ -12,9 +13,137 @@ namespace Heroes
 	namespace Engine
 	{
 
-		SDLUtilityTool::SDLUtilityTool()
+		int ProcessInputFunctionXboxController(void* inputHandler)
 		{
+			InputHandler* input = (InputHandler*)inputHandler;
+
+			SDL_Event sdlEvent;
+
+			while (input->IsActive())
+			{
+				// proccess an event
+
+				if (SDL_PollEvent(&sdlEvent))
+				{
+					switch (sdlEvent.type)
+					{
+					case SDL_KEYDOWN:
+						/* handle keyboard stuff here */
+						break;
+
+					case SDL_QUIT:
+						/* Set whatever flags are necessary to */
+						/* end the main game loop here */
+						break;
+					case SDL_CONTROLLERBUTTONDOWN:
+						
+						switch (sdlEvent.cbutton.button)
+						{
+						// Start, Back
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START:
+							input->SetButton(SDL_CONTROLLER_BUTTON_START, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK:
+							input->SetButton(SDL_CONTROLLER_BUTTON_BACK, ButtonState::BUTTON_HELD);
+							break;
+						// A,B,X,y
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A:
+							input->SetButton(SDL_CONTROLLER_BUTTON_A, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B:
+							input->SetButton(SDL_CONTROLLER_BUTTON_B, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X:
+							input->SetButton(SDL_CONTROLLER_BUTTON_X, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y:
+							input->SetButton(SDL_CONTROLLER_BUTTON_Y, ButtonState::BUTTON_HELD);
+							break;
+						// D - Pad
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_UP, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_DOWN, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_LEFT, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, ButtonState::BUTTON_HELD);
+							break;
+						// Bumbers
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+							input->SetButton(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, ButtonState::BUTTON_HELD);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+							input->SetButton(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, ButtonState::BUTTON_HELD);
+							break;
+						default:
+							g_assert(false);
+							break;
+						}
+						break;
+					case SDL_CONTROLLERBUTTONUP:
+
+						switch (sdlEvent.cbutton.button)
+						{
+							// Start, Back
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_START:
+							input->SetButton(SDL_CONTROLLER_BUTTON_START, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK:
+							input->SetButton(SDL_CONTROLLER_BUTTON_BACK, ButtonState::BUTTON_PRESSED);
+							break;
+							// A,B,X,y
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A:
+							input->SetButton(SDL_CONTROLLER_BUTTON_A, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_B:
+							input->SetButton(SDL_CONTROLLER_BUTTON_B, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_X:
+							input->SetButton(SDL_CONTROLLER_BUTTON_X, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_Y:
+							input->SetButton(SDL_CONTROLLER_BUTTON_Y, ButtonState::BUTTON_PRESSED);
+							break;
+							// D - Pad
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_UP:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_UP, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_DOWN:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_DOWN, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_LEFT:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_LEFT, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_DPAD_RIGHT:
+							input->SetButton(SDL_CONTROLLER_BUTTON_DPAD_RIGHT, ButtonState::BUTTON_PRESSED);
+							break;
+							// Bumbers
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_RIGHTSHOULDER:
+							input->SetButton(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER, ButtonState::BUTTON_PRESSED);
+							break;
+						case SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_LEFTSHOULDER:
+							input->SetButton(SDL_CONTROLLER_BUTTON_LEFTSHOULDER, ButtonState::BUTTON_PRESSED);
+							break;
+						default:
+							g_assert(false);
+							break;
+						}
+						break;
+					}
+				}
+
+			}
+
+			return 0;
 		}
+
+		// Very dangerous operation to type cast a pointer to create reference
+		SDLUtilityTool::SDLUtilityTool() {}
+
 		SDLUtilityTool::~SDLUtilityTool() {}
 
 		bool SDLUtilityTool::Init()
@@ -28,6 +157,7 @@ namespace Heroes
 				LogTTFError();
 				success = success & (SDL_Init(SDL_INIT_FLAGS) == 0);
 				LogIMGError();
+				success = success & InitInputHandler();
 				
 				if (success)
 				{
@@ -39,13 +169,66 @@ namespace Heroes
 			return success;
 		}
 
+		bool SDLUtilityTool::InitInputHandler()
+		{
+			// create the game controller and give the InputHandler a copy
+			g_assert(SDL_NumJoysticks() != 0);
+			g_assert(SDL_IsGameController(0));
+			m_inputController = SDL_GameControllerOpen(0);
+			LogSDLError();
+			g_assert(m_inputController != nullptr);
+			m_inputHandler.m_gameController = m_inputController;
+			g_assert(m_inputHandler.m_gameController != nullptr);
+
+			// sets the flag that the input thread watches to true
+			m_inputHandler.Activate();
+
+			// create the input thread
+			m_inputThread = SDL_CreateThread(ProcessInputFunctionXboxController, "InputThread", &m_inputHandler);
+			LogSDLError();
+			g_assert(m_inputThread != nullptr);
+
+			
+
+			// any failure here is critical
+			return true;
+		}
+
+		void SDLUtilityTool::DestroyInputHandler()
+		{
+			int returnValue = 0;
+
+			// wait on the thread
+			g_assert(m_inputHandler.IsActive());
+			m_inputHandler.Deactivate();
+			g_assert(m_inputThread != nullptr);
+			SDL_WaitThread(m_inputThread, &returnValue);
+			LogSDLError();
+			
+
+			// cleanup the game controller
+			g_assert(m_inputController != nullptr);
+			SDL_GameControllerClose(m_inputController);
+			LogSDLError();
+			m_inputController = nullptr;
+			m_inputHandler.m_gameController = nullptr;
+			
+		}
+
 		bool SDLUtilityTool::Destroy()
 		{
 			bool success = false;
 
 			if (m_initialized)
 			{
+				// destroy input handler, controller and thread
+				// TODO
+				DestroyInputHandler();
+
+				// then quit sdl
 				SDL_Quit();
+
+				
 				m_initialized = false;
 				success = true;
 			}
@@ -215,28 +398,6 @@ namespace Heroes
 			return surface;
 		}
 
-		SDL_GameController* SDLUtilityTool::GameControllerOpen(int controllerNum)
-		{
-			g_assert(m_initialized);
-			SDL_GameController* controller = SDL_GameControllerOpen(controllerNum);
-			LogSDLError();
-			g_assert(controller != nullptr);
-			m_sdlControllers++;
-			m_totalResources++;
-			return controller;
-			
-		}
-
-		void SDLUtilityTool::GameControllerClose(SDL_GameController* controller)
-		{
-			g_assert(m_initialized);
-			g_assert(controller != nullptr);
-			SDL_GameControllerClose(controller);
-			LogSDLError();
-			m_sdlControllers--;
-			m_totalResources--;
-		}
-
 		SDL_Surface* SDLUtilityTool::LoadImageSurface(const char* file)
 		{
 			g_assert(m_initialized);
@@ -263,16 +424,16 @@ namespace Heroes
 			return imageTexture;
 		}
 
-		SDL_Thread* SDLUtilityTool::CreateThread(SDL_ThreadFunction threadFunction, const char* name, void* data)
+		SDL_Thread* SDLUtilityTool::CreateThread(SDL_ThreadFunction threadFunction, const char* threadName, void* data)
 		{
 			g_assert(m_initialized);
-			g_assert(name != nullptr);
+			g_assert(threadName != nullptr);
 			g_assert(data != nullptr);
-			g_assert(m_threadMap.count(name) == 0);
-			SDL_Thread* thread = SDL_CreateThread(threadFunction, name, data);
+			g_assert(m_threadMap.count(threadName) == 0);
+			SDL_Thread* thread = SDL_CreateThread(threadFunction, threadName, data);
 			LogSDLError();
 			g_assert(thread != nullptr);
-			m_threadMap[name] = thread;
+			m_threadMap[threadName] = thread;
 			m_sdlThreads++;
 			m_totalResources++;
 			return thread;
@@ -301,6 +462,11 @@ namespace Heroes
 			LogSDLError();
 			m_sdlThreads--;
 			m_totalResources--;
+		}
+
+		InputHandler& SDLUtilityTool::GetInputHandler()
+		{
+			return m_inputHandler;
 		}
 
 		std::string SDLUtilityTool::StatusString()

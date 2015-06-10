@@ -92,18 +92,6 @@ namespace Heroes
 				m_staticComponents[entityStaticID].m_movementSystem = movementSystem;
 			}
 
-			GamePlay::EntityRenderFunc SystemsComponents::GetRenderUpdateSystem_S(int entityStaticID)
-			{
-				CheckStaticEntityID(entityStaticID);
-				return m_staticComponents[entityStaticID].m_renderUpdateSystem;
-			}
-
-			void SystemsComponents::SetRenderUpdateSystem_S(int entityStaticID, GamePlay::EntityRenderFunc renderSystem)
-			{
-				CheckStaticEntityID(entityStaticID);
-				m_staticComponents[entityStaticID].m_renderUpdateSystem = renderSystem;
-			}
-
 		} // namespace GamePlay
 	} // namespace States
 } //namespace Heroes

@@ -43,8 +43,10 @@ namespace Heroes
 
 
 
-		State::State(Engine::SDLUtilityTool& sdlUtilityTool, Engine::StateCreationData& stateCreationData) : m_sdlUtilityTool(sdlUtilityTool),
-			m_stateCreatePackage(Engine::CreateEndState, Engine::StateCreationData(Engine::NoStateCreationData, false))
+		State::State(Engine::SDLUtilityTool& sdlUtilityTool, 
+					 Engine::StateCreationData& stateCreationData) : m_sdlUtilityTool(sdlUtilityTool),
+																	 m_stateCreatePackage(Engine::CreateEndState, 
+																						  Engine::StateCreationData(Engine::NoStateCreationData, false))
 		{
 			/*
 			 * This creates the common SDL resources that all states should need
@@ -67,17 +69,12 @@ namespace Heroes
 			m_sdlTexture = sdlUtilityTool.CreateTextureFromSurface(m_sdlRenderer, m_sdlSurface);
 			g_assert(m_sdlTexture != nullptr);
 
-			// TODO - REMOVE THIS AND PUT IT IN THE INPUT HANDLER
-			g_assert(SDL_NumJoysticks() != 0);
-			if (SDL_IsGameController(0)) {
-				m_controller = sdlUtilityTool.GameControllerOpen(0);
-			}
-			g_assert(m_controller != nullptr);
+			
 		}
 
 		State::~State()
 		{
-			m_sdlUtilityTool.GameControllerClose(m_controller);
+			// broken because input handler cant be destroyed
 			m_sdlUtilityTool.DestroyTexture(m_sdlTexture);
 			m_sdlUtilityTool.DestroySurface(m_sdlSurface);
 			m_sdlUtilityTool.DestroyRenderer(m_sdlRenderer);

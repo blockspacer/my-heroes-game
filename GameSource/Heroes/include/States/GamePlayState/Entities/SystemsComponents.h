@@ -26,7 +26,6 @@ namespace Heroes
 				GamePlay::EntityDecisionSystemFunc m_AISystem;
 				GamePlay::EntitySystemFunc m_actionSystem;
 				GamePlay::EntitySystemFunc m_movementSystem;
-				GamePlay::EntityRenderFunc m_renderUpdateSystem;
 			};
 
 			class SystemsComponents : public ComponentsContainer<DynamicSystemsComponent, StaticSystemsComponent>
@@ -53,8 +52,6 @@ namespace Heroes
 
 				GamePlay::EntitySystemFunc GetMovementSystem_S(int entityStaticID);
 
-				GamePlay::EntityRenderFunc GetRenderUpdateSystem_S(int entityStaticID);
-
 				// UTILITY FUNCTIONS			
 
 			private:
@@ -72,8 +69,6 @@ namespace Heroes
 				void SetActionSystem_S(int entityStaticID, GamePlay::EntitySystemFunc actionSystem);
 
 				void SetMovementSystem_S(int entityStaticID, GamePlay::EntitySystemFunc movementSystem);
-
-				void SetRenderUpdateSystem_S(int entityStaticID, GamePlay::EntityRenderFunc renderSystem);
 			};
 
 		} // namespace GamePlay

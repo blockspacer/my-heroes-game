@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "Engine/SDLUtilityTool.h"
-#include "Engine/InputHandler.h"
 
 namespace Heroes
 {
@@ -170,16 +169,11 @@ namespace Heroes
 
 			SDLUtilityTool& m_sdlUtilityTool;
 
-			// This is how states get input from the user, refer to InputHandler to
-			// see how to access specific input
-			InputHandler m_inputHandler{ m_sdlUtilityTool };
-
 			// all states will have a basic sdl visuals and input
 			SDL_Window* m_sdlWindow{ nullptr };
 			SDL_Renderer* m_sdlRenderer{ nullptr };
 			SDL_Surface* m_sdlSurface{ nullptr };
 			SDL_Texture* m_sdlTexture{ nullptr };
-			SDL_GameController* m_controller{ nullptr };
 
 		};
 

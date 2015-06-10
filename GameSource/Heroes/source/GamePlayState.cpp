@@ -54,9 +54,6 @@ namespace Heroes
 
 				m_targetTexture = m_sdlUtilityTool.LoadImageTexture("./Resources/Textures/Target.png", m_sdlRenderer);
 
-				m_inputHandler.Start("GamePlayStateInputThread");
-
-
 				g_Log_Write_L1(LOG_CONSTRUCTION_EVENT, "Created Game Play State");
 			}
 
@@ -108,13 +105,15 @@ namespace Heroes
 
 				//std::cout << m_entityMemory.m_statusComponents.GetDeathTimer_S(0) << std::endl;
 
-				SDL_Event sdlEvent;
-				if (SDL_WaitEventTimeout(&sdlEvent, 0)) {}
+				//SDL_Event sdlEvent;
+				//if (SDL_WaitEventTimeout(&sdlEvent, 0)) {}
+
+				ButtonState state = m_sdlUtilityTool.GetInputHandler().GetButton(SDL_CONTROLLER_BUTTON_BACK);
 
 				// read the buttons and axis
-				Uint8 buttonBack = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK);
+				//Uint8 buttonBack = SDL_GameControllerGetButton(m_controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_BACK);
 
-				if (buttonBack)
+				if (state == ButtonState::BUTTON_PRESSED)
 				{
 					SetNextState(Engine::StateCreationPackage(MainMenu::CreateMainMenuState, Engine::StateCreationData(Engine::NoStateCreationData, false)));
 				}
@@ -173,7 +172,7 @@ namespace Heroes
 					{
 						if (m_entityMemory.m_statusComponents.GetBusyStatus_D(entityID) == BusyStatusType::NONE)
 						{
-							m_entityMemory.m_systemsComponents.GetAISystem_D(entityID)(entityID, m_entityMemory, m_controller, m_inputHandler);
+							m_entityMemory.m_systemsComponents.GetAISystem_D(entityID)(entityID, m_entityMemory, m_sdlUtilityTool.GetInputHandler());
 						}
 					}
 				}

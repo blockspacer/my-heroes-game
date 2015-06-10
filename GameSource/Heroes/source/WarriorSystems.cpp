@@ -32,7 +32,7 @@ namespace Heroes
 					
 				}
 
-				void WarriorAISystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller, Engine::InputHandler& inputHandler)
+				void WarriorAISystem(int targetEntity, GamePlay::EntityMemory& entityMemory, Engine::InputHandler& inputHandler)
 				{
 					// check that target is still valid
 					int staticID = entityMemory.m_statusComponents.GetStaticEntityID_D(targetEntity);

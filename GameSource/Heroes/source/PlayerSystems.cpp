@@ -14,29 +14,29 @@ namespace Heroes
 			namespace PlayerSystems
 			{
 
-				void MainEntityAISystem(int targetEntity, GamePlay::EntityMemory& entityMemory, SDL_GameController* controller, Engine::InputHandler& inputHandler)
+				void MainEntityAISystem(int targetEntity, GamePlay::EntityMemory& entityMemory, Engine::InputHandler& inputHandler)
 				{
-					if (inputHandler.GetRightBumberPressed())
+					if (inputHandler.GetButton(SDL_CONTROLLER_BUTTON_RIGHTSHOULDER) == ButtonState::BUTTON_PRESSED)
 					{
 						// set basic attack 1.5 secs
 						entityMemory.m_AIComponents.SwitchTargets_D(targetEntity, entityMemory);
 
 					}
 
-					Uint8 buttonA = SDL_GameControllerGetButton(controller, SDL_GameControllerButton::SDL_CONTROLLER_BUTTON_A);
+					ButtonState buttonAState = inputHandler.GetButton(SDL_CONTROLLER_BUTTON_A);
 
-					if (buttonA)
+					if (buttonAState == ButtonState::BUTTON_PRESSED)
 					{
 						// set basic attack 1.5 secs
 						entityMemory.m_statusComponents.SetBusyStatus_D(targetEntity, BusyStatusType::BASIC_ATTACK, entityMemory.m_actionComponents.GetNormalAttackSpeed_S(entityMemory.m_statusComponents.GetStaticEntityID_D(targetEntity)) * 100);
 					}
 
 					// direction stuff
-					Sint16 axisLeftX = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTX);
-					Sint16 axisLeftY = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_LEFTY);
+					Sint16 axisLeftX = inputHandler.Left_Stick_X();
+					Sint16 axisLeftY = inputHandler.Left_Stick_Y();
 
-					Sint16 axisRightX = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTX);
-					Sint16 axisRightY = SDL_GameControllerGetAxis(controller, SDL_GameControllerAxis::SDL_CONTROLLER_AXIS_RIGHTY);
+					Sint16 axisRightX = inputHandler.Right_Stick_X();
+					Sint16 axisRightY = inputHandler.Right_Stick_Y();
 
 					b2Vec2 movementVector = b2Vec2(axisLeftX, axisLeftY);
 					if (abs(movementVector.x) > 5000 || abs(movementVector.y) > 5000)

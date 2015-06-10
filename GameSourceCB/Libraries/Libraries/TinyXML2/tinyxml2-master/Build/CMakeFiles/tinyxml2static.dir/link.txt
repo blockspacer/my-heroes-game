@@ -1,0 +1,2 @@
+C:\PROGRA~2\CODEBL~1\MinGW\bin\ar.exe cr libtinyxml2.a  CMakeFiles/tinyxml2static.dir/tinyxml2.cpp.obj
+C:\PROGRA~2\CODEBL~1\MinGW\bin\ranlib.exe libtinyxml2.a
