@@ -33,7 +33,7 @@ int main(int argc, char** argv)
 	//	"print_hello(123)\n"
 	//	);*/
 
-	StateEngine stateEngine = StateEngine();
+	StateEngine stateEngine;
 	if (!stateEngine.Init())
 	{
 		return 1;

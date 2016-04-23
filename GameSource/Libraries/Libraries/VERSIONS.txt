@@ -1,7 +1,0 @@
-Box2D version: 2.3.0
-
-Lua version: 5.1.5
-
-Boost version: 1.47
-
-SDL 2.0.3 (need updated SDL platfrom file)

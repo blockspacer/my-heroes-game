@@ -1,4 +1,0 @@
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/TinyXML2/tinyxml2-master/Build/CMakeFiles/DATA_COPY.dir
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/TinyXML2/tinyxml2-master/Build/CMakeFiles/test.dir
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/TinyXML2/tinyxml2-master/Build/CMakeFiles/tinyxml2.dir
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/TinyXML2/tinyxml2-master/Build/CMakeFiles/tinyxml2static.dir

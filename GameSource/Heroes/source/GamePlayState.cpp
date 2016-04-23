@@ -36,6 +36,15 @@ namespace Heroes
 				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 5), warriorOrientation, m_entityMemory);
 				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 7), warriorOrientation, m_entityMemory);
 				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 9), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 5), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 7), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 9), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 5), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 7), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 9), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 5), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 7), warriorOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(warrior, b2Vec2(5, 9), warriorOrientation, m_entityMemory);
 
 				b2Vec2 testEntityOrientation;
 				testEntityOrientation.x = 1;
@@ -44,7 +53,18 @@ namespace Heroes
 				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 5), testEntityOrientation, m_entityMemory);
 				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 7), testEntityOrientation, m_entityMemory);
 				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 9), testEntityOrientation, m_entityMemory);
-
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(11, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 5), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 9), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(11, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 5), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 9), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(11, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 5), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 7), testEntityOrientation, m_entityMemory);
+				m_entityLoader.LoadDynamicEntity(testEntity, b2Vec2(13, 9), testEntityOrientation, m_entityMemory);
 
 				m_entityLoader.LoadDynamicEntity(rock, b2Vec2(9, 4), b2Vec2_zero, m_entityMemory);
 				m_entityLoader.LoadDynamicEntity(rock, b2Vec2(10, 11), b2Vec2_zero, m_entityMemory);

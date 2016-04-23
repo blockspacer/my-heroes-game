@@ -1,5 +1,0 @@
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/Box2D/Box2D/Build/Box2D/CMakeFiles/Box2D.dir
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/Box2D/Box2D/Build/HelloWorld/CMakeFiles/HelloWorld.dir
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/Box2D/Box2D/Build/Testbed/CMakeFiles/Testbed.dir
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/Box2D/Box2D/Build/freeglut/CMakeFiles/freeglut_static.dir
-D:/GameDevelopment/GameRepository/GameSourceCB/Libraries/Libraries/Box2D/Box2D/Build/glui/CMakeFiles/glui.dir
